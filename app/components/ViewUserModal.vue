@@ -1,0 +1,429 @@
+<template>
+  <div v-if="show" class="modal-overlay" @click="$emit('close')">
+    <div class="modal-content" @click.stop>
+      <div class="modal-header">
+        <h3>User Details</h3>
+        <button @click="$emit('close')" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div v-if="loading" class="loading-state">
+          <div class="spinner"></div>
+          <p>Loading user details...</p>
+        </div>
+
+        <div v-else-if="error" class="error-state">
+          <p>{{ error }}</p>
+        </div>
+
+        <div v-else-if="userDetails">
+          <div class="detail-group">
+            <label>Username</label>
+            <div class="detail-value">{{ userDetails.username || 'N/A' }}</div>
+          </div>
+
+          <div class="detail-group">
+            <label>Keycloak ID</label>
+            <div class="detail-value">
+              <code class="code-text">{{ userDetails.keycloak_id || 'N/A' }}</code>
+            </div>
+          </div>
+
+          <div class="detail-group">
+            <label>User ID</label>
+            <div class="detail-value">{{ userDetails.id || 'N/A' }}</div>
+          </div>
+
+          <div class="detail-group">
+            <label>Created At</label>
+            <div class="detail-value">{{ formatDate(userDetails.created_at) }}</div>
+          </div>
+
+          <div class="detail-group">
+            <label>Updated At</label>
+            <div class="detail-value">{{ formatDate(userDetails.updated_at) }}</div>
+          </div>
+
+          <div class="detail-group">
+            <label>Public Keys</label>
+            <div v-if="userDetails.pubKey && userDetails.pubKey.length > 0" class="keys-list">
+              <div v-for="(key, index) in userDetails.pubKey" :key="index" class="key-item">
+                <div class="key-header">Key {{ index + 1 }}</div>
+                <code class="key-content">{{ key }}</code>
+              </div>
+            </div>
+            <div v-else class="detail-value text-muted">No public keys configured</div>
+          </div>
+
+          <div class="detail-group">
+            <label>Assigned Servers ({{ userDetails.assigned_servers?.length || 0 }})</label>
+            <div v-if="userDetails.assigned_servers && userDetails.assigned_servers.length > 0" class="servers-list">
+              <div v-for="server in userDetails.assigned_servers" :key="server.id" class="server-item">
+                <div class="server-info">
+                  <div class="server-details">
+                    <strong>{{ server.name }}</strong>
+                    <code class="ip-address">{{ server.ip }}</code>
+                  </div>
+                  <button 
+                    v-if="isAdmin" 
+                    @click="unassignServer(server.id)" 
+                    class="btn-unassign"
+                    :disabled="unassigning === server.id"
+                  >
+                    {{ unassigning === server.id ? 'Removing...' : 'Unassign' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div v-else class="detail-value text-muted">No servers assigned</div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button @click="$emit('close')" class="btn-primary">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, watch } from 'vue'
+
+const props = defineProps({
+  show: {
+    type: Boolean,
+    default: false
+  },
+  user: {
+    type: Object,
+    default: null
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  }
+})
+
+defineEmits(['close'])
+
+const { apiRequest } = useApi()
+const userDetails = ref(null)
+const loading = ref(false)
+const error = ref('')
+const unassigning = ref(null)
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  try {
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch {
+    return dateString
+  }
+}
+
+const fetchUserDetails = async (keycloakId) => {
+  try {
+    loading.value = true
+    error.value = ''
+    userDetails.value = await apiRequest(`/api/user/${keycloakId}`)
+  } catch (err) {
+    console.error('Failed to load user details:', err)
+    error.value = err.message || 'Failed to load user details'
+  } finally {
+    loading.value = false
+  }
+}
+
+const unassignServer = async (serverId) => {
+  if (!userDetails.value || !userDetails.value.id) return
+  
+  if (!confirm(`Are you sure you want to remove access to this server?`)) return
+  
+  try {
+    unassigning.value = serverId
+    await apiRequest('/api/user/unassign', {
+      method: 'POST',
+      body: {
+        user_id: userDetails.value.id,
+        server_id: serverId
+      }
+    })
+    // Refresh user details after unassignment
+    await fetchUserDetails(props.user.keycloak_id)
+  } catch (err) {
+    console.error('Failed to unassign server:', err)
+    alert('Failed to unassign server: ' + err.message)
+  } finally {
+    unassigning.value = null
+  }
+}
+
+// Watch for user changes and fetch details
+watch(() => props.user, (newUser) => {
+  if (newUser && newUser.keycloak_id && props.show) {
+    fetchUserDetails(newUser.keycloak_id)
+  }
+}, { immediate: true })
+
+// Watch for show changes
+watch(() => props.show, (newShow) => {
+  if (newShow && props.user && props.user.keycloak_id) {
+    fetchUserDetails(props.user.keycloak_id)
+  } else if (!newShow) {
+    // Reset when modal closes
+    userDetails.value = null
+    error.value = ''
+  }
+})
+</script>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+.modal-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f1f5f9;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #64748b;
+}
+
+.close-btn:hover {
+  background: #e2e8f0;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 16px;
+  border: 4px solid #f1f5f9;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-state {
+  color: #ef4444;
+}
+
+.detail-group {
+  margin-bottom: 24px;
+}
+
+.detail-group:last-of-type {
+  margin-bottom: 0;
+}
+
+.detail-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.detail-value {
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.code-text {
+  font-family: 'Courier New', monospace;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.ip-address {
+  font-family: 'Courier New', monospace;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.text-muted {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.keys-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.key-item {
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.key-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.key-content {
+  display: block;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: #1e293b;
+  background: white;
+  padding: 8px;
+  border-radius: 4px;
+  word-break: break-all;
+  white-space: pre-wrap;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.servers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.server-item {
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.server-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.server-details {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.server-info strong {
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.btn-unassign {
+  padding: 6px 14px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-unassign:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.btn-unassign:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 20px;
+  margin-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+</style>

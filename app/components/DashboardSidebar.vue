@@ -14,6 +14,7 @@
       >
         <span>Dashboard</span>
       </div>
+
       <div 
         class="nav-item"
         :class="{ active: activeTab === 'users' }"
@@ -21,7 +22,18 @@
       >
         <span>Users</span>
       </div>
+
+      <div
+        class="nav-item"
+        :class="{ active: activeTab === 'blacklist' }"
+        @click="handleNavClick('blacklist')"
+        >
+        <span>Blacklist</span>
+      </div>
+      
     </nav>
+
+
 
     <div class="sidebar-footer">
       <div class="user-profile">

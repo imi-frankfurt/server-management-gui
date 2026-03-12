@@ -33,6 +33,17 @@
         label3="Total Public Keys"
       />
 
+      <DashboardStats v-if="activeTab === 'blacklist'"
+        :total-servers="blacklists?.filter(b => b.username && b.username.length > 0).length || 0"
+        :active-servers="blacklists?.filter(b => b.servers && b.servers.length > 0).length || 0"
+        :total-users="0"
+        :access-level="userRoles"
+        label1="Total Blacklisted Users"
+        label2="Total Blacklisted Servers"
+        label3=""
+        :show-card3="false"
+        > </DashboardStats>
+
       <ServerTable v-if="activeTab === 'dashboard'"
         :servers="servers"
         :loading="loading"
@@ -44,6 +55,15 @@
         @delete-server="deleteServer"
         @retry="fetchServers"
       />
+
+      <BlackListTable v-if="activeTab === 'blacklist'"
+        :blacklists="blacklists"
+        :loading="loading"
+        :error="error"
+        @retry="fetchBlacklist"
+      />
+
+
 
       <UserTable v-if="activeTab === 'users'"
         :users="users"
@@ -114,6 +134,7 @@ import EditServerModal from '../components/EditServerModal.vue'
 import DeleteServerModal from '../components/DeleteServerModal.vue'
 import ViewUserModal from '../components/ViewUserModal.vue'
 import AssignUserModal from '../components/AssignUserModal.vue'
+import BlackListTable from '../components/BlackListTable.vue'
 
 definePageMeta({
   middleware: 'auth'
@@ -126,6 +147,7 @@ const { apiRequest } = useApi()
 const activeTab = ref('dashboard')
 const servers = ref(null)
 const users = ref(null)
+const blacklists = ref(null)
 const loading = ref(true)
 const error = ref('')
 const usersLoading = ref(false)
@@ -151,7 +173,17 @@ const userName = computed(() => {
 
 const userRoles = computed(() => {
   const roles = tokenData.value?.roles || []
-  return roles.length > 0 ? roles.join(', ') : 'No roles'
+  const hasAdmin = roles.some(role => String(role)
+  .toLowerCase()
+  .includes('admin')
+  )
+  if (hasAdmin) {
+    return 'Admin'
+  }
+  else {
+    return "User"
+  }
+  // return roles.length > 0 ? roles.join(', ') : 'No roles'
 })
 
 const userInitials = computed(() => {
@@ -190,6 +222,20 @@ const fetchUsers = async () => {
     usersLoading.value = false
   }
 }
+
+const fetchBlacklist = async () => {
+  try {
+    loading.value = true
+    error.value = ''
+    blacklists.value = await apiRequest('/api/blacklist')
+  } catch (err) {
+    console.error('Failed to load blacklist:', err)
+    error.value = err.message || 'Failed to load blacklist'
+  } finally {
+    loading.value = false
+  }
+}
+
 
 const decodeToken = () => {
   // Only run in browser context
@@ -306,6 +352,7 @@ onMounted(async () => {
   decodeToken()
   await fetchServers()
   await fetchUsers()
+  await fetchBlacklist()
 })
 </script>
 

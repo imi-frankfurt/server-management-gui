@@ -1,14 +1,17 @@
 <template>
   <section class="stats-grid">
     <DashboardStatCard
+      v-if="showCard1"
       :label="label1 || 'Total Servers'"
       :value="totalServers"
     />
     <DashboardStatCard
+      v-if="showCard2"
       :label="label2 || 'Active Servers'"
       :value="activeServers"
     />
     <DashboardStatCard
+      v-if="showCard3"
       :label="label3 || 'Total Users'"
       :value="totalUsers"
     />
@@ -50,7 +53,19 @@ const props = defineProps({
   label3: {
     type: String,
     default: 'Total Users'
-  }
+  },
+  showCard1: {
+    type: Boolean,
+    default: true
+  },
+  showCard2: {
+    type: Boolean,
+    default: true
+  },
+  showCard3: {
+    type: Boolean,
+    default: true
+  },
 })
 </script>
 

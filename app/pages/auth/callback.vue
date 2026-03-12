@@ -39,7 +39,6 @@ onMounted(async () => {
     
     console.log('Authorization code received:', code.substring(0, 20) + '...')
     
-    // The redirect_uri must match exactly what was sent to Keycloak
     const redirectUri = window.location.origin + '/auth/callback'
     console.log('Using redirect_uri:', redirectUri)
     
@@ -54,6 +53,7 @@ onMounted(async () => {
     })
     
     console.log('Token received successfully')
+    
     
     // Store tokens
     localStorage.setItem('access_token', response.access_token)

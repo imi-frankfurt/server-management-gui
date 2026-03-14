@@ -44,33 +44,19 @@ onMounted(async () => {
     
     // Exchange code for token
     console.log('Exchanging code for token...')
-    const response = await $fetch(`${config.public.apiBaseUrl}/auth/exchange-code`, {
+    await $fetch(`${config.public.apiBaseUrl}/auth/exchange-code`, {
       method: 'POST',
+      credentials: 'include',
       body: {
-        code: code,
+        code,
         redirect_uri: redirectUri
       }
     })
     
     console.log('Token received successfully')
-    
-    
-    // Store tokens
-    localStorage.setItem('access_token', response.access_token)
-    
-    if (response.refresh_token) {
-      localStorage.setItem('refresh_token', response.refresh_token)
-    }
-    
-    if (response.expires_in) {
-      const expiresAt = Date.now() + (response.expires_in * 1000)
-      localStorage.setItem('token_expires_at', expiresAt.toString())
-    }
-    
-    console.log('Redirecting to dashboard...')
-    
-    // Redirect to dashboard
+
     await navigateTo('/dashboard')
+    
     
   } catch (err) {
     console.error('Callback error:', err)

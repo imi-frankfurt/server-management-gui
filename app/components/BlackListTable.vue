@@ -19,8 +19,8 @@
           <tr>
             <th>Username</th>
             <th>Servers</th>
-            <th>Added On</th>
-            <th>Updated On</th>
+            <th>Created On</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -33,7 +33,13 @@
                 <span v-else class="text-muted">No servers</span>
             </td>
             <td>{{ formatDate(blacklist.created_at) }}</td>
-            <td>{{ formatDate(blacklist.updated_at) }}</td>
+            <td>
+                <div class="action-buttons">
+                    <button @click="$emit('view-blacklist', blacklist)" class="action-btn view" title="View">
+                        View
+                    </button>
+                </div>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -134,5 +140,51 @@ const formatDate = (dateString) => {
 .text-muted {
   color: #94a3b8;
   font-size: 14px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.loading-state, .empty-state, .error-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #64748b;
+}
+
+.loading-state .spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state h3 {
+  color: #1e293b;
+  margin-bottom: 8px;
 }
 </style>

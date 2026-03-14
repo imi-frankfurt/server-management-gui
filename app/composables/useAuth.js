@@ -1,40 +1,36 @@
 export const useAuth = () => {
-  const getToken = () => {
-    if (process.client) {
-      return localStorage.getItem('access_token')
-    }
-    return null
-  }
-
-  const isAuthenticated = () => {
-    if (process.client) {
-      const token = localStorage.getItem('access_token')
-      const expiresAt = localStorage.getItem('token_expires_at')
-      
-      if (!token) return false
-      if (expiresAt && Date.now() > parseInt(expiresAt)) {
-        // Token expired
-        logout()
-        return false
-      }
-      
+  const isAuthenticated = async () => {
+    try {
+      const headers = import.meta.server ? useRequestHeaders(['cookie']) : {}
+      await $fetch('/api/auth/session', { headers })
       return true
+    } catch {
+      return false
     }
-    return false
   }
 
-  const logout = () => {
-    if (process.client) {
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('refresh_token')
-      localStorage.removeItem('token_expires_at')
-      navigateTo('/login')
+  const getSession = async () => {
+    try {
+      const headers = import.meta.server ? useRequestHeaders(['cookie']) : {}
+      return await $fetch('/api/auth/session', { headers })
+    } catch {
+      return null
+    }
+  }
+
+  const logout = async () => {
+    try {
+      await $fetch('/api/auth/logout', { method: 'POST' })
+    } catch {
+      // ignore
+    } finally {
+      navigateTo('/login?force_reauth=1')
     }
   }
 
   return {
-    getToken,
     isAuthenticated,
+    getSession,
     logout
   }
 }

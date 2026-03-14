@@ -140,7 +140,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { isAuthenticated, logout, getToken } = useAuth()
+const { logout, getSession } = useAuth()
 const { apiRequest } = useApi()
 
 // Data
@@ -237,20 +237,12 @@ const fetchBlacklist = async () => {
 }
 
 
-const decodeToken = () => {
-  // Only run in browser context
-  if (typeof window === 'undefined') return
-  
-  const token = getToken()
-  if (token) {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]))
-      tokenData.value = {
-        preferred_username: payload.preferred_username || payload.sub,
-        roles: payload.resource_access?.[payload.azp]?.roles || []
-      }
-    } catch (err) {
-      console.error('Failed to decode token:', err)
+const decodeToken = async () => {
+  const session = await getSession()
+  if (session) {
+    tokenData.value = {
+      preferred_username: session.preferred_username || session.sub,
+      roles: session.roles || []
     }
   }
 }
@@ -349,7 +341,7 @@ const handleUserAssigned = async () => {
 
 // Lifecycle
 onMounted(async () => {
-  decodeToken()
+  await decodeToken()
   await fetchServers()
   await fetchUsers()
   await fetchBlacklist()
@@ -366,7 +358,7 @@ onMounted(async () => {
 .dashboard-container {
   display: flex;
   min-height: 100vh;
-  background: #f8f9fa;
+  background: #0b1220;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
@@ -384,12 +376,12 @@ onMounted(async () => {
 .header-left h1 {
   font-size: 32px;
   font-weight: 700;
-  color: #1e293b;
+  color: #e5e7eb;
   margin-bottom: 4px;
 }
 
 .subtitle {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 16px;
 }
 

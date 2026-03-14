@@ -17,47 +17,29 @@
 import { ref, onMounted } from 'vue'
 
 const error = ref('')
-const config = useRuntimeConfig()
+let exchanged = false
 
 onMounted(async () => {
   try {
-    // Get current URL to extract query params
+    if (exchanged) return
+    exchanged = true
+
     const urlParams = new URLSearchParams(window.location.search)
-    
-    // Log all params for debugging
-    console.log('Callback URL:', window.location.href)
-    console.log('Query params:', Object.fromEntries(urlParams))
-    
-    // Extract authorization code
     const code = urlParams.get('code')
-    
+
     if (!code) {
       error.value = 'No authorization code received from Keycloak. Please try logging in again.'
-      console.error('Missing code parameter')
       return
     }
-    
-    console.log('Authorization code received:', code.substring(0, 20) + '...')
-    
+
     const redirectUri = window.location.origin + '/auth/callback'
-    console.log('Using redirect_uri:', redirectUri)
-    
-    // Exchange code for token
-    console.log('Exchanging code for token...')
-    await $fetch(`${config.public.apiBaseUrl}/auth/exchange-code`, {
+
+    await $fetch('/api/auth/exchange-code', {
       method: 'POST',
-      credentials: 'include',
-      body: {
-        code,
-        redirect_uri: redirectUri
-      }
+      body: { code, redirect_uri: redirectUri }
     })
-    
-    console.log('Token received successfully')
 
     await navigateTo('/dashboard')
-    
-    
   } catch (err) {
     console.error('Callback error:', err)
     error.value = err?.data?.detail || err.message || 'Failed to complete login'
@@ -80,7 +62,7 @@ onMounted(async () => {
 }
 
 .spinner {
-  border: 4px solid #f3f3f3;
+  border: 4px solid #1e293b;
   border-top: 4px solid #4a90e2;
   border-radius: 50%;
   width: 40px;

@@ -110,7 +110,7 @@ const formatDate = (dateString) => {
 
 <style scoped>
 .content-section {
-  background: white;
+  background: #111827;
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
@@ -127,7 +127,7 @@ const formatDate = (dateString) => {
 .section-header h2 {
   font-size: 20px;
   font-weight: 600;
-  color: #1e293b;
+  color: #e5e7eb;
 }
 
 .btn-primary {
@@ -147,9 +147,9 @@ const formatDate = (dateString) => {
 
 .btn-secondary {
   padding: 10px 20px;
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
+  background: #1e293b;
+  color: #64748b;
+  border: 1px solid #334155;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -157,7 +157,7 @@ const formatDate = (dateString) => {
 }
 
 .btn-secondary:hover {
-  background: #e2e8f0;
+  background: #334155;
 }
 
 .table-container {
@@ -170,8 +170,8 @@ const formatDate = (dateString) => {
 }
 
 .data-table thead {
-  background: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
+  background: #0f172a;
+  border-bottom: 2px solid #334155;
 }
 
 .data-table th {
@@ -179,36 +179,36 @@ const formatDate = (dateString) => {
   text-align: left;
   font-size: 14px;
   font-weight: 600;
-  color: #475569;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .data-table td {
   padding: 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #1e293b;
 }
 
 .data-table tbody tr:hover {
-  background: #f8fafc;
+  background: #0f172a;
 }
 
 .keycloak-id {
-  background: #f1f5f9;
+  background: #1e293b;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-family: 'Courier New', monospace;
-  color: #475569;
+  color: #64748b;
 }
 
 .key-count {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 14px;
 }
 
 .date-text {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 14px;
 }
 
@@ -224,8 +224,8 @@ const formatDate = (dateString) => {
 
 .action-btn {
   padding: 6px 12px;
-  border: 1px solid #e2e8f0;
-  background: white;
+  border: 1px solid #334155;
+  background: #111827;
   border-radius: 6px;
   cursor: pointer;
   font-size: 13px;
@@ -233,18 +233,18 @@ const formatDate = (dateString) => {
 }
 
 .action-btn:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: #0f172a;
+  border-color: #64748b;
 }
 
 .loading-state, .empty-state, .error-state {
   text-align: center;
   padding: 60px 20px;
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .loading-state .spinner {
-  border: 4px solid #f3f3f3;
+  border: 4px solid #1e293b;
   border-top: 4px solid #3b82f6;
   border-radius: 50%;
   width: 40px;
@@ -259,7 +259,7 @@ const formatDate = (dateString) => {
 }
 
 .empty-state h3 {
-  color: #1e293b;
+  color: #e5e7eb;
   margin-bottom: 8px;
 }
 </style>

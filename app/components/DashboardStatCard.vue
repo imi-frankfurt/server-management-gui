@@ -22,7 +22,7 @@ const props = defineProps({
 
 <style scoped>
 .stat-card {
-  background: white;
+  background: #111827;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -40,13 +40,13 @@ const props = defineProps({
 
 .stat-label {
   font-size: 14px;
-  color: #64748b;
+  color: #94a3b8;
   margin-bottom: 8px;
 }
 
 .stat-value {
   font-size: 28px;
   font-weight: 700;
-  color: #1e293b;
+  color: #e5e7eb;
 }
 </style>

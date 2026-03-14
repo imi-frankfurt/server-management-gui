@@ -67,7 +67,7 @@ defineEmits(['close'])
 }
 
 .modal-content {
-  background: white;
+  background: #111827;
   border-radius: 16px;
   width: 100%;
   max-width: 500px;
@@ -79,28 +79,28 @@ defineEmits(['close'])
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #334155;
 }
 
 .modal-header h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #1e293b;
+  color: #e5e7eb;
 }
 
 .close-btn {
   width: 32px;
   height: 32px;
   border: none;
-  background: #f1f5f9;
+  background: #1e293b;
   border-radius: 6px;
   cursor: pointer;
   font-size: 18px;
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .close-btn:hover {
-  background: #e2e8f0;
+  background: #334155;
 }
 
 .modal-body {
@@ -119,22 +119,22 @@ defineEmits(['close'])
   display: block;
   font-size: 14px;
   font-weight: 600;
-  color: #475569;
+  color: #64748b;
   margin-bottom: 8px;
 }
 
 .detail-value {
   padding: 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #0f172a;
+  border: 1px solid #334155;
   border-radius: 8px;
   font-size: 14px;
-  color: #1e293b;
+  color: #e5e7eb;
 }
 
 .ip-address {
   font-family: 'Courier New', monospace;
-  background: #f1f5f9;
+  background: #1e293b;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 13px;
@@ -153,11 +153,11 @@ defineEmits(['close'])
 
 .alias-item {
   padding: 10px 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #0f172a;
+  border: 1px solid #334155;
   border-radius: 8px;
   font-size: 14px;
-  color: #1e293b;
+  color: #e5e7eb;
 }
 
 .modal-footer {
@@ -166,7 +166,7 @@ defineEmits(['close'])
   justify-content: flex-end;
   padding-top: 20px;
   margin-top: 24px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #334155;
 }
 
 .btn-primary {

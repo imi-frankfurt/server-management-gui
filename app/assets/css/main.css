@@ -1,2 +1,58 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+:root {
+	color-scheme: dark;
+	--bg: #0b1220;
+	--surface: #111827;
+	--surface-soft: #1f2937;
+	--text: #e5e7eb;
+	--text-muted: #94a3b8;
+	--border: #334155;
+	--accent: #3b82f6;
+	--accent-strong: #2563eb;
+}
+
+html,
+body,
+#__nuxt {
+	min-height: 100%;
+	background: radial-gradient(1200px 600px at 20% -10%, #172554 0%, transparent 45%),
+		radial-gradient(900px 500px at 100% 0%, #0f172a 0%, transparent 50%),
+		var(--bg);
+	color: var(--text);
+}
+
+input,
+select,
+textarea {
+	background: var(--surface-soft);
+	color: var(--text);
+	border: 1px solid var(--border);
+}
+
+input::placeholder,
+textarea::placeholder {
+	color: var(--text-muted);
+}
+
+table,
+th,
+td {
+	border-color: var(--border);
+}
+
+.data-table thead {
+	background: #0f172a !important;
+	border-bottom: 2px solid var(--border) !important;
+}
+
+.data-table tbody tr:hover {
+	background: #0f172a !important;
+}
+
+.ip-address,
+.keycloak-id {
+	background: #1e293b !important;
+	color: var(--text-muted) !important;
+}

@@ -151,7 +151,7 @@ watch(() => props.show, (newVal) => {
 }
 
 .modal-content {
-  background: white;
+  background: #111827;
   border-radius: 16px;
   width: 100%;
   max-width: 500px;
@@ -163,28 +163,28 @@ watch(() => props.show, (newVal) => {
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #334155;
 }
 
 .modal-header h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #1e293b;
+  color: #e5e7eb;
 }
 
 .close-btn {
   width: 32px;
   height: 32px;
   border: none;
-  background: #f1f5f9;
+  background: #1e293b;
   border-radius: 6px;
   cursor: pointer;
   font-size: 18px;
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .close-btn:hover {
-  background: #e2e8f0;
+  background: #334155;
 }
 
 .modal-body {
@@ -199,14 +199,14 @@ watch(() => props.show, (newVal) => {
   display: block;
   font-size: 14px;
   font-weight: 500;
-  color: #475569;
+  color: #64748b;
   margin-bottom: 8px;
 }
 
 .form-group input {
   width: 100%;
   padding: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #334155;
   border-radius: 8px;
   font-size: 14px;
   transition: all 0.2s;
@@ -276,9 +276,9 @@ watch(() => props.show, (newVal) => {
 
 .btn-secondary {
   padding: 10px 20px;
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
+  background: #1e293b;
+  color: #64748b;
+  border: 1px solid #334155;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -286,6 +286,6 @@ watch(() => props.show, (newVal) => {
 }
 
 .btn-secondary:hover {
-  background: #e2e8f0;
+  background: #334155;
 }
 </style>

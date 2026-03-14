@@ -119,7 +119,7 @@ const handleLogout = () => {
   align-items: center;
   padding: 12px 16px;
   border-radius: 8px;
-  color: #cbd5e1;
+  color: #64748b;
   text-decoration: none;
   transition: all 0.2s;
   margin-bottom: 4px;

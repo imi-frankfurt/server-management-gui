@@ -14,24 +14,30 @@
 import { ref } from 'vue'
 
 const error = ref('')
-const config = useRuntimeConfig()
+const route = useRoute()
 
 const loginWithKeycloak = async () => {
   try {
     const frontendCallbackUrl = window.location.origin + '/auth/callback'
-    console.log('Frontend callback URL:', frontendCallbackUrl)
-    
-    // Get Keycloak login URL from backend
-    const response = await $fetch(`${config.public.apiBaseUrl}/auth/login-url`, {
+    const forceReauth = route.query.force_reauth === '1'
+
+    const response = await $fetch('/api/auth/login-url', {
       params: {
-        frontend_callback_url: frontendCallbackUrl
+        frontend_callback_url: frontendCallbackUrl,
+        ...(forceReauth ? { prompt: 'login', max_age: 0 } : {})
       }
     })
     
-    console.log('Keycloak auth URL:', response.auth_url)
-    
-    // Redirect to Keycloak login page
-    window.location.href = response.auth_url
+    // Some backend implementations ignore optional params, so enforce them here too.
+    let authUrl = response.auth_url
+    if (forceReauth) {
+      const parsed = new URL(authUrl)
+      parsed.searchParams.set('prompt', 'login')
+      parsed.searchParams.set('max_age', '0')
+      authUrl = parsed.toString()
+    }
+
+    window.location.href = authUrl
     
   } catch (err) {
     console.error('Login error:', err)
@@ -46,11 +52,11 @@ const loginWithKeycloak = async () => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #0b1220;
 }
 
 .login-card {
-  background: white;
+  background: #111827;
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);

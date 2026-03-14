@@ -1,11 +1,8 @@
 export const useApi = () => {
-  const config = useRuntimeConfig()
-
   const apiRequest = async (endpoint, options = {}) => {
     try {
-      const response = await $fetch(`${config.public.apiBaseUrl}${endpoint}`, {
+      const response = await $fetch(endpoint, {
         ...options,
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           ...options.headers
@@ -17,7 +14,7 @@ export const useApi = () => {
       if (error?.status === 401 || error?.statusCode === 401) {
         const { logout } = useAuth()
         await logout()
-        throw new Error('Session expired. Please login again.')
+        return
       }
       throw error
     }

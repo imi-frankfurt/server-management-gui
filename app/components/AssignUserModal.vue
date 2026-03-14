@@ -202,7 +202,7 @@ watch(() => props.show, (newShow) => {
 }
 
 .modal-content {
-  background: white;
+  background: #111827;
   border-radius: 16px;
   width: 100%;
   max-width: 600px;
@@ -216,32 +216,32 @@ watch(() => props.show, (newShow) => {
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #334155;
   position: sticky;
   top: 0;
-  background: white;
+  background: #111827;
   z-index: 10;
 }
 
 .modal-header h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #1e293b;
+  color: #e5e7eb;
 }
 
 .close-btn {
   width: 32px;
   height: 32px;
   border: none;
-  background: #f1f5f9;
+  background: #1e293b;
   border-radius: 6px;
   cursor: pointer;
   font-size: 18px;
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .close-btn:hover {
-  background: #e2e8f0;
+  background: #334155;
 }
 
 .modal-body {
@@ -249,7 +249,7 @@ watch(() => props.show, (newShow) => {
 }
 
 .modal-description {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 14px;
   margin-bottom: 20px;
 }
@@ -264,7 +264,7 @@ watch(() => props.show, (newShow) => {
   width: 40px;
   height: 40px;
   margin: 0 auto 16px;
-  border: 4px solid #f1f5f9;
+  border: 4px solid #1e293b;
   border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -292,18 +292,18 @@ watch(() => props.show, (newShow) => {
 }
 
 .server-item {
-  border: 2px solid #e2e8f0;
+  border: 2px solid #334155;
   border-radius: 8px;
   transition: all 0.2s;
 }
 
 .server-item:hover:not(.already-assigned) {
   border-color: #3b82f6;
-  background: #f8fafc;
+  background: #0f172a;
 }
 
 .server-item.already-assigned {
-  background: #f8fafc;
+  background: #0f172a;
   opacity: 0.7;
 }
 
@@ -347,13 +347,13 @@ watch(() => props.show, (newShow) => {
 }
 
 .server-details strong {
-  color: #1e293b;
+  color: #e5e7eb;
   font-size: 14px;
 }
 
 .ip-address {
   font-family: 'Courier New', monospace;
-  background: #f1f5f9;
+  background: #1e293b;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 13px;
@@ -385,7 +385,7 @@ watch(() => props.show, (newShow) => {
   gap: 12px;
   justify-content: flex-end;
   padding-top: 20px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #334155;
 }
 
 .btn-primary {
@@ -410,9 +410,9 @@ watch(() => props.show, (newShow) => {
 
 .btn-secondary {
   padding: 10px 20px;
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
+  background: #1e293b;
+  color: #64748b;
+  border: 1px solid #334155;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -420,7 +420,7 @@ watch(() => props.show, (newShow) => {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #e2e8f0;
+  background: #334155;
 }
 
 .btn-secondary:disabled {

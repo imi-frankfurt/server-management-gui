@@ -168,22 +168,56 @@ const activeServers = computed(() => {
 })
 
 const userName = computed(() => {
-  return tokenData.value?.preferred_username || 'User'
+  return (
+    tokenData.value?.preferred_username ||
+    tokenData.value?.username ||
+    tokenData.value?.name ||
+    tokenData.value?.sub ||
+    'User'
+  )
+})
+
+const extractRoles = (source) => {
+  const roles = []
+
+  const visit = (value) => {
+    if (!value) return
+
+    if (Array.isArray(value)) {
+      value.forEach(visit)
+      return
+    }
+
+    if (typeof value === 'string') {
+      const trimmed = value.trim()
+      if (!trimmed) return
+
+      // Handle comma-separated roles if backend returns a single string.
+      trimmed.split(',').forEach((part) => {
+        const item = part.trim().toLowerCase()
+        if (item) roles.push(item)
+      })
+      return
+    }
+
+    if (typeof value === 'object') {
+      if (Array.isArray(value.roles)) {
+        visit(value.roles)
+      }
+      Object.values(value).forEach(visit)
+    }
+  }
+
+  visit(source)
+  return [...new Set(roles)]
+}
+
+const normalizedRoles = computed(() => {
+  return extractRoles(tokenData.value?.roles)
 })
 
 const userRoles = computed(() => {
-  const roles = tokenData.value?.roles || []
-  const hasAdmin = roles.some(role => String(role)
-  .toLowerCase()
-  .includes('admin')
-  )
-  if (hasAdmin) {
-    return 'Admin'
-  }
-  else {
-    return "User"
-  }
-  // return roles.length > 0 ? roles.join(', ') : 'No roles'
+  return normalizedRoles.value.some((role) => role.includes('admin')) ? 'Admin' : 'User'
 })
 
 const userInitials = computed(() => {
@@ -192,8 +226,7 @@ const userInitials = computed(() => {
 })
 
 const isAdmin = computed(() => {
-  const roles = tokenData.value?.roles || []
-  return roles.includes('admin-role')
+  return Boolean(tokenData.value?.isAdmin) || normalizedRoles.value.some((role) => role.includes('admin'))
 })
 
 // Methods
@@ -237,15 +270,37 @@ const fetchBlacklist = async () => {
 }
 
 
-const decodeToken = async () => {
-  const session = await getSession()
-  if (session) {
-    tokenData.value = {
-      preferred_username: session.preferred_username || session.sub,
-      roles: session.roles || []
-    }
+const applySession = (session) => {
+  if (!session) return
+
+  const payload = session.data ?? session.user ?? session
+
+  const extractedRoles =
+    payload.roles ??
+    payload.realm_access ??
+    payload.resource_access ??
+    []
+
+  tokenData.value = {
+    preferred_username:
+      payload.preferred_username ||
+      payload.username ||
+      payload.name ||
+      payload.sub,
+    username: payload.username,
+    name: payload.name,
+    sub: payload.sub,
+    roles: extractedRoles,
+    isAdmin: payload.is_admin ?? payload.isAdmin ?? false
   }
 }
+
+const decodeToken = async () => {
+  const session = await getSession()
+  applySession(session)
+}
+
+await decodeToken()
 
 const addServer = async (serverData) => {
   try {
@@ -341,7 +396,6 @@ const handleUserAssigned = async () => {
 
 // Lifecycle
 onMounted(async () => {
-  await decodeToken()
   await fetchServers()
   await fetchUsers()
   await fetchBlacklist()

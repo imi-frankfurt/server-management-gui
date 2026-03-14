@@ -7,6 +7,10 @@ export default defineNuxtConfig({
   
   runtimeConfig: {
     // Server-only — never exposed to the browser
-    apiBaseUrl: 'https://localhost:5000' // Override with NUXT_API_BASE_URL env var
+    apiBaseUrl: 'https://localhost:5000', // Override with NUXT_API_BASE_URL env var
+    public: {
+      // Optional direct browser base URL (used by auth/session when needed)
+      apiBaseUrl: '' // Override with NUXT_PUBLIC_API_BASE_URL env var
+    }
   }
 })

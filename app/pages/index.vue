@@ -11,3 +11,7 @@
       }]"
     />
 </template>
+
+<script setup>
+await navigateTo('/login', { redirectCode: 302 })
+</script>

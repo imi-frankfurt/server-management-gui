@@ -60,6 +60,7 @@
         :blacklists="blacklists"
         :loading="loading"
         :error="error"
+        @view-blacklist="viewBlacklist"
         @retry="fetchBlacklist"
       />
 
@@ -111,6 +112,13 @@
       :is-admin="isAdmin"
       @close="showViewUserModal = false"
     />
+
+    <ViewBlackListModal
+      :show="showViewBlacklistModal"
+      :user="selectedBlacklist"
+      :is-admin="isAdmin"
+      @close="showViewBlacklistModal = false"
+    />
     
     <AssignUserModal
       :show="showAssignUserModal"
@@ -133,6 +141,7 @@ import ViewServerModal from '../components/ViewServerModal.vue'
 import EditServerModal from '../components/EditServerModal.vue'
 import DeleteServerModal from '../components/DeleteServerModal.vue'
 import ViewUserModal from '../components/ViewUserModal.vue'
+import ViewBlackListModal from '../components/ViewBlackListModal.vue'
 import AssignUserModal from '../components/AssignUserModal.vue'
 import BlackListTable from '../components/BlackListTable.vue'
 
@@ -157,9 +166,11 @@ const showViewServerModal = ref(false)
 const showEditServerModal = ref(false)
 const showDeleteServerModal = ref(false)
 const showViewUserModal = ref(false)
+const showViewBlacklistModal = ref(false)
 const showAssignUserModal = ref(false)
 const selectedServer = ref(null)
 const selectedUser = ref(null)
+const selectedBlacklist = ref(null)
 const tokenData = ref(null)
 
 // Computed
@@ -382,6 +393,11 @@ const syncUsers = async () => {
 const viewUser = (user) => {
   selectedUser.value = user
   showViewUserModal.value = true
+}
+
+const viewBlacklist = (blacklist) => {
+  selectedBlacklist.value = blacklist
+  showViewBlacklistModal.value = true
 }
 
 const assignUser = (user) => {

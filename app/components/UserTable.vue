@@ -1,7 +1,10 @@
 <template>
   <section class="content-section">
     <div class="section-header">
-      <h2>Users</h2>
+      <div>
+        <h2>Users</h2>
+        <p class="section-meta">Last synced: {{ formatDateTime(lastSynced) }}</p>
+      </div>
       <button v-if="isAdmin" @click="$emit('sync-users')" class="btn-primary">
         Sync Users
       </button>
@@ -39,9 +42,12 @@
               <code class="keycloak-id">{{ formatKeycloakId(user.keycloak_id) }}</code>
             </td>
             <td>
-              <span class="server-count">
-                {{ user.assigned_servers_count ?? user.assigned_servers?.length ?? 0 }} server(s)
-              </span>
+              <div class="server-assignment">
+                <span class="server-count">
+                  {{ user.assigned_servers_count ?? user.assigned_servers?.length ?? 0 }} server(s)
+                </span>
+                <span class="role-count admin">Admin: {{ getPrimaryServerCount(user) }}</span>
+              </div>
             </td>
             <td>
               <span v-if="user.pubKey && user.pubKey.length > 0" class="key-count">
@@ -86,6 +92,10 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  lastSynced: {
+    type: String,
+    default: ''
+  },
   loading: {
     type: Boolean,
     default: false
@@ -116,6 +126,28 @@ const formatDate = (dateString) => {
     day: 'numeric' 
   })
 }
+
+const getPrimaryServerCount = (user) => {
+  if (!Array.isArray(user?.assigned_servers) || user.assigned_servers.length === 0) return 0
+  return user.assigned_servers.filter((server) => server?.primary_user === true).length
+}
+
+const formatDateTime = (dateString) => {
+  if (!dateString) return 'N/A'
+
+  try {
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    })
+  } catch {
+    return dateString
+  }
+}
 </script>
 
 <style scoped>
@@ -138,6 +170,12 @@ const formatDate = (dateString) => {
   font-size: 20px;
   font-weight: 600;
   color: #e5e7eb;
+}
+
+.section-meta {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #94a3b8;
 }
 
 .btn-primary {
@@ -220,6 +258,21 @@ const formatDate = (dateString) => {
 .server-count {
   color: #94a3b8;
   font-size: 14px;
+}
+
+.server-assignment {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.role-count {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.role-count.admin {
+  color: #60a5fa;
 }
 
 .date-text {

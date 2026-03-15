@@ -25,11 +25,11 @@
 
       <DashboardStats v-if="activeTab === 'users'"
         :total-servers="users?.length || 0"
-        :active-servers="users?.filter(u => u.pubKey && u.pubKey.length > 0).length || 0"
+        :active-servers="users?.reduce((sum, u) => sum + ((u.assigned_servers || []).filter(s => s.primary_user === true).length), 0) || 0"
         :total-users="users?.reduce((sum, u) => sum + (u.pubKey?.length || 0), 0)"
         :access-level="userRoles"
         label1="Total Users"
-        label2="Users with Keys"
+        label2="Admin Assignments"
         label3=""
         :show-card3="false"
 
@@ -49,6 +49,7 @@
       <ServerTable v-if="activeTab === 'dashboard'"
         :servers="servers"
         :users="users"
+        :last-updated="activityStatus?.last_updated"
         :loading="loading"
         :error="error"
         :is-admin="isAdmin"
@@ -75,6 +76,7 @@
 
       <UserTable v-if="activeTab === 'users'"
         :users="users"
+        :last-synced="activityStatus?.last_synced"
         :loading="usersLoading"
         :error="usersError"
         :is-admin="isAdmin"
@@ -194,6 +196,7 @@ const activeTab = ref('dashboard')
 const servers = ref(null)
 const users = ref(null)
 const blacklists = ref(null)
+const activityStatus = ref(null)
 const loading = ref(true)
 const error = ref('')
 const usersLoading = ref(false)
@@ -217,7 +220,26 @@ const tokenData = ref(null)
 
 // Computed
 const activeServers = computed(() => {
-  return servers.value?.length || 0
+  if (!Array.isArray(servers.value) || servers.value.length === 0) return 0
+
+  if (Array.isArray(users.value) && users.value.length > 0) {
+    const assignedServerIds = new Set()
+
+    users.value.forEach((user) => {
+      ;(user.assigned_servers || []).forEach((server) => {
+        if (server?.id !== undefined && server?.id !== null) {
+          assignedServerIds.add(server.id)
+        }
+      })
+    })
+
+    return servers.value.filter((server) => assignedServerIds.has(server.id)).length
+  }
+
+  return servers.value.filter((server) => {
+    const count = server?.assigned_users_count ?? server?.assigned_users?.length ?? 0
+    return count > 0
+  }).length
 })
 
 const userName = computed(() => {
@@ -281,6 +303,22 @@ const userInitials = computed(() => {
 const isAdmin = computed(() => {
   return Boolean(tokenData.value?.isAdmin) || normalizedRoles.value.some((role) => role.includes('admin'))
 })
+
+const fetchActivityStatus = async () => {
+  try {
+    activityStatus.value = await apiRequest('/api/activity/status')
+  } catch (err) {
+    console.error('Failed to load activity status:', err)
+  }
+}
+
+const refreshServerData = async () => {
+  await Promise.all([fetchServers(), fetchActivityStatus()])
+}
+
+const refreshUserData = async () => {
+  await Promise.all([fetchUsers(), fetchActivityStatus()])
+}
 
 // Methods
 const fetchServers = async () => {
@@ -362,7 +400,7 @@ const addServer = async (serverData) => {
       body: serverData
     })
     showAddServerModal.value = false
-    await fetchServers()
+    await refreshServerData()
   } catch (err) {
     alert('Failed to add server: ' + err.message)
   }
@@ -390,7 +428,7 @@ const updateServer = async (serverData) => {
       body: serverData
     })
     showEditServerModal.value = false
-    await fetchServers()
+    await refreshServerData()
   } catch (err) {
     alert('Failed to update server: ' + err.message)
   }
@@ -405,7 +443,7 @@ const confirmDelete = async (server) => {
   try {
     await apiRequest(`/api/server/${server.id}`, { method: 'DELETE' })
     showDeleteServerModal.value = false
-    await fetchServers()
+    await refreshServerData()
   } catch (err) {
     alert('Failed to delete server: ' + err.message)
   }
@@ -425,8 +463,7 @@ const syncUsers = async () => {
     usersError.value = ''
     const result = await apiRequest('/api/user/sync')
     console.log('Sync result:', result)
-    // Refresh users list after sync
-    await fetchUsers()
+    await refreshUserData()
     alert('Users synchronized successfully!')
   } catch (err) {
     console.error('Failed to sync users:', err)
@@ -458,17 +495,16 @@ const assignUser = (user) => {
 }
 
 const handleUserAssigned = async () => {
-  // Refresh users list after assignment
-  await fetchUsers()
+  await refreshUserData()
 }
 
 const handleUserUnassigned = async () => {
-  // Refresh users list and dashboard user counts after unassignment.
-  await fetchUsers()
+  await refreshUserData()
 }
 
 // Lifecycle
 onMounted(async () => {
+  await fetchActivityStatus()
   await fetchServers()
   await fetchUsers()
   await fetchBlacklist()

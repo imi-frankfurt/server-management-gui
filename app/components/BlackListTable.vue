@@ -32,10 +32,10 @@
                 <span v-if="group.totalServers > 0" class="key-count">
                     {{ group.totalServers }} server(s)
                 </span>
-                <span v-else class="text-muted">No servers</span>
+                <span v-else class="date-text">No servers</span>
             </td>
-            <td>{{ formatDate(group.created_at) }}</td>
-            <td>{{ formatDate(group.updated_at) }}</td>
+            <td class="date-text">{{ formatDate(group.created_at) }}</td>
+            <td class="date-text">{{ formatDate(group.updated_at) }}</td>
             <td>
                 <div class="action-buttons">
                     <button @click="$emit('view-blacklist', group.firstEntry)" class="action-btn view" title="View">
@@ -249,6 +249,41 @@ const formatDate = (dateString) => {
   height: 40px;
   animation: spin 1s linear infinite;
   margin: 0 auto 16px;
+}
+
+.date-text {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.detail-group {
+  margin-bottom: 24px;
+}
+
+.detail-group:last-of-type {
+  margin-bottom: 0;
+}
+
+.detail-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.key-count {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.detail-value {
+  padding: 12px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #e5e7eb;
 }
 
 @keyframes spin {

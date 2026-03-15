@@ -1,7 +1,10 @@
 <template>
   <section class="content-section">
     <div class="section-header">
-      <h2>Servers</h2>
+      <div>
+        <h2>Servers</h2>
+        <p class="section-meta">Last updated: {{ formatDateTime(lastUpdated) }}</p>
+      </div>
       <button v-if="isAdmin" @click="$emit('add-server')" class="btn-primary">
         Add Server
       </button>
@@ -96,6 +99,10 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  lastUpdated: {
+    type: String,
+    default: ''
+  },
   loading: {
     type: Boolean,
     default: false
@@ -135,6 +142,23 @@ const formatDate = (dateString) => {
     return dateString
   }
 }
+
+const formatDateTime = (dateString) => {
+  if (!dateString) return 'N/A'
+
+  try {
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    })
+  } catch {
+    return dateString
+  }
+}
 </script>
 
 <style scoped>
@@ -157,6 +181,12 @@ const formatDate = (dateString) => {
   font-size: 20px;
   font-weight: 600;
   color: #e5e7eb;
+}
+
+.section-meta {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #94a3b8;
 }
 
 .btn-primary {

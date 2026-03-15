@@ -55,12 +55,18 @@
           </div>
 
           <div class="detail-group">
+            <label>Admin Assignments</label>
+            <div class="detail-value">{{ adminAssignmentCount }} server(s)</div>
+          </div>
+
+          <div class="detail-group">
             <label>Assigned Servers ({{ userDetails.assigned_servers?.length || 0 }})</label>
             <div v-if="userDetails.assigned_servers && userDetails.assigned_servers.length > 0" class="servers-list">
               <div v-for="server in userDetails.assigned_servers" :key="server.id" class="server-item">
                 <div class="server-info">
                   <div class="server-details">
                     <strong>{{ server.name }}</strong>
+                    <span v-if="server.primary_user === true" class="role-badge">Admin</span>
                     <code class="ip-address">{{ server.ip }}</code>
                   </div>
                   <button 
@@ -87,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   show: {
@@ -111,6 +117,12 @@ const userDetails = ref(null)
 const loading = ref(false)
 const error = ref('')
 const unassigning = ref(null)
+
+const adminAssignmentCount = computed(() => {
+  const assignedServers = userDetails.value?.assigned_servers
+  if (!Array.isArray(assignedServers) || assignedServers.length === 0) return 0
+  return assignedServers.filter((server) => server?.primary_user === true).length
+})
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
@@ -174,7 +186,7 @@ watch(() => props.user, (newUser) => {
 }, { immediate: true })
 
 // Watch for show changes
-watch(() => props.show, (newShow) => {
+watch(() => props.show, async (newShow) => {
   if (newShow && props.user && props.user.keycloak_id) {
     fetchUserDetails(props.user.keycloak_id)
   } else if (!newShow) {
@@ -269,6 +281,9 @@ watch(() => props.show, (newShow) => {
 .error-state {
   color: #ef4444;
 }
+
+
+
 
 .detail-group {
   margin-bottom: 24px;
@@ -381,6 +396,17 @@ watch(() => props.show, (newShow) => {
 .server-info strong {
   color: #e5e7eb;
   font-size: 14px;
+}
+
+.role-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid #1d4ed8;
+  background: #172554;
+  color: #bfdbfe;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .btn-unassign {

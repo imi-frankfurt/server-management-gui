@@ -11,7 +11,7 @@
     <main class="main-content">
       <header class="dashboard-header">
         <div class="header-left">
-          <h1>{{ activeTab === 'users' ? 'Users' : 'Dashboard' }}</h1>
+          <h1>{{ activeTab === 'users' ? 'Users' : activeTab === 'blacklist' ? 'Blacklist' : activeTab === 'logs' ? 'Activity Logs' : 'Dashboard' }}</h1>
           <p class="subtitle">Welcome back, {{ userName }}</p>
         </div>
       </header>
@@ -73,6 +73,13 @@
       />
 
 
+
+      <ActivityLogsTable v-if="activeTab === 'logs'"
+        :logs="logs"
+        :loading="logsLoading"
+        :error="logsError"
+        @retry="fetchLogs"
+      />
 
       <UserTable v-if="activeTab === 'users'"
         :users="users"
@@ -184,6 +191,7 @@ import AddBlackListModal from '../components/AddBlackListModal.vue'
 import AssignBlackListModal from '../components/AssignBlackListModal.vue'
 import AssignUserModal from '../components/AssignUserModal.vue'
 import BlackListTable from '../components/BlackListTable.vue'
+import ActivityLogsTable from '../components/ActivityLogsTable.vue'
 
 definePageMeta({
   middleware: 'auth'
@@ -197,11 +205,14 @@ const activeTab = ref('dashboard')
 const servers = ref(null)
 const users = ref(null)
 const blacklists = ref(null)
+const logs = ref(null)
 const activityStatus = ref(null)
 const loading = ref(true)
 const error = ref('')
 const usersLoading = ref(false)
 const usersError = ref('')
+const logsLoading = ref(false)
+const logsError = ref('')
 const showAddServerModal = ref(false)
 const showViewServerModal = ref(false)
 const showServerUsersModal = ref(false)
@@ -348,6 +359,19 @@ const fetchUsers = async () => {
   }
 }
 
+const fetchLogs = async () => {
+  try {
+    logsLoading.value = true
+    logsError.value = ''
+    logs.value = await apiRequest('/api/activity/logs')
+  } catch (err) {
+    console.error('Failed to load activity logs:', err)
+    logsError.value = err.message || 'Failed to load activity logs'
+  } finally {
+    logsLoading.value = false
+  }
+}
+
 const fetchBlacklist = async () => {
   try {
     loading.value = true
@@ -456,6 +480,9 @@ const handleLogout = () => {
 
 const handleNavigation = (tab) => {
   activeTab.value = tab
+  if (tab === 'logs') {
+    fetchLogs()
+  }
 }
 
 const syncUsers = async () => {
@@ -465,6 +492,7 @@ const syncUsers = async () => {
     const result = await apiRequest('/api/user/sync')
     console.log('Sync result:', result)
     await refreshUserData()
+    await fetchLogs()
     alert('Users synchronized successfully!')
   } catch (err) {
     console.error('Failed to sync users:', err)
@@ -515,6 +543,7 @@ onMounted(async () => {
   await fetchServers()
   await fetchUsers()
   await fetchBlacklist()
+  await fetchLogs()
 })
 </script>
 

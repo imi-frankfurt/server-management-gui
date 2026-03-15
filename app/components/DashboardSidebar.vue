@@ -30,6 +30,14 @@
         >
         <span>Blacklist</span>
       </div>
+
+      <div
+        class="nav-item"
+        :class="{ active: activeTab === 'logs' }"
+        @click="handleNavClick('logs')"
+      >
+        <span>Logs</span>
+      </div>
       
     </nav>
 

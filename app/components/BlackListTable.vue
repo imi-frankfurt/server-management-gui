@@ -39,7 +39,7 @@
                     <button @click="$emit('view-blacklist', group.firstEntry)" class="action-btn view" title="View">
                         View
                     </button>
-                    <button @click="$emit('assign-blacklist', group.firstEntry)" class="action-btn view" title="Assign">
+                    <button v-if="isAdmin" @click="$emit('assign-blacklist', group.firstEntry)" class="action-btn assign" title="Assign">
                         Assign
                     </button>
                 </div>
@@ -76,6 +76,10 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  }
 })
 
 // Merge entries with the same username into one row
@@ -205,6 +209,25 @@ const formatDate = (dateString) => {
   border-color: #64748b;
 }
 
+.action-btn.view {
+  color: #60a5fa;
+  border-color: #1e40af;
+}
+
+.action-btn.view:hover {
+  background: #1e3a8a;
+  border-color: #60a5fa;
+}
+
+.action-btn.assign {
+  color: #a78bfa;
+  border-color: #4c1d95;
+}
+
+.action-btn.assign:hover {
+  background: #2e1065;
+  border-color: #7c3aed;
+}
 
 .loading-state, .empty-state, .error-state {
   text-align: center;

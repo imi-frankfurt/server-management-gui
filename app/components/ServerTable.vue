@@ -50,6 +50,9 @@
                 <button @click="$emit('view-server', server)" class="action-btn view" title="View">
                   View
                 </button>
+                <button @click="$emit('view-server-users', server)" class="action-btn users" title="Users">
+                  Users
+                </button>
                 <button v-if="isAdmin" @click="$emit('edit-server', server)" class="action-btn edit" title="Edit">
                   Edit
                 </button>
@@ -93,7 +96,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['add-server', 'view-server', 'edit-server', 'delete-server', 'retry'])
+defineEmits(['add-server', 'view-server', 'view-server-users', 'edit-server', 'delete-server', 'retry'])
 </script>
 
 <style scoped>
@@ -221,10 +224,45 @@ defineEmits(['add-server', 'view-server', 'edit-server', 'delete-server', 'retry
   border-color: #64748b;
 }
 
+.action-btn.view {
+  color: #60a5fa;
+  border-color: #1e40af;
+}
+
+.action-btn.view:hover {
+  background: #1e3a8a;
+  border-color: #60a5fa;
+}
+
+.action-btn.edit {
+  color: #fbbf24;
+  border-color: rgb(144, 58, 9);
+}
+
+.action-btn.edit:hover {
+  background: #3b1a03;
+  border-color: #f59e0b;
+}
+
+.action-btn.delete {
+  color: #f87171;
+  border-color: #7f1d1d;
+}
+
 .action-btn.delete:hover {
   background: rgba(239, 68, 68, 0.1);
   border-color: #fca5a5;
   color: #dc2626;
+}
+
+.action-btn.users {
+  color: #34d399;
+  border-color: #064e3b;
+}
+
+.action-btn.users:hover {
+  background: #022c22;
+  border-color: #10b981;
 }
 
 .loading-state, .empty-state, .error-state {

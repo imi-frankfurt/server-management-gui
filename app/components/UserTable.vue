@@ -50,7 +50,7 @@
                 <button @click="$emit('view-user', user)" class="action-btn view" title="View">
                   View
                 </button>
-                <button v-if="isAdmin" @click="$emit('assign-user', user)" class="action-btn edit" title="Assign">
+                <button v-if="isAdmin" @click="$emit('assign-user', user)" class="action-btn assign" title="Assign">
                   Assign
                 </button>
               </div>
@@ -235,6 +235,26 @@ const formatDate = (dateString) => {
 .action-btn:hover {
   background: #0f172a;
   border-color: #64748b;
+}
+
+.action-btn.view {
+  color: #60a5fa;
+  border-color: #1e40af;
+}
+
+.action-btn.view:hover {
+  background: #1e3a8a;
+  border-color: #60a5fa;
+}
+
+.action-btn.assign {
+  color: #a78bfa;
+  border-color: #4c1d95;
+}
+
+.action-btn.assign:hover {
+  background: #2e1065;
+  border-color: #7c3aed;
 }
 
 .loading-state, .empty-state, .error-state {

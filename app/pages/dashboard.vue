@@ -19,7 +19,7 @@
       <DashboardStats v-if="activeTab === 'dashboard'"
         :total-servers="servers?.length || 0"
         :active-servers="activeServers"
-        :total-users="0"
+        :total-users="users?.length || 0"
         :access-level="userRoles"
       />
 
@@ -30,12 +30,14 @@
         :access-level="userRoles"
         label1="Total Users"
         label2="Users with Keys"
-        label3="Total Public Keys"
+        label3=""
+        :show-card3="false"
+
       />
 
       <DashboardStats v-if="activeTab === 'blacklist'"
-        :total-servers="blacklists?.filter(b => b.username && b.username.length > 0).length || 0"
-        :active-servers="blacklists?.filter(b => b.servers && b.servers.length > 0).length || 0"
+        :total-servers="new Set(blacklists?.map(b => b.username)).size || 0"
+        :active-servers="blacklists?.reduce((sum, b) => sum + (b.servers?.length || 0), 0) || 0"
         :total-users="0"
         :access-level="userRoles"
         label1="Total Blacklisted Users"
@@ -51,6 +53,7 @@
         :is-admin="isAdmin"
         @add-server="showAddServerModal = true"
         @view-server="viewServer"
+        @view-server-users="viewServerUsers"
         @edit-server="editServer"
         @delete-server="deleteServer"
         @retry="fetchServers"
@@ -60,6 +63,7 @@
         :blacklists="blacklists"
         :loading="loading"
         :error="error"
+        :is-admin="isAdmin"
         @add-blacklist="showAddBlacklistModal = true"
         @view-blacklist="viewBlacklist"
         @assign-blacklist="assignBlacklist"
@@ -91,6 +95,12 @@
       :show="showViewServerModal"
       :server="selectedServer"
       @close="showViewServerModal = false"
+    />
+
+    <ServerUsersModal
+      :show="showServerUsersModal"
+      :server="selectedServerForUsers"
+      @close="showServerUsersModal = false"
     />
     
     <EditServerModal
@@ -159,6 +169,7 @@ import ServerTable from '../components/ServerTable.vue'
 import UserTable from '../components/UserTable.vue'
 import AddServerModal from '../components/AddServerModal.vue'
 import ViewServerModal from '../components/ViewServerModal.vue'
+import ServerUsersModal from '../components/ServerUsersModal.vue'
 import EditServerModal from '../components/EditServerModal.vue'
 import DeleteServerModal from '../components/DeleteServerModal.vue'
 import ViewUserModal from '../components/ViewUserModal.vue'
@@ -186,6 +197,7 @@ const usersLoading = ref(false)
 const usersError = ref('')
 const showAddServerModal = ref(false)
 const showViewServerModal = ref(false)
+const showServerUsersModal = ref(false)
 const showEditServerModal = ref(false)
 const showDeleteServerModal = ref(false)
 const showViewUserModal = ref(false)
@@ -194,6 +206,7 @@ const showViewBlacklistModal = ref(false)
 const showAssignBlacklistModal = ref(false)
 const showAssignUserModal = ref(false)
 const selectedServer = ref(null)
+const selectedServerForUsers = ref(null)
 const selectedUser = ref(null)
 const selectedBlacklist = ref(null)
 const selectedBlacklistForAssign = ref(null)
@@ -355,6 +368,11 @@ const addServer = async (serverData) => {
 const viewServer = (server) => {
   selectedServer.value = server
   showViewServerModal.value = true
+}
+
+const viewServerUsers = (server) => {
+  selectedServerForUsers.value = server
+  showServerUsersModal.value = true
 }
 
 const editServer = (server) => {

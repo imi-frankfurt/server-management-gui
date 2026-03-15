@@ -25,18 +25,18 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="blacklist in blacklists" :key="blacklist.id">
-            <td>{{ blacklist.username }}</td>
+          <tr v-for="group in groupedBlacklists" :key="group.username">
+            <td>{{ group.username }}</td>
             <td>
-                <span v-if="blacklist.servers && blacklist.servers.length > 0" class="key-count">
-                    {{ blacklist.servers.length }} server(s)
+                <span v-if="group.totalServers > 0" class="key-count">
+                    {{ group.totalServers }} server(s)
                 </span>
                 <span v-else class="text-muted">No servers</span>
             </td>
-            <td>{{ formatDate(blacklist.created_at) }}</td>
+            <td>{{ formatDate(group.created_at) }}</td>
             <td>
                 <div class="action-buttons">
-                    <button @click="$emit('view-blacklist', blacklist)" class="action-btn view" title="View">
+                    <button @click="$emit('view-blacklist', group.firstEntry)" class="action-btn view" title="View">
                         View
                     </button>
                 </div>
@@ -56,6 +56,8 @@
 
 
 <script setup>
+import { computed } from 'vue'
+
 defineEmits(['add-blacklist', 'view-blacklist', 'retry'])
 
 const props = defineProps({
@@ -71,6 +73,25 @@ const props = defineProps({
     type: String,
     default: ''
   },
+})
+
+// Merge entries with the same username into one row
+const groupedBlacklists = computed(() => {
+  const map = new Map()
+  for (const entry of (props.blacklists || [])) {
+    if (map.has(entry.username)) {
+      const group = map.get(entry.username)
+      group.totalServers += (entry.servers?.length || 0)
+    } else {
+      map.set(entry.username, {
+        username: entry.username,
+        totalServers: entry.servers?.length || 0,
+        created_at: entry.created_at,
+        firstEntry: entry
+      })
+    }
+  }
+  return [...map.values()]
 })
 
 const formatDate = (dateString) => {

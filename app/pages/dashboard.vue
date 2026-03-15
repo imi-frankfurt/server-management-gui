@@ -62,6 +62,7 @@
         :error="error"
         @add-blacklist="showAddBlacklistModal = true"
         @view-blacklist="viewBlacklist"
+        @assign-blacklist="assignBlacklist"
         @retry="fetchBlacklist"
       />
 
@@ -131,6 +132,15 @@
       @removed="fetchBlacklist"
     />
     
+    <AssignBlackListModal
+      :show="showAssignBlacklistModal"
+      :user="selectedBlacklistForAssign"
+      :servers="servers"
+      :blacklists="blacklists"
+      @close="showAssignBlacklistModal = false"
+      @assigned="fetchBlacklist"
+    />
+
     <AssignUserModal
       :show="showAssignUserModal"
       :user="selectedUser"
@@ -154,6 +164,7 @@ import DeleteServerModal from '../components/DeleteServerModal.vue'
 import ViewUserModal from '../components/ViewUserModal.vue'
 import ViewBlackListModal from '../components/ViewBlackListModal.vue'
 import AddBlackListModal from '../components/AddBlackListModal.vue'
+import AssignBlackListModal from '../components/AssignBlackListModal.vue'
 import AssignUserModal from '../components/AssignUserModal.vue'
 import BlackListTable from '../components/BlackListTable.vue'
 
@@ -180,10 +191,12 @@ const showDeleteServerModal = ref(false)
 const showViewUserModal = ref(false)
 const showAddBlacklistModal = ref(false)
 const showViewBlacklistModal = ref(false)
+const showAssignBlacklistModal = ref(false)
 const showAssignUserModal = ref(false)
 const selectedServer = ref(null)
 const selectedUser = ref(null)
 const selectedBlacklist = ref(null)
+const selectedBlacklistForAssign = ref(null)
 const tokenData = ref(null)
 
 // Computed
@@ -411,6 +424,11 @@ const viewUser = (user) => {
 const viewBlacklist = (blacklist) => {
   selectedBlacklist.value = blacklist
   showViewBlacklistModal.value = true
+}
+
+const assignBlacklist = (blacklist) => {
+  selectedBlacklistForAssign.value = blacklist
+  showAssignBlacklistModal.value = true
 }
 
 const assignUser = (user) => {

@@ -39,6 +39,9 @@
                     <button @click="$emit('view-blacklist', group.firstEntry)" class="action-btn view" title="View">
                         View
                     </button>
+                    <button @click="$emit('assign-blacklist', group.firstEntry)" class="action-btn view" title="Assign">
+                        Assign
+                    </button>
                 </div>
             </td>
           </tr>
@@ -58,7 +61,7 @@
 <script setup>
 import { computed } from 'vue'
 
-defineEmits(['add-blacklist', 'view-blacklist', 'retry'])
+defineEmits(['add-blacklist', 'view-blacklist', 'assign-blacklist', 'retry'])
 
 const props = defineProps({
   blacklists: {
@@ -201,6 +204,7 @@ const formatDate = (dateString) => {
   background: #0f172a;
   border-color: #64748b;
 }
+
 
 .loading-state, .empty-state, .error-state {
   text-align: center;

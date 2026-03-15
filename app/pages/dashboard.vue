@@ -60,6 +60,7 @@
         :blacklists="blacklists"
         :loading="loading"
         :error="error"
+        @add-blacklist="showAddBlacklistModal = true"
         @view-blacklist="viewBlacklist"
         @retry="fetchBlacklist"
       />
@@ -113,6 +114,13 @@
       @close="showViewUserModal = false"
     />
 
+    <AddBlackListModal
+      :show="showAddBlacklistModal"
+      :servers="servers"
+      @close="showAddBlacklistModal = false"
+      @added="fetchBlacklist"
+    />
+
     <ViewBlackListModal
       :show="showViewBlacklistModal"
       :user="selectedBlacklist"
@@ -142,6 +150,7 @@ import EditServerModal from '../components/EditServerModal.vue'
 import DeleteServerModal from '../components/DeleteServerModal.vue'
 import ViewUserModal from '../components/ViewUserModal.vue'
 import ViewBlackListModal from '../components/ViewBlackListModal.vue'
+import AddBlackListModal from '../components/AddBlackListModal.vue'
 import AssignUserModal from '../components/AssignUserModal.vue'
 import BlackListTable from '../components/BlackListTable.vue'
 
@@ -166,6 +175,7 @@ const showViewServerModal = ref(false)
 const showEditServerModal = ref(false)
 const showDeleteServerModal = ref(false)
 const showViewUserModal = ref(false)
+const showAddBlacklistModal = ref(false)
 const showViewBlacklistModal = ref(false)
 const showAssignUserModal = ref(false)
 const selectedServer = ref(null)

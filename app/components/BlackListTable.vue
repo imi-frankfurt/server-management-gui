@@ -2,6 +2,7 @@
   <section class="content-section">
     <div class="section-header">
       <h2>Blacklist</h2>
+      <button @click="$emit('add-blacklist')" class="btn-add">+ Add to Blacklist</button>
     </div>
     <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
@@ -55,6 +56,8 @@
 
 
 <script setup>
+defineEmits(['add-blacklist', 'view-blacklist', 'retry'])
+
 const props = defineProps({
   blacklists: {
     type: Array,
@@ -101,6 +104,22 @@ const formatDate = (dateString) => {
   font-size: 20px;
   font-weight: 600;
   color: #e5e7eb;
+}
+
+.btn-add {
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-add:hover {
+  background: #2563eb;
 }
 
 .data-table {

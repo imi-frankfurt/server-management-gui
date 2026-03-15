@@ -21,6 +21,7 @@
             <th>Username</th>
             <th>Servers</th>
             <th>Created On</th>
+            <th>Updated On</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -34,6 +35,7 @@
                 <span v-else class="text-muted">No servers</span>
             </td>
             <td>{{ formatDate(group.created_at) }}</td>
+            <td>{{ formatDate(group.updated_at) }}</td>
             <td>
                 <div class="action-buttons">
                     <button @click="$emit('view-blacklist', group.firstEntry)" class="action-btn view" title="View">
@@ -89,11 +91,15 @@ const groupedBlacklists = computed(() => {
     if (map.has(entry.username)) {
       const group = map.get(entry.username)
       group.totalServers += (entry.servers?.length || 0)
+      if (new Date(entry.updated_at || 0) > new Date(group.updated_at || 0)) {
+        group.updated_at = entry.updated_at
+      }
     } else {
       map.set(entry.username, {
         username: entry.username,
         totalServers: entry.servers?.length || 0,
         created_at: entry.created_at,
+        updated_at: entry.updated_at,
         firstEntry: entry
       })
     }

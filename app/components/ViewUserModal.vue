@@ -104,7 +104,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['close'])
+const emit = defineEmits(['close', 'unassigned'])
 
 const { apiRequest } = useApi()
 const userDetails = ref(null)
@@ -156,6 +156,8 @@ const unassignServer = async (serverId) => {
     })
     // Refresh user details after unassignment
     await fetchUserDetails(props.user.keycloak_id)
+    // Notify parent so table/stats refresh without manual reload.
+    emit('unassigned')
   } catch (err) {
     console.error('Failed to unassign server:', err)
     alert('Failed to unassign server: ' + err.message)

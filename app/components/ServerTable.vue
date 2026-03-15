@@ -24,7 +24,9 @@
             <th>Name</th>
             <th>IP Address</th>
             <th>Server ID</th>
+            <th>Assigned Users</th>
             <th>Aliases</th>
+            <th>Updated</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -40,10 +42,18 @@
               <span class="ip-address">{{ server.id }}</span>
             </td>
             <td>
+              <span class="count-text">
+                {{ getAssignedUserCount(server) }} user(s)
+              </span>
+            </td>
+            <td>
               <span v-if="server.alias && server.alias.length > 0" class="alias-count">
                 {{ server.alias.length }} alias(es)
               </span>
               <span v-else class="text-muted">No aliases</span>
+            </td>
+            <td>
+              <span class="date-text">{{ formatDate(server.updated_at) }}</span>
             </td>
             <td>
               <div class="action-buttons">
@@ -82,6 +92,10 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  users: {
+    type: Array,
+    default: () => []
+  },
   loading: {
     type: Boolean,
     default: false
@@ -97,6 +111,30 @@ const props = defineProps({
 })
 
 defineEmits(['add-server', 'view-server', 'view-server-users', 'edit-server', 'delete-server', 'retry'])
+
+const getAssignedUserCount = (server) => {
+  if (Array.isArray(props.users) && props.users.length > 0) {
+    return props.users.filter((user) =>
+      (user.assigned_servers || []).some((assignedServer) => assignedServer.id === server.id)
+    ).length
+  }
+
+  return server.assigned_users_count ?? server.assigned_users?.length ?? 0
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+
+  try {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  } catch {
+    return dateString
+  }
+}
 </script>
 
 <style scoped>
@@ -195,6 +233,16 @@ defineEmits(['add-server', 'view-server', 'view-server-users', 'edit-server', 'd
 
 
 .alias-count {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.count-text {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.date-text {
   color: #94a3b8;
   font-size: 14px;
 }

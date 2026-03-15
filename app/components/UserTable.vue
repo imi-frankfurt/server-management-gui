@@ -23,8 +23,10 @@
           <tr>
             <th>Username</th>
             <th>Keycloak ID</th>
+            <th>Servers</th>
             <th>Public Keys</th>
             <th>Created</th>
+            <th>Updated</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -37,6 +39,11 @@
               <code class="keycloak-id">{{ formatKeycloakId(user.keycloak_id) }}</code>
             </td>
             <td>
+              <span class="server-count">
+                {{ user.assigned_servers_count ?? user.assigned_servers?.length ?? 0 }} server(s)
+              </span>
+            </td>
+            <td>
               <span v-if="user.pubKey && user.pubKey.length > 0" class="key-count">
                 {{ user.pubKey.length }} key(s)
               </span>
@@ -44,6 +51,9 @@
             </td>
             <td>
               <span class="date-text">{{ formatDate(user.created_at) }}</span>
+            </td>
+            <td>
+              <span class="date-text">{{ formatDate(user.updated_at) }}</span>
             </td>
             <td>
               <div class="action-buttons">
@@ -203,6 +213,11 @@ const formatDate = (dateString) => {
 }
 
 .key-count {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.server-count {
   color: #94a3b8;
   font-size: 14px;
 }

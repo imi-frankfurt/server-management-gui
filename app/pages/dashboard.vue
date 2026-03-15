@@ -48,6 +48,7 @@
 
       <ServerTable v-if="activeTab === 'dashboard'"
         :servers="servers"
+        :users="users"
         :loading="loading"
         :error="error"
         :is-admin="isAdmin"
@@ -94,6 +95,7 @@
     <ViewServerModal
       :show="showViewServerModal"
       :server="selectedServer"
+      :users="users"
       @close="showViewServerModal = false"
     />
 
@@ -122,6 +124,7 @@
       :show="showViewUserModal"
       :user="selectedUser"
       :is-admin="isAdmin"
+      @unassigned="handleUserUnassigned"
       @close="showViewUserModal = false"
     />
 
@@ -456,6 +459,11 @@ const assignUser = (user) => {
 
 const handleUserAssigned = async () => {
   // Refresh users list after assignment
+  await fetchUsers()
+}
+
+const handleUserUnassigned = async () => {
+  // Refresh users list and dashboard user counts after unassignment.
   await fetchUsers()
 }
 

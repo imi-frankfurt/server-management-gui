@@ -21,6 +21,10 @@
           <div class="detail-value">{{ server?.id || 'N/A' }}</div>
         </div>
         <div class="detail-group">
+          <label>Assigned Users</label>
+          <div class="detail-value">{{ assignedUserCount }}</div>
+        </div>
+        <div class="detail-group">
           <label>Aliases</label>
           <div v-if="server?.alias && server.alias.length > 0" class="aliases-list">
             <div v-for="(alias, index) in server.alias" :key="index" class="alias-item">
@@ -28,6 +32,10 @@
             </div>
           </div>
           <div v-else class="detail-value text-muted">No aliases configured</div>
+        </div>
+        <div class="detail-group">
+          <label>Updated At</label>
+          <div class="detail-value">{{ formatDate(server?.updated_at) }}</div>
         </div>
         <div class="modal-footer">
           <button @click="$emit('close')" class="btn-primary">Close</button>
@@ -46,10 +54,42 @@ const props = defineProps({
   server: {
     type: Object,
     default: null
+  },
+  users: {
+    type: Array,
+    default: () => []
   }
 })
 
 defineEmits(['close'])
+
+const assignedUserCount = computed(() => {
+  if (!props.server?.id) return 0
+
+  if (Array.isArray(props.users) && props.users.length > 0) {
+    return props.users.filter((user) =>
+      (user.assigned_servers || []).some((assignedServer) => assignedServer.id === props.server.id)
+    ).length
+  }
+
+  return props.server?.assigned_users_count ?? props.server?.assigned_users?.length ?? 0
+})
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+
+  try {
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch {
+    return dateString
+  }
+}
 </script>
 
 <style scoped>

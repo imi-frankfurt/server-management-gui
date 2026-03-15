@@ -143,6 +143,7 @@
       :is-admin="isAdmin"
       :blacklists="blacklists"
       :servers="servers"
+      @view-server="viewServerFromBlacklist"
       @close="showViewBlacklistModal = false"
       @removed="fetchBlacklist"
     />
@@ -482,6 +483,12 @@ const viewUser = (user) => {
 const viewBlacklist = (blacklist) => {
   selectedBlacklist.value = blacklist
   showViewBlacklistModal.value = true
+}
+
+const viewServerFromBlacklist = (server) => {
+  if (!server) return
+  showViewBlacklistModal.value = false
+  viewServer(server)
 }
 
 const assignBlacklist = (blacklist) => {

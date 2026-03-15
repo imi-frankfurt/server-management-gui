@@ -34,6 +34,13 @@
                     <strong>{{ server.serverName }}</strong>
                   </div>
                   <button
+                    v-if="server.serverRef"
+                    @click="emit('view-server', server.serverRef)"
+                    class="btn-view"
+                  >
+                    View Server
+                  </button>
+                  <button
                     v-if="isAdmin"
                     @click="removeServerEntry(server.entryId, server.serverId, server.serverName)"
                     class="btn-unassign"
@@ -67,7 +74,7 @@ const props = defineProps({
   servers: { type: Array, default: () => [] }
 })
 
-const emit = defineEmits(['close', 'removed'])
+const emit = defineEmits(['close', 'removed', 'view-server'])
 
 const { apiRequest } = useApi()
 const removingServer = ref(null)
@@ -98,7 +105,12 @@ const serverList = computed(() => {
   return userEntries.value.flatMap(entry =>
     (entry.servers || []).map(serverName => {
       const match = props.servers.find(s => s.name === serverName)
-      return { entryId: entry.id, serverId: match?.id ?? null, serverName }
+      return {
+        entryId: entry.id,
+        serverId: match?.id ?? null,
+        serverName,
+        serverRef: match ?? null
+      }
     })
   )
 })
@@ -332,6 +344,24 @@ const removeServerEntry = async (entryId, serverId, serverName) => {
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
+}
+
+.btn-view {
+  padding: 6px 14px;
+  background: transparent;
+  color: #60a5fa;
+  border: 1px solid #1d4ed8;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-view:hover {
+  background: #1e3a8a;
+  border-color: #60a5fa;
 }
 
 .btn-unassign:hover:not(:disabled) {

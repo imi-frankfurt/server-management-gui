@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     ignoreResponseError: true
   }
 
-  if (['POST', 'PUT', 'PATCH'].includes(method)) {
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
     fetchOptions.body = await readBody(event)
   }
 

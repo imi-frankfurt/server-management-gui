@@ -6,56 +6,40 @@
         <button @click="$emit('close')" class="close-btn">×</button>
       </div>
       <div class="modal-body">
-        <div v-if="loading" class="loading-state">
-          <div class="spinner"></div>
-          <p>Loading user details...</p>
+        <div v-if="userEntries.length === 0" class="error-state">
+          <p>No blacklist entries found for this user.</p>
         </div>
 
-        <div v-else-if="error" class="error-state">
-          <p>{{ error }}</p>
-        </div>
-
-        <div v-else-if="blackListDetails">
+        <div v-else>
           <div class="detail-group">
             <label>Username</label>
-            <div class="detail-value">{{ blackListDetails.username || 'N/A' }}</div>
+            <div class="detail-value">{{ user?.username || 'N/A' }}</div>
           </div>
 
           <div class="detail-group">
-            <label>User ID</label>
-            <div class="detail-value">{{ blackListDetails.id || 'N/A' }}</div>
+            <label>Blacklisted Since</label>
+            <div class="detail-value">{{ formatDate(userEntries[0]?.created_at) }}</div>
           </div>
 
           <div class="detail-group">
-            <label>Created At</label>
-            <div class="detail-value">{{ formatDate(blackListDetails.created_at) }}</div>
-          </div>
-
-          <div class="detail-group">
-            <label>Updated At</label>
-            <div class="detail-value">{{ formatDate(blackListDetails.updated_at) }}</div>
-          </div>
-
-          <div class="detail-group">
-            <label>Assigned Servers ({{ serverList.length }})</label>
+            <label>Blacklisted Servers ({{ serverList.length }})</label>
             <div v-if="serverList.length > 0" class="servers-list">
               <div
-                v-for="(server, index) in serverList"
-                :key="server.id || server.name || index"
+                v-for="server in serverList"
+                :key="`${server.serverId}-${server.serverName}`"
                 class="server-item"
               >
                 <div class="server-info">
                   <div class="server-details">
-                    <strong>{{ server.name }}</strong>
-                    <code v-if="server.ip" class="ip-address">{{ server.ip }}</code>
+                    <strong>{{ server.serverName }}</strong>
                   </div>
-                  <button 
-                    v-if="isAdmin && server.id" 
-                    @click="unassignServer(server.id)" 
+                  <button
+                    v-if="isAdmin"
+                    @click="removeServerEntry(server.entryId, server.serverId, server.serverName)"
                     class="btn-unassign"
-                    :disabled="unassigning === server.id"
+                    :disabled="removingServer === `${server.entryId}-${server.serverName}`"
                   >
-                    {{ unassigning === server.id ? 'Removing...' : 'Unassign' }}
+                    {{ removingServer === `${server.entryId}-${server.serverName}` ? 'Removing...' : 'Remove' }}
                   </button>
                 </div>
               </div>
@@ -73,30 +57,20 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
-  show: {
-    type: Boolean,
-    default: false
-  },
-  user: {
-    type: Object,
-    default: null
-  },
-  isAdmin: {
-    type: Boolean,
-    default: false
-  }
+  show: { type: Boolean, default: false },
+  user: { type: Object, default: null },
+  isAdmin: { type: Boolean, default: false },
+  blacklists: { type: Array, default: () => [] },
+  servers: { type: Array, default: () => [] }
 })
 
-defineEmits(['close'])
+const emit = defineEmits(['close', 'removed'])
 
 const { apiRequest } = useApi()
-const blackListDetails = ref(null)
-const loading = ref(false)
-const error = ref('')
-const unassigning = ref(null)
+const removingServer = ref(null)
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
@@ -113,108 +87,40 @@ const formatDate = (dateString) => {
   }
 }
 
-const normalizeBlacklistResponse = (payload) => {
-  if (!payload) return null
+// All blacklist entries for this user across all servers
+const userEntries = computed(() => {
+  if (!props.user?.username || !props.blacklists?.length) return []
+  return props.blacklists.filter(b => b.username === props.user.username)
+})
 
-  // Support array responses like [{...}] from /api/blacklist/:id
-  if (Array.isArray(payload)) {
-    return payload[0] || null
-  }
-
-  const wrapped = payload.data || payload.user || payload.blacklist || payload
-  if (Array.isArray(wrapped)) {
-    return wrapped[0] || null
-  }
-
-  return wrapped
-}
-
-const getUserIdentifier = (user) => {
-  if (!user) return null
-  return user.id || null
-}
-
+// Flat list of { entryId, serverId, serverName } — one item per server per entry
 const serverList = computed(() => {
-  if (!blackListDetails.value) return []
-  if (Array.isArray(blackListDetails.value.assigned_servers)) {
-    return blackListDetails.value.assigned_servers
-  }
-
-  // Your blacklist endpoint returns `servers` as strings.
-  if (Array.isArray(blackListDetails.value.servers)) {
-    return blackListDetails.value.servers.map((name, index) => ({
-      id: null,
-      name: name || `Server ${index + 1}`,
-      ip: null
-    }))
-  }
-
-  return []
-})
-
-const fetchUserDetails = async (identifier) => {
-  if (!identifier) {
-    blackListDetails.value = null
-    return
-  }
-
-  try {
-    loading.value = true
-    error.value = ''
-    const response = await apiRequest(`/api/blacklist/${identifier}`)
-    blackListDetails.value = normalizeBlacklistResponse(response)
-  } catch (err) {
-    console.error('Failed to load user details:', err)
-    error.value = err.message || 'Failed to load user details'
-  } finally {
-    loading.value = false
-  }
-}
-
-const unassignServer = async (serverId) => {
-  if (!blackListDetails.value || !blackListDetails.value.id) return
-  if (!serverId) return
-  
-  if (!confirm(`Are you sure you want to remove access to this server?`)) return
-  
-  try {
-    unassigning.value = serverId
-    await apiRequest('/api/blacklist/unassign', {
-      method: 'POST',
-      body: {
-        user_id: blackListDetails.value.id,
-        server_id: serverId
-      }
+  return userEntries.value.flatMap(entry =>
+    (entry.servers || []).map(serverName => {
+      const match = props.servers.find(s => s.name === serverName)
+      return { entryId: entry.id, serverId: match?.id ?? null, serverName }
     })
-    // Refresh user details after unassignment
-    await fetchUserDetails(getUserIdentifier(props.user))
+  )
+})
+
+const removeServerEntry = async (entryId, serverId, serverName) => {
+  if (!confirm(`Remove "${props.user?.username}" from "${serverName}" blacklist?`)) return
+  const key = `${entryId}-${serverName}`
+  try {
+    removingServer.value = key
+    await apiRequest('/api/blacklist/unassign', {
+      method: 'DELETE',
+      body: { username: props.user.username, server_id: serverId }
+    })
+    emit('removed')
+    if (serverList.value.length === 1) emit('close')
   } catch (err) {
-    console.error('Failed to unassign server:', err)
-    alert('Failed to unassign server: ' + err.message)
+    console.error('Failed to remove from blacklist:', err)
+    alert('Failed to remove from blacklist: ' + err.message)
   } finally {
-    unassigning.value = null
+    removingServer.value = null
   }
 }
-
-// Watch for user changes and fetch details
-watch(() => props.user, (newUser) => {
-  const identifier = getUserIdentifier(newUser)
-  if (identifier && props.show) {
-    fetchUserDetails(identifier)
-  }
-}, { immediate: true })
-
-// Watch for show changes
-watch(() => props.show, (newShow) => {
-  const identifier = getUserIdentifier(props.user)
-  if (newShow && identifier) {
-    fetchUserDetails(identifier)
-  } else if (!newShow) {
-    // Reset when modal closes
-    blackListDetails.value = null
-    error.value = ''
-  }
-})
 </script>
 
 <style scoped>
@@ -444,6 +350,27 @@ watch(() => props.show, (newShow) => {
   padding-top: 20px;
   margin-top: 24px;
   border-top: 1px solid #334155;
+}
+
+.btn-danger {
+  padding: 10px 20px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: auto;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-primary {

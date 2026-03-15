@@ -125,7 +125,10 @@
       :show="showViewBlacklistModal"
       :user="selectedBlacklist"
       :is-admin="isAdmin"
+      :blacklists="blacklists"
+      :servers="servers"
       @close="showViewBlacklistModal = false"
+      @removed="fetchBlacklist"
     />
     
     <AssignUserModal

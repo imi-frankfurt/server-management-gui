@@ -4,6 +4,13 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   devtools: { enabled: true },
   compatibilityDate: '2026-03-09',
+
+  devServer: {
+    https: {
+      key: './.cert/localhost+2-key.pem',
+      cert: './.cert/localhost+2.pem'
+    }
+  },
   
   runtimeConfig: {
     // Server-only — never exposed to the browser

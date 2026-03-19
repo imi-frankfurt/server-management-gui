@@ -8,28 +8,32 @@
       <form @submit.prevent="handleSubmit" class="modal-body">
         <div class="form-group">
           <label>Server Name</label>
-          <input 
-            v-model="formData.name" 
-            type="text" 
-            placeholder="e.g., Production Server" 
-            required 
+          <input
+            v-model="formData.name"
+            type="text"
+            placeholder="e.g., Production Server"
+            required
           />
         </div>
         <div class="form-group">
           <label>IP Address</label>
-          <input 
-            v-model="formData.ip" 
-            type="text" 
-            placeholder="e.g., 192.168.1.1" 
-            required 
+          <input
+            v-model="formData.ip"
+            type="text"
+            placeholder="e.g., 192.168.1.1"
+            @input="validateIp"
+            required
           />
+          <div v-if="ipError" class="error-message">
+            {{ ipError }}
+          </div>
         </div>
         <div class="form-group">
           <label>Aliases (comma-separated)</label>
-          <input 
-            v-model="aliasInput" 
-            type="text" 
-            placeholder="e.g., prod, production, main" 
+          <input
+            v-model="aliasInput"
+            type="text"
+            placeholder="e.g., prod, production, main"
             @input="checkDuplicateAliases"
           />
           <small class="help-text">Separate multiple aliases with commas</small>
@@ -44,10 +48,10 @@
           <button type="button" @click="$emit('close')" class="btn-secondary">
             Cancel
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             class="btn-primary"
-            :disabled="duplicateAliases.length > 0"
+            :disabled="duplicateAliases.length > 0 || !!ipError"
           >
             Update Server
           </button>
@@ -58,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   show: {
@@ -85,21 +89,37 @@ const formData = ref({
 
 const aliasInput = ref('')
 const duplicateAliases = ref([])
+const ipError = ref('')
+
+const ipv4Regex = /^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+
+const validateIp = () => {
+  const ip = formData.value.ip.trim()
+
+  if (!ip) {
+    ipError.value = ''
+    return true
+  }
+
+  const isValid = ipv4Regex.test(ip)
+  ipError.value = isValid ? '' : 'Please enter a valid IPv4 address (e.g., 192.168.0.1)'
+  return isValid
+}
 
 const checkDuplicateAliases = () => {
   const aliases = aliasInput.value
     .split(',')
     .map(a => a.trim())
     .filter(a => a.length > 0)
-  
+
   duplicateAliases.value = []
-  
+
   // Check each alias against all servers (except current one)
   aliases.forEach(alias => {
     props.servers.forEach(server => {
       // Skip the current server being edited
       if (server.id === props.server?.id) return
-      
+
       // Check if this server has the alias
       if (server.alias && server.alias.includes(alias)) {
         duplicateAliases.value.push({
@@ -112,12 +132,16 @@ const checkDuplicateAliases = () => {
 }
 
 const handleSubmit = () => {
+  if (!validateIp()) {
+    return
+  }
+
   // Convert comma-separated string to array
   const aliases = aliasInput.value
     .split(',')
     .map(a => a.trim())
     .filter(a => a.length > 0)
-  
+
   emit('submit', {
     ...formData.value,
     alias: aliases
@@ -134,6 +158,7 @@ watch(() => props.server, (newServer) => {
     }
     // Convert array to comma-separated string
     aliasInput.value = (newServer.alias || []).join(', ')
+    validateIp()
   }
 }, { immediate: true })
 
@@ -147,9 +172,11 @@ watch(() => props.show, (newVal) => {
     }
     aliasInput.value = ''
     duplicateAliases.value = []
+    ipError.value = ''
   } else {
     // Check for duplicates when modal opens
     checkDuplicateAliases()
+    validateIp()
   }
 })
 </script>

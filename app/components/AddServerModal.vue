@@ -21,8 +21,12 @@
             v-model="formData.ip" 
             type="text" 
             placeholder="e.g., 192.168.1.1" 
+            @input="validateIp"
             required 
           />
+          <div v-if="ipError" class="error-message">
+            {{ ipError }}
+          </div>
         </div>
         <div class="form-group">
           <label>Aliases (comma-separated)</label>
@@ -47,7 +51,7 @@
           <button 
             type="submit" 
             class="btn-primary"
-            :disabled="duplicateAliases.length > 0"
+            :disabled="duplicateAliases.length > 0 || !!ipError"
           >
             Add Server
           </button>
@@ -80,6 +84,22 @@ const formData = ref({
 
 const aliasInput = ref('')
 const duplicateAliases = ref([])
+const ipError = ref('')
+
+const ipv4Regex = /^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+
+const validateIp = () => {
+  const ip = formData.value.ip.trim()
+
+  if (!ip) {
+    ipError.value = ''
+    return true
+  }
+
+  const isValid = ipv4Regex.test(ip)
+  ipError.value = isValid ? '' : 'Please enter a valid IPv4 address (e.g., 192.168.0.1)'
+  return isValid
+}
 
 const checkDuplicateAliases = () => {
   const aliases = aliasInput.value
@@ -104,6 +124,10 @@ const checkDuplicateAliases = () => {
 }
 
 const handleSubmit = () => {
+  if (!validateIp()) {
+    return
+  }
+
   // Convert comma-separated string to array
   const aliases = aliasInput.value
     .split(',')
@@ -121,6 +145,7 @@ const handleSubmit = () => {
   }
   aliasInput.value = ''
   duplicateAliases.value = []
+  ipError.value = ''
 }
 
 // Reset form when modal is closed
@@ -132,6 +157,7 @@ watch(() => props.show, (newVal) => {
     }
     aliasInput.value = ''
     duplicateAliases.value = []
+    ipError.value = ''
   }
 })
 </script>

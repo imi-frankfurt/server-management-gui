@@ -38,7 +38,8 @@
         </div>
 
         <div class="modal-footer">
-          <button @click="$emit('close')" class="btn-primary">Close</button>
+          <button @click="$emit('add-users')" class="btn-primary">Add Users</button>
+          <button @click="$emit('close')" class="btn-secondary">Close</button>
         </div>
       </div>
     </div>
@@ -68,7 +69,7 @@ const props = defineProps({
   server: { type: Object, default: null }
 })
 
-defineEmits(['close'])
+defineEmits(['close', 'add-users'])
 
 const { apiRequest } = useApi()
 const assignedUsers = ref([])
@@ -274,7 +275,20 @@ watch(() => props.server, (newServer) => {
 
 .btn-primary {
   padding: 10px 20px;
+  margin: 5px;
   background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  margin: 5px;
+  background: #334155;
   color: white;
   border: none;
   border-radius: 8px;

@@ -14,9 +14,12 @@ export default defineEventHandler(async (event) => {
 
   setResponseStatus(event, response.status)
 
-  const setCookie = response.headers.get('set-cookie')
-  if (setCookie) {
-    setResponseHeader(event, 'set-cookie', setCookie)
+  const setCookies = response.headers.getSetCookie()
+  
+  if (setCookies && setCookies.length > 0) {
+    for (const cookie of setCookies) {
+      appendResponseHeader(event, 'set-cookie', cookie)
+    }
   }
 
   return response._data

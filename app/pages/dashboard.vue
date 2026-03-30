@@ -111,6 +111,7 @@
     <AddUsersModal
       :show="showAddUsersModal"
       :server="selectedServer"
+      :servers="servers"
       @addUsers="viewAddUser"
       @close="showAddUsersModal = false"
     />

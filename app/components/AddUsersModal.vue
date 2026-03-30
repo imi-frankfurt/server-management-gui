@@ -19,6 +19,36 @@
           <p>{{ error }}</p>
         </div>
 
+          <div v-else-if="allUsers.length > 0">
+            <div
+            v-for="user in allUsers"
+            :key="user.keycloak_id"
+            class="user-assign-item"
+            :class="{ 'already-assigned': isUserAssignedToServer(user, props.server.id) }"
+            >
+            <label class="user-label">
+              <input
+                type="checkbox"
+                :checked="isUserAssignedToServer(user, props.server.id)"
+                :disabled="isUserAssignedToServer(user, props.server.id) || assigning"
+                @change="toggleServer(props.server.id)"
+                class="user-checkbox"
+              />
+              <div class="user-info">
+                 <div class="user-avatar">{{ user.username?.substring(0, 2).toUpperCase() || '??' }}</div>
+                 <div class="user-details">
+                    <strong>{{ user.username }}</strong>
+                    <code class="keycloak-id">{{ user.keycloak_id }}</code>
+                  </div>
+                  <button @click="openUserModal(user)" class="btn-view-user">View</button>
+              </div>
+              <span v-if="isUserAssignedToServer(user, props.server.id)" class="assigned-badge">
+                Already Assigned
+              </span>
+            </label>
+            </div>
+          </div>
+
         <div v-else class="empty-state">
           <p>Test modal.</p>
         </div>
@@ -45,21 +75,24 @@ const openUserModal = (user) => {
 
 const props = defineProps({
   show: { type: Boolean, default: false },
-  server: { type: Object, default: null }
+  server: { type: Object, default: null },
+  servers: { type: Array, default: () => [] }
 })
 
 defineEmits(['close', 'addUsers'])
 
 const { apiRequest } = useApi()
+const allUsers = ref([])
 const assignedUsers = ref([])
 const loading = ref(false)
 const error = ref('')
 
-const fetchUsers = async (serverId) => {
+const fetchAllUsers = async (serverId) => {
   try {
     loading.value = true
     error.value = ''
     const all = await apiRequest('/api/user')
+    allUsers.value = (all || [])
     assignedUsers.value = (all || []).filter(u =>
       (u.assigned_servers || []).some(s => s.id === serverId)
     )
@@ -71,10 +104,15 @@ const fetchUsers = async (serverId) => {
   }
 }
 
+const isUserAssignedToServer = (user, serverId) => {
+  return (user.assigned_servers || []).some(s => s.id === serverId);
+};
+
 watch(() => props.show, (newVal) => {
-  if (newVal && props.server?.id) {
-    fetchUsers(props.server.id)
+  if (newVal) {
+    fetchAllUsers(props.server.id)
   } else if (!newVal) {
+    allUsers.value = []
     assignedUsers.value = []
     error.value = ''
   }
@@ -82,7 +120,7 @@ watch(() => props.show, (newVal) => {
 
 watch(() => props.server, (newServer) => {
   if (props.show && newServer?.id) {
-    fetchUsers(newServer.id)
+    fetchAllUsers(newServer.id)
   }
 })
 </script>
@@ -208,6 +246,7 @@ watch(() => props.server, (newServer) => {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin: 10px;
 }
 
 .user-details strong {
@@ -276,5 +315,59 @@ watch(() => props.server, (newServer) => {
   transition: all 0.2s;
 }
 
+
 .btn-primary:hover { background: #2563eb; }
+
+.user-assign-item {
+  padding: 12px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.user-assign-item:hover:not(.already-assigned) { border-color: #3b82f6; }
+
+.user-assign-item.already-assigned { opacity: 0.6; }
+
+.user-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.user-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+
+.keycloak-id-show {
+  font-family: 'Courier New', monospace;
+  background: #1e293b;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.assigned-badge {
+  font-size: 12px;
+  color: #f59e0b;
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 </style>

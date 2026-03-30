@@ -10,6 +10,17 @@
       </div>
 
       <div class="modal-body">
+
+        <div class="filter-bar">
+          <input
+            v-model="search"
+            type="text"
+            class="filter-input"
+            placeholder="Search details…"
+        />
+
+        </div>
+
         <div v-if="loading" class="loading-state">
           <div class="spinner"></div>
           <p>Loading users...</p>
@@ -19,35 +30,39 @@
           <p>{{ error }}</p>
         </div>
 
-          <div v-else-if="allUsers.length > 0">
-            <div
-            v-for="user in allUsers"
-            :key="user.keycloak_id"
-            class="user-assign-item"
-            :class="{ 'already-assigned': isUserAssignedToServer(user, props.server.id) }"
-            >
-            <label class="user-label">
-              <input
-                type="checkbox"
-                :checked="isUserAssignedToServer(user, props.server.id)"
-                :disabled="assigning"
-                @change="enableUser(user)"
-                class="user-checkbox"
-              />
-              <div class="user-info">
-                 <div class="user-avatar">{{ user.username?.substring(0, 2).toUpperCase() || '??' }}</div>
-                 <div class="user-details">
-                    <strong>{{ user.username }}</strong>
-                    <code class="keycloak-id">{{ user.keycloak_id }}</code>
-                  </div>
-                 <span style="display:inline-block; width:200px;"></span>
-              </div>
-              <span v-if="isUserAssignedToServer(user, props.server.id)" class="assigned-badge">
-                Already Assigned
-              </span>
-            </label>
+        <div v-else-if="allUsers.length > 0">
+          <div
+          v-for="user in filteredUsers"
+          :key="user.keycloak_id"
+          class="user-assign-item"
+          :class="{ 'already-assigned': isUserAssignedToServer(user, props.server.id) }"
+          >
+          <tr v-if="filteredUsers.length === 0">
+            <td colspan="5" class="no-results">No users match the current filters.</td>
+          </tr>
+
+          <label class="user-label">
+            <input
+              type="checkbox"
+              :checked="isUserAssignedToServer(user, props.server.id)"
+              :disabled="assigning"
+              @change="onUserCheckboxChange($event, user)"
+              class="user-checkbox"
+            />
+            <div class="user-info">
+                <div class="user-avatar">{{ user.username?.substring(0, 2).toUpperCase() || '??' }}</div>
+                <div class="user-details">
+                  <strong>{{ user.username }}</strong>
+                  <code class="keycloak-id">{{ user.keycloak_id }}</code>
+                </div>
+                <span style="display:inline-block; width:200px;"></span>
             </div>
+            <span v-if="isUserAssignedToServer(user, props.server.id)" class="assigned-badge">
+              Already Assigned
+            </span>
+          </label>
           </div>
+        </div>
 
         <div v-else class="empty-state">
           <p>Test modal.</p>
@@ -59,10 +74,12 @@
             type="button" 
             @click="handleAssign" 
             class="btn-primary"
-            :disabled="selectedUsers.length === 0 || assigning"
-          >
-            {{ assigning ? 'Assigning...' : `Assign ${selectedUsers.length > 0 ? `(${selectedUsers.length})` : ''}` }}
-          </button>
+            :disabled="(selectedUsers.length === 0 && unSelectedUsers.length === 0) || assigning"          >
+            {{ assigning 
+              ? 'Assigning...' 
+              : `Apply${selectedUsers.length > 0 ? ` (+${selectedUsers.length} assign)` : ''}${unSelectedUsers.length > 0 ? ` (+${unSelectedUsers.length} unassign)` : ''}` 
+            }}          
+            </button>
         </div>
       </div>
     </div>
@@ -90,10 +107,12 @@ const props = defineProps({
 const emit = defineEmits(['close', 'addUsers', 'assigned'])
 
 const { apiRequest } = useApi()
+const search = ref('')
 const allUsers = ref([])
 const assigning = ref(false)
 const assignedUsers = ref([])
 const selectedUsers = ref([])
+const unSelectedUsers = ref([])
 const loading = ref(false)
 const error = ref('')
 
@@ -116,8 +135,29 @@ const fetchAllUsers = async (serverId) => {
   }
 }
 
+const isFiltered = computed(() => {
+  return search.value.trim() !== ''
+})
+
+const filteredUsers = computed(() => {
+  if (!isFiltered.value) return allUsers.value
+  const term = search.value.toLowerCase()
+  return allUsers.value.filter(u =>
+    (u.username || '').toLowerCase().includes(term) ||
+    (u.keycloak_id || '').toLowerCase().includes(term)
+  )
+})
+
 const isUserAssignedToServer = (user, serverId) => {
   return (user.assigned_servers || []).some(s => s.id === serverId);
+};
+
+const onUserCheckboxChange = (event, user) => {
+  if (event.target.checked) {
+    enableUser(user);
+  } else {
+    disableUser(user);
+  }
 };
 
 const enableUser = (user) => {
@@ -129,24 +169,43 @@ const enableUser = (user) => {
   }
 }
 
-const handleAssign = async () => {
-  if (selectedUsers.value.length === 0 || !props.server?.id) return
+const disableUser = (user) => {
+  const index = unSelectedUsers.value.indexOf(user.id)
+  if (index > -1) {
+    unSelectedUsers.value.splice(index, 1)
+  }
+  else {
+    unSelectedUsers.value.push(user.id)
+  }
+}
 
-  try {
-    assigning.value = true
+const handleAssign = async () => {
+ if (!props.server?.id) return;
+ try {
+    assigning.value = true;
+    // Assign selected users
     for (const userId of selectedUsers.value) {
       await apiRequest('/api/user/assign', {
         method: 'POST',
         body: { user_id: userId, server_id: props.server.id }
-      })
+      });
     }
-    emit('assigned')
-    emit('close')
+
+    // Unassign unselected users
+    for (const userId of unSelectedUsers.value) {
+      await apiRequest('/api/user/unassign', {
+        method: 'POST',
+        body: { user_id: userId, server_id: props.server.id }
+      });
+    }
+
+    emit('assigned');
+    emit('close');
   } catch (err) {
-    console.error('Failed to assign users:', err)
-    alert('Failed to assign users: ' + err.message)
+    console.error('Failed to assign/unassign users:', err);
+    alert('Failed to assign/unassign users: ' + err.message);
   } finally {
-    assigning.value = false
+    assigning.value = false;
   }
   
 }
@@ -156,10 +215,12 @@ watch(() => props.show, (newVal) => {
   if (newVal) {
     fetchAllUsers(props.server.id)
     selectedUsers.value = []
+    unSelectedUsers.value = []
   } else if (!newVal) {
     allUsers.value = []
     assignedUsers.value = []
     selectedUsers.value = []
+    unSelectedUsers.value = []
     error.value = ''
   }
 })
@@ -413,6 +474,52 @@ watch(() => props.server, (newServer) => {
   padding: 2px 8px;
   border-radius: 4px;
   white-space: nowrap;
+}
+
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.filter-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 8px 12px;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  color: #e5e7eb;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filter-input::placeholder {
+  color: #6b7280;
+}
+
+.filter-input:focus {
+  border-color: #3b82f6;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  color: #e5e7eb;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+  border-color: #3b82f6;
 }
 
 </style>

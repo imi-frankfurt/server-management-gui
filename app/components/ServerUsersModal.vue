@@ -38,7 +38,7 @@
         </div>
 
         <div class="modal-footer">
-          <button @click="$emit('add-users')" class="btn-primary">Add Users</button>
+          <button @click="$emit('addUsers')" class="btn-primary">Add Users</button>
           <button @click="$emit('close')" class="btn-secondary">Close</button>
         </div>
       </div>
@@ -69,7 +69,7 @@ const props = defineProps({
   server: { type: Object, default: null }
 })
 
-defineEmits(['close', 'add-users'])
+defineEmits(['close', 'addUsers'])
 
 const { apiRequest } = useApi()
 const assignedUsers = ref([])

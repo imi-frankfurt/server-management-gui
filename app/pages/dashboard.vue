@@ -108,9 +108,17 @@
       @close="showViewServerModal = false"
     />
 
+    <AddUsersModal
+      :show="showAddUsersModal"
+      :server="selectedServer"
+      @addUsers="viewAddUser"
+      @close="showAddUsersModal = false"
+    />
+
     <ServerUsersModal
       :show="showServerUsersModal"
       :server="selectedServerForUsers"
+      @addUsers="viewAddUser"
       @close="showServerUsersModal = false"
     />
     
@@ -192,6 +200,7 @@ import AssignBlackListModal from '../components/AssignBlackListModal.vue'
 import AssignUserModal from '../components/AssignUserModal.vue'
 import BlackListTable from '../components/BlackListTable.vue'
 import ActivityLogsTable from '../components/ActivityLogsTable.vue'
+import AddUsersModal from '../components/AddUsersModal.vue'
 
 definePageMeta({
   middleware: 'auth'
@@ -215,6 +224,7 @@ const logsLoading = ref(false)
 const logsError = ref('')
 const showAddServerModal = ref(false)
 const showViewServerModal = ref(false)
+const showAddUsersModal = ref(false)
 const showServerUsersModal = ref(false)
 const showEditServerModal = ref(false)
 const showDeleteServerModal = ref(false)
@@ -434,6 +444,13 @@ const addServer = async (serverData) => {
 const viewServer = (server) => {
   selectedServer.value = server
   showViewServerModal.value = true
+}
+
+const viewAddUser = (server) => {
+  // disable ServerUsersModal when opening AddUsersModal to prevent conflicts
+  showServerUsersModal.value = false
+  selectedServer.value = server
+  showAddUsersModal.value = true
 }
 
 const viewServerUsers = (server) => {

@@ -30,8 +30,8 @@
               <input
                 type="checkbox"
                 :checked="isUserAssignedToServer(user, props.server.id)"
-                :disabled="isUserAssignedToServer(user, props.server.id) || assigning"
-                @change="toggleServer(props.server.id)"
+                :disabled="assigning"
+                @change="enableUser(user)"
                 class="user-checkbox"
               />
               <div class="user-info">
@@ -40,7 +40,7 @@
                     <strong>{{ user.username }}</strong>
                     <code class="keycloak-id">{{ user.keycloak_id }}</code>
                   </div>
-                  <button @click="openUserModal(user)" class="btn-view-user">View</button>
+                 <span style="display:inline-block; width:200px;"></span>
               </div>
               <span v-if="isUserAssignedToServer(user, props.server.id)" class="assigned-badge">
                 Already Assigned
@@ -55,6 +55,14 @@
 
         <div class="modal-footer">
           <button @click="$emit('close')" class="btn-secondary">Close</button>
+          <button 
+            type="button" 
+            @click="handleAssign" 
+            class="btn-primary"
+            :disabled="selectedUsers.length === 0 || assigning"
+          >
+            {{ assigning ? 'Assigning...' : `Assign ${selectedUsers.length > 0 ? `(${selectedUsers.length})` : ''}` }}
+          </button>
         </div>
       </div>
     </div>
@@ -79,16 +87,19 @@ const props = defineProps({
   servers: { type: Array, default: () => [] }
 })
 
-defineEmits(['close', 'addUsers'])
+const emit = defineEmits(['close', 'addUsers', 'assigned'])
 
 const { apiRequest } = useApi()
 const allUsers = ref([])
+const assigning = ref(false)
 const assignedUsers = ref([])
+const selectedUsers = ref([])
 const loading = ref(false)
 const error = ref('')
 
 const fetchAllUsers = async (serverId) => {
   try {
+    assigning.value = true
     loading.value = true
     error.value = ''
     const all = await apiRequest('/api/user')
@@ -101,6 +112,7 @@ const fetchAllUsers = async (serverId) => {
     error.value = err.message || 'Failed to load users'
   } finally {
     loading.value = false
+    assigning.value = false
   }
 }
 
@@ -108,12 +120,46 @@ const isUserAssignedToServer = (user, serverId) => {
   return (user.assigned_servers || []).some(s => s.id === serverId);
 };
 
+const enableUser = (user) => {
+  const index = selectedUsers.value.indexOf(user.id)
+  if (index > -1) {
+    selectedUsers.value.splice(index, 1)
+  } else {
+    selectedUsers.value.push(user.id)
+  }
+}
+
+const handleAssign = async () => {
+  if (selectedUsers.value.length === 0 || !props.server?.id) return
+
+  try {
+    assigning.value = true
+    for (const userId of selectedUsers.value) {
+      await apiRequest('/api/user/assign', {
+        method: 'POST',
+        body: { user_id: userId, server_id: props.server.id }
+      })
+    }
+    emit('assigned')
+    emit('close')
+  } catch (err) {
+    console.error('Failed to assign users:', err)
+    alert('Failed to assign users: ' + err.message)
+  } finally {
+    assigning.value = false
+  }
+  
+}
+
+
 watch(() => props.show, (newVal) => {
   if (newVal) {
     fetchAllUsers(props.server.id)
+    selectedUsers.value = []
   } else if (!newVal) {
     allUsers.value = []
     assignedUsers.value = []
+    selectedUsers.value = []
     error.value = ''
   }
 })
@@ -246,7 +292,6 @@ watch(() => props.server, (newServer) => {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin: 10px;
 }
 
 .user-details strong {

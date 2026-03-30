@@ -114,6 +114,7 @@
       :servers="servers"
       @addUsers="viewAddUser"
       @close="showAddUsersModal = false"
+      @assigned="handleUserAssigned"
     />
 
     <ServerUsersModal

@@ -161,23 +161,30 @@ const onUserCheckboxChange = (event, user) => {
 };
 
 const enableUser = (user) => {
-  const index = selectedUsers.value.indexOf(user.id)
-  if (index > -1) {
-    selectedUsers.value.splice(index, 1)
-  } else {
-    selectedUsers.value.push(user.id)
+  const unassignIdx = unSelectedUsers.value.indexOf(user.id);
+  if (unassignIdx > -1) {
+    unSelectedUsers.value.splice(unassignIdx, 1);
   }
-}
+  const assignIdx = selectedUsers.value.indexOf(user.id);
+  if (assignIdx > -1) {
+    selectedUsers.value.splice(assignIdx, 1);
+  } else {
+    selectedUsers.value.push(user.id);
+  }
+};
 
 const disableUser = (user) => {
-  const index = unSelectedUsers.value.indexOf(user.id)
-  if (index > -1) {
-    unSelectedUsers.value.splice(index, 1)
+  const assignIdx = selectedUsers.value.indexOf(user.id);
+  if (assignIdx > -1) {
+    selectedUsers.value.splice(assignIdx, 1);
   }
-  else {
-    unSelectedUsers.value.push(user.id)
+  const unassignIdx = unSelectedUsers.value.indexOf(user.id);
+  if (unassignIdx > -1) {
+    unSelectedUsers.value.splice(unassignIdx, 1);
+  } else {
+    unSelectedUsers.value.push(user.id);
   }
-}
+};
 
 const handleAssign = async () => {
  if (!props.server?.id) return;

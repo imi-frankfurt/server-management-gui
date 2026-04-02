@@ -1,6 +1,7 @@
 export const useApi = () => {
   const apiRequest = async (endpoint, options = {}) => {
     const { _retried = false, headers: optionHeaders = {}, ...fetchOptions } = options
+    const { refreshToken, logout, sessionActive } = useAuth()
 
     try {
       const response = await $fetch(endpoint, {
@@ -15,7 +16,9 @@ export const useApi = () => {
       return response
     } catch (error) {
       if (error?.status === 401 || error?.statusCode === 401) {
-        const { refreshToken, logout } = useAuth()
+        if (!sessionActive.value) {
+          throw error
+        }
 
         if (!_retried) {
           const refreshed = await refreshToken()

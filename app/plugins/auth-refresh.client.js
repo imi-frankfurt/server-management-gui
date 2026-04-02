@@ -1,9 +1,11 @@
 export default defineNuxtPlugin(() => {
-  const { refreshToken } = useAuth()
+  const { refreshToken, getSession, sessionActive } = useAuth()
 
   const refreshIntervalMs = 4 * 60 * 1000
 
   const refreshSilently = async () => {
+    if (!sessionActive.value) return
+
     try {
       await refreshToken()
     } catch {
@@ -11,9 +13,22 @@ export default defineNuxtPlugin(() => {
     }
   }
 
-  const intervalId = window.setInterval(() => {
-    refreshSilently()
-  }, refreshIntervalMs)
+  let intervalId = null
+
+  const startRefreshLoop = () => {
+    if (intervalId) return
+
+    intervalId = window.setInterval(() => {
+      refreshSilently()
+    }, refreshIntervalMs)
+  }
+
+  const stopRefreshLoop = () => {
+    if (!intervalId) return
+
+    window.clearInterval(intervalId)
+    intervalId = null
+  }
 
   const onFocus = () => {
     refreshSilently()
@@ -28,13 +43,18 @@ export default defineNuxtPlugin(() => {
   window.addEventListener('focus', onFocus)
   document.addEventListener('visibilitychange', onVisibilityChange)
 
-  onNuxtReady(() => {
-    refreshSilently()
+  onNuxtReady(async () => {
+    await getSession()
+
+    if (sessionActive.value) {
+      refreshSilently()
+      startRefreshLoop()
+    }
   })
 
   if (import.meta.hot) {
     import.meta.hot.dispose(() => {
-      window.clearInterval(intervalId)
+      stopRefreshLoop()
       window.removeEventListener('focus', onFocus)
       document.removeEventListener('visibilitychange', onVisibilityChange)
     })

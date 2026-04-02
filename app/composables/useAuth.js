@@ -8,10 +8,15 @@ export const useAuth = () => {
   const fallbackSessionUrl = '/api/auth/session'
 
   let refreshPromise = null
+  const sessionActive = useState('auth-session-active', () => false)
 
   const getAuthHeaders = () => (import.meta.server ? useRequestHeaders(['cookie']) : {})
 
   const refreshToken = async () => {
+    if (!sessionActive.value) {
+      return false
+    }
+
     if (refreshPromise) return refreshPromise
 
     refreshPromise = (async () => {
@@ -24,6 +29,7 @@ export const useAuth = () => {
         return true
       } catch (error) {
         console.warn('Refresh fehlgeschlagen:', error.status)
+        sessionActive.value = false
         return false
       } finally {
         refreshPromise = null
@@ -36,15 +42,28 @@ export const useAuth = () => {
   const fetchSession = async () => {
     const headers = getAuthHeaders()
     try {
-      return await $fetch(sessionUrl, { headers, credentials: 'include' })
+      const session = await $fetch(sessionUrl, { headers, credentials: 'include' })
+      sessionActive.value = Boolean(session && (session.authenticated || session.user))
+      return session
     } catch (error) {
       if (error.status === 401) {
-        const success = await refreshToken()
-        if (success) return await $fetch(sessionUrl, { headers, credentials: 'include' })
+        if (sessionActive.value) {
+          const success = await refreshToken()
+          if (success) {
+            const session = await $fetch(sessionUrl, { headers, credentials: 'include' })
+            sessionActive.value = Boolean(session && (session.authenticated || session.user))
+            return session
+          }
+        }
+
+        sessionActive.value = false
+        return null
       }
 
       if (sessionUrl !== fallbackSessionUrl) {
-        return await $fetch(fallbackSessionUrl, { headers, credentials: 'include' })
+        const session = await $fetch(fallbackSessionUrl, { headers, credentials: 'include' })
+        sessionActive.value = Boolean(session && (session.authenticated || session.user))
+        return session
       }
       throw error
     }
@@ -77,6 +96,7 @@ export const useAuth = () => {
     } catch {
       // ignore
     } finally {
+      sessionActive.value = false
       navigateTo('/login?force_reauth=1')
     }
   }
@@ -85,6 +105,7 @@ export const useAuth = () => {
     isAuthenticated,
     getSession,
     refreshToken,
-    logout
+    logout,
+    sessionActive
   }
 }

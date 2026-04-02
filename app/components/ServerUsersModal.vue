@@ -28,6 +28,17 @@
                 <strong>{{ user.username }}</strong>
                 <code class="keycloak-id">{{ user.keycloak_id }}</code>
               </div>
+              <label class="primary-select">
+                <input
+                  type="radio"
+                  name="server-users-primary"
+                  :checked="primaryUserId === user.id"
+                  :disabled="savingPrimary"
+                  @change="selectPrimary(user.id)"
+                />
+                <span>Primary</span>
+              </label>
+              <span v-if="isPrimary(user)" class="admin-badge">Current Primary</span>
               <button @click="openUserModal(user)" class="btn-view-user">View</button>
             </div>
           </div>
@@ -38,6 +49,13 @@
         </div>
 
         <div class="modal-footer">
+          <button
+            @click="savePrimaryUser"
+            class="btn-primary"
+            :disabled="!hasPrimaryChange || !primaryUserId || savingPrimary"
+          >
+            {{ savingPrimary ? 'Saving...' : 'Save Primary User' }}
+          </button>
           <button @click="$emit('addUsers', server)" class="btn-primary">Edit Users</button>
           <button @click="$emit('close')" class="btn-secondary">Close</button>
         </div>
@@ -54,7 +72,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 const showUserModal = ref(false)
 const selectedUser = ref(null)
@@ -75,6 +93,25 @@ const { apiRequest } = useApi()
 const assignedUsers = ref([])
 const loading = ref(false)
 const error = ref('')
+const savingPrimary = ref(false)
+const primaryUserId = ref(null)
+const initialPrimaryUserId = ref(null)
+
+const getServerAssignment = (user) => {
+  return (user?.assigned_servers || []).find((server) => server?.id === props.server?.id) || null
+}
+
+const isPrimary = (user) => {
+  return getServerAssignment(user)?.primary_user === true
+}
+
+const hasPrimaryChange = computed(() => {
+  return primaryUserId.value !== initialPrimaryUserId.value
+})
+
+const selectPrimary = (userId) => {
+  primaryUserId.value = userId
+}
 
 const fetchUsers = async (serverId) => {
   try {
@@ -84,6 +121,13 @@ const fetchUsers = async (serverId) => {
     assignedUsers.value = (all || []).filter(u =>
       (u.assigned_servers || []).some(s => s.id === serverId)
     )
+
+    const currentPrimary = assignedUsers.value.find((user) => {
+      return (user.assigned_servers || []).some((assignedServer) => assignedServer.id === serverId && assignedServer.primary_user === true)
+    })
+
+    primaryUserId.value = currentPrimary?.id || null
+    initialPrimaryUserId.value = primaryUserId.value
   } catch (err) {
     console.error('Failed to load users:', err)
     error.value = err.message || 'Failed to load users'
@@ -92,11 +136,38 @@ const fetchUsers = async (serverId) => {
   }
 }
 
+const savePrimaryUser = async () => {
+  if (!props.server?.id || !primaryUserId.value || !hasPrimaryChange.value) return
+
+  try {
+    savingPrimary.value = true
+
+    for (const user of assignedUsers.value) {
+      await apiRequest(`/api/user/${user.id}`, {
+        method: 'PUT',
+        body: {
+          server_id: props.server.id,
+          primary_user: user.id === primaryUserId.value
+        }
+      })
+    }
+
+    await fetchUsers(props.server.id)
+  } catch (err) {
+    console.error('Failed to update primary user:', err)
+    alert('Failed to update primary user: ' + err.message)
+  } finally {
+    savingPrimary.value = false
+  }
+}
+
 watch(() => props.show, (newVal) => {
   if (newVal && props.server?.id) {
     fetchUsers(props.server.id)
   } else if (!newVal) {
     assignedUsers.value = []
+    primaryUserId.value = null
+    initialPrimaryUserId.value = null
     error.value = ''
   }
 })
@@ -190,6 +261,30 @@ watch(() => props.server, (newServer) => {
   background: #0f172a;
   border: 1px solid #334155;
   border-radius: 10px;
+}
+
+.primary-select {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #f59e0b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.primary-select input {
+  accent-color: #f59e0b;
+}
+
+.admin-badge {
+  font-size: 12px;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
 }
 
 .btn-view-user {

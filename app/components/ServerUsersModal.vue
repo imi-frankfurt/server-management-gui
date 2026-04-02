@@ -38,7 +38,7 @@
         </div>
 
         <div class="modal-footer">
-          <button @click="$emit('addUsers', server)" class="btn-primary">Add Users</button>
+          <button @click="$emit('addUsers', server)" class="btn-primary">Edit Users</button>
           <button @click="$emit('close')" class="btn-secondary">Close</button>
         </div>
       </div>

@@ -3,7 +3,7 @@
     <div class="modal-content" @click.stop>
       <div class="modal-header">
         <div>
-          <h3>Add users {{ server?.name }}</h3>
+          <h3>Edit users {{ server?.name }}</h3>
           <p class="header-sub">{{ server?.ip }}</p>
         </div>
         <button @click="$emit('close')" class="close-btn">×</button>
@@ -55,7 +55,19 @@
                   <strong>{{ user.username }}</strong>
                   <code class="keycloak-id">{{ user.keycloak_id }}</code>
                 </div>
-                <span style="display:inline-block; width:200px;"></span>
+                <span style="width:200px;"></span>
+                <!-- isAdmin checkbox, only enabled if user is selected for assign -->
+                <!--
+                <label v-if="selectedUsers.includes(user.id)" style="margin-left:10px; display:flex; align-items:center; gap:4px;">
+                  <input
+                    type="checkbox"
+                    :checked="adminUserId === user.id"
+                    :disabled="assigning"
+                    @change="onAdminCheckboxChange(user)"
+                  />
+                  <span style="font-size:12px; color:#f59e0b;">Admin</span>
+                </label>
+                -->
             </div>
             <span v-if="isUserAssignedToServer(user, props.server.id)" class="assigned-badge">
               Already Assigned
@@ -113,8 +125,17 @@ const assigning = ref(false)
 const assignedUsers = ref([])
 const selectedUsers = ref([])
 const unSelectedUsers = ref([])
+const adminUserId = ref(null) // Track the admin user id
 const loading = ref(false)
 const error = ref('')
+// Only one admin allowed
+const onAdminCheckboxChange = (user) => {
+  if (adminUserId.value === user.id) {
+    adminUserId.value = null;
+  } else {
+    adminUserId.value = user.id;
+  }
+};
 
 const fetchAllUsers = async (serverId) => {
   try {
@@ -165,24 +186,37 @@ const enableUser = (user) => {
   if (unassignIdx > -1) {
     unSelectedUsers.value.splice(unassignIdx, 1);
   }
-  const assignIdx = selectedUsers.value.indexOf(user.id);
-  if (assignIdx > -1) {
-    selectedUsers.value.splice(assignIdx, 1);
+  if (!isUserAssignedToServer(user, props.server.id)) {
+    const assignIdx = selectedUsers.value.indexOf(user.id);
+    if (assignIdx === -1) {
+      selectedUsers.value.push(user.id);
+    }
   } else {
-    selectedUsers.value.push(user.id);
+    const assignIdx = selectedUsers.value.indexOf(user.id);
+    if (assignIdx > -1) {
+      selectedUsers.value.splice(assignIdx, 1);
+    }
   }
 };
 
 const disableUser = (user) => {
+  // Remove from selectedUsers if present
   const assignIdx = selectedUsers.value.indexOf(user.id);
   if (assignIdx > -1) {
     selectedUsers.value.splice(assignIdx, 1);
   }
-  const unassignIdx = unSelectedUsers.value.indexOf(user.id);
-  if (unassignIdx > -1) {
-    unSelectedUsers.value.splice(unassignIdx, 1);
+  // Only add to unSelectedUsers if currently assigned
+  if (isUserAssignedToServer(user, props.server.id)) {
+    const unassignIdx = unSelectedUsers.value.indexOf(user.id);
+    if (unassignIdx === -1) {
+      unSelectedUsers.value.push(user.id);
+    }
   } else {
-    unSelectedUsers.value.push(user.id);
+    // If not assigned, make sure not in unSelectedUsers
+    const unassignIdx = unSelectedUsers.value.indexOf(user.id);
+    if (unassignIdx > -1) {
+      unSelectedUsers.value.splice(unassignIdx, 1);
+    }
   }
 };
 
@@ -194,7 +228,10 @@ const handleAssign = async () => {
     for (const userId of selectedUsers.value) {
       await apiRequest('/api/user/assign', {
         method: 'POST',
-        body: { user_id: userId, server_id: props.server.id }
+        body: {
+          user_id: userId,
+          server_id: props.server.id,
+        }
       });
     }
 
@@ -223,11 +260,13 @@ watch(() => props.show, (newVal) => {
     fetchAllUsers(props.server.id)
     selectedUsers.value = []
     unSelectedUsers.value = []
+    adminUserId.value = null
   } else if (!newVal) {
     allUsers.value = []
     assignedUsers.value = []
     selectedUsers.value = []
     unSelectedUsers.value = []
+    adminUserId.value = null
     error.value = ''
   }
 })

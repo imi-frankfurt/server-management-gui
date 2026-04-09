@@ -73,6 +73,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { ViewUserModal } from '~/components/user'
 
 const showUserModal = ref(false)
 const selectedUser = ref(null)

@@ -186,23 +186,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import DashboardSidebar from '../components/DashboardSidebar.vue'
-import DashboardStats from '../components/DashboardStats.vue'
-import ServerTable from '../components/ServerTable.vue'
-import UserTable from '../components/UserTable.vue'
-import AddServerModal from '../components/AddServerModal.vue'
-import ViewServerModal from '../components/ViewServerModal.vue'
-import ServerUsersModal from '../components/ServerUsersModal.vue'
-import EditServerModal from '../components/EditServerModal.vue'
-import DeleteServerModal from '../components/DeleteServerModal.vue'
-import ViewUserModal from '../components/ViewUserModal.vue'
-import ViewBlackListModal from '../components/ViewBlackListModal.vue'
-import AddBlackListModal from '../components/AddBlackListModal.vue'
-import AssignBlackListModal from '../components/AssignBlackListModal.vue'
-import AssignUserModal from '../components/AssignUserModal.vue'
-import BlackListTable from '../components/BlackListTable.vue'
-import ActivityLogsTable from '../components/ActivityLogsTable.vue'
-import AddUsersModal from '../components/AddUsersModal.vue'
+import { DashboardSidebar, DashboardStats } from '~/components/dashboard'
+import { ServerTable, AddServerModal, ViewServerModal, EditServerModal, DeleteServerModal, ServerUsersModal, AssignUserModal } from '~/components/server'
+import { UserTable, ViewUserModal, AddUsersModal } from '~/components/user'
+import { BlackListTable, ViewBlackListModal, AddBlackListModal, AssignBlackListModal } from '~/components/blacklist'
+import { ActivityLogsTable } from '~/components/log'
 
 definePageMeta({
   middleware: 'auth'

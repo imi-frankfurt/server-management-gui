@@ -1,0 +1,1 @@
+export {default as ActivityLogsTable} from './ActivityLogsTable.vue'

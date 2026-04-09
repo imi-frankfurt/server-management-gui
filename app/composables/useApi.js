@@ -2,6 +2,10 @@ export const useApi = () => {
   const apiRequest = async (endpoint, options = {}) => {
     const { _retried = false, headers: optionHeaders = {}, ...fetchOptions } = options
     const { refreshToken, logout, sessionActive } = useAuth()
+    const { getCsrfToken } = useCsrf()
+    const method = String(fetchOptions.method || 'GET').toUpperCase()
+    const csrfToken = getCsrfToken()
+    const unsafeMethods = ['POST', 'PUT', 'PATCH', 'DELETE']
 
     try {
       const response = await $fetch(endpoint, {
@@ -9,7 +13,8 @@ export const useApi = () => {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          ...optionHeaders
+          ...optionHeaders,
+          ...(unsafeMethods.includes(method) && csrfToken ? { 'X-CSRF-Token': csrfToken } : {})
         }
       })
 

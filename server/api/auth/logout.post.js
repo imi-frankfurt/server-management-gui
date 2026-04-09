@@ -1,11 +1,13 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const requestCookies = getRequestHeader(event, 'cookie') ?? ''
+  const requestCsrfToken = getRequestHeader(event, 'x-csrf-token') ?? ''
 
   const response = await $fetch.raw(`${config.apiBaseUrl}/auth/logout`, {
     method: 'POST',
     headers: {
-      cookie: requestCookies
+      cookie: requestCookies,
+      ...(requestCsrfToken ? { 'x-csrf-token': requestCsrfToken } : {})
     },
     ignoreResponseError: true
   })

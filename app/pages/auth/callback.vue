@@ -18,6 +18,7 @@ import { ref, onMounted } from 'vue'
 
 const error = ref('')
 let exchanged = false
+const { getCsrfToken } = useCsrf()
 
 onMounted(async () => {
   try {
@@ -36,6 +37,9 @@ onMounted(async () => {
 
     await $fetch('/api/auth/exchange-code', {
       method: 'POST',
+      headers: {
+        ...(getCsrfToken() ? { 'X-CSRF-Token': getCsrfToken() } : {})
+      },
       body: { code, redirect_uri: redirectUri }
     })
 

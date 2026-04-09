@@ -1,6 +1,7 @@
 export const useAuth = () => {
   const config = useRuntimeConfig()
   const directBase = config.public?.apiBaseUrl || ''
+  const { clearCsrfToken } = useCsrf()
   
   const sessionUrl = directBase ? `${directBase}/auth/session` : '/api/auth/session'
   const refreshUrl = directBase ? `${directBase}/auth/refresh` : '/api/auth/refresh'
@@ -21,15 +22,22 @@ export const useAuth = () => {
 
     refreshPromise = (async () => {
       try {
+        const { getCsrfToken } = useCsrf()
+
         await $fetch(refreshUrl, {
           method: 'POST',
-          headers: getAuthHeaders(),
+          headers: {
+            ...getAuthHeaders(),
+            ...(getCsrfToken() ? { 'X-CSRF-Token': getCsrfToken() } : {})
+          },
           credentials: 'include'
         })
+
         return true
       } catch (error) {
         console.warn('Refresh fehlgeschlagen:', error.status)
         sessionActive.value = false
+        clearCsrfToken()
         return false
       } finally {
         refreshPromise = null
@@ -43,6 +51,7 @@ export const useAuth = () => {
     const headers = getAuthHeaders()
     try {
       const session = await $fetch(sessionUrl, { headers, credentials: 'include' })
+
       sessionActive.value = Boolean(session && (session.authenticated || session.user))
       return session
     } catch (error) {
@@ -57,6 +66,7 @@ export const useAuth = () => {
         }
 
         sessionActive.value = false
+        clearCsrfToken()
         return null
       }
 
@@ -87,16 +97,22 @@ export const useAuth = () => {
   }
 
   const logout = async () => {
+    const { getCsrfToken } = useCsrf()
+
     try {
       await $fetch(logoutUrl, {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: {
+          ...getAuthHeaders(),
+          ...(getCsrfToken() ? { 'X-CSRF-Token': getCsrfToken() } : {})
+        },
         credentials: 'include'
       })
     } catch {
       // ignore
     } finally {
       sessionActive.value = false
+      clearCsrfToken()
       navigateTo('/login?force_reauth=1')
     }
   }

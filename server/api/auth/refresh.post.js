@@ -2,6 +2,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const requestCookies = getRequestHeader(event, 'cookie') ?? ''
   const requestBody = await readBody(event).catch(() => undefined)
+  const requestCsrfToken = getRequestHeader(event, 'x-csrf-token') ?? ''
 
   const refreshPaths = [
     '/auth/refresh',
@@ -23,7 +24,8 @@ export default defineEventHandler(async (event) => {
       body: requestBody,
       headers: {
         'content-type': getRequestHeader(event, 'content-type') ?? 'application/json',
-        cookie: requestCookies
+        cookie: requestCookies,
+        ...(requestCsrfToken ? { 'x-csrf-token': requestCsrfToken } : {})
       },
       ignoreResponseError: true
     })

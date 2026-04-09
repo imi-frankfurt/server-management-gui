@@ -7,13 +7,15 @@ export default defineEventHandler(async (event) => {
 
   const method = getMethod(event)
   const query = getQuery(event)
+  const csrfToken = getRequestHeader(event, 'x-csrf-token') ?? ''
 
   const fetchOptions = {
     method,
     params: Object.keys(query).length > 0 ? query : undefined,
     headers: {
       'content-type': getRequestHeader(event, 'content-type') ?? 'application/json',
-      cookie: getRequestHeader(event, 'cookie') ?? ''
+      cookie: getRequestHeader(event, 'cookie') ?? '',
+      ...(csrfToken ? { 'x-csrf-token': csrfToken } : {})
     },
     ignoreResponseError: true
   }
@@ -26,9 +28,12 @@ export default defineEventHandler(async (event) => {
 
   setResponseStatus(event, response.status)
 
-  const setCookie = response.headers.get('set-cookie')
-  if (setCookie) {
-    setResponseHeader(event, 'set-cookie', setCookie)
+  const setCookies = typeof response.headers.getSetCookie === 'function'
+    ? response.headers.getSetCookie()
+    : (response.headers.get('set-cookie') ? [response.headers.get('set-cookie')] : [])
+
+  if (setCookies.length > 0) {
+    setResponseHeader(event, 'set-cookie', setCookies)
   }
 
   return response._data

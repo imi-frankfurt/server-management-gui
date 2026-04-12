@@ -496,7 +496,7 @@ const syncUsers = async () => {
   try {
     usersLoading.value = true
     usersError.value = ''
-    const result = await apiRequest('/api/user/sync')
+    const result = await apiRequest('/api/user/sync', { method: 'POST' })
     console.log('Sync result:', result)
     await refreshUserData()
     await fetchLogs()

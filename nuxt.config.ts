@@ -5,6 +5,27 @@ const runtimeEnv = (globalThis as typeof globalThis & {
   }
 }).process?.env ?? {}
 
+const isProduction = runtimeEnv.NODE_ENV === 'production'
+const connectSrc = ["'self'", 'ws:', 'wss:']
+
+if (runtimeEnv.NUXT_PUBLIC_API_BASE_URL) {
+  connectSrc.push(runtimeEnv.NUXT_PUBLIC_API_BASE_URL)
+}
+
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  "object-src 'none'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  "style-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${isProduction ? '' : " 'unsafe-eval'"}`,
+  "worker-src 'self' blob:",
+  `connect-src ${connectSrc.join(' ')}`
+].join('; ')
+
 export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
   css: ['~/assets/css/main.css'],
@@ -36,6 +57,16 @@ export default defineNuxtConfig({
     https: {
       key: './.cert/localhost+2-key.pem',
       cert: './.cert/localhost+2.pem'
+    }
+  },
+
+  nitro: {
+    routeRules: {
+      '/**': {
+        headers: {
+          'Content-Security-Policy': contentSecurityPolicy
+        }
+      }
     }
   },
   

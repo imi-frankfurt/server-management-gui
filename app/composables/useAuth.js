@@ -1,11 +1,10 @@
 export const useAuth = () => {
-  const config = useRuntimeConfig()
-  const directBase = config.public?.apiBaseUrl || ''
   const { clearCsrfToken } = useCsrf()
-  
-  const sessionUrl = directBase ? `${directBase}/auth/session` : '/api/auth/session'
-  const refreshUrl = directBase ? `${directBase}/auth/refresh` : '/api/auth/refresh'
-  const logoutUrl = directBase ? `${directBase}/auth/logout` : '/api/auth/logout'
+
+  // Always go through Nuxt BFF routes to keep cookies/CSRF handling centralized.
+  const sessionUrl = '/api/auth/session'
+  const refreshUrl = '/api/auth/refresh'
+  const logoutUrl = '/api/auth/logout'
   const fallbackSessionUrl = '/api/auth/session'
 
   let refreshPromise = null

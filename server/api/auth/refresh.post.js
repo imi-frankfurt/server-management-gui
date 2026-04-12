@@ -2,7 +2,18 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const requestCookies = getRequestHeader(event, 'cookie') ?? ''
   const requestBody = await readBody(event).catch(() => undefined)
-  const requestCsrfToken = getRequestHeader(event, 'x-csrf-token') ?? ''
+  const requestCsrfTokenHeader = getRequestHeader(event, 'x-csrf-token') ?? ''
+
+  // Fallback for double-submit CSRF: use csrf_token cookie if header is missing.
+  const csrfCookieValue = requestCookies
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith('csrf_token='))
+    ?.split('=')
+    .slice(1)
+    .join('=')
+
+  const requestCsrfToken = requestCsrfTokenHeader || (csrfCookieValue ? decodeURIComponent(csrfCookieValue) : '')
 
   const refreshPaths = [
     '/auth/refresh',
@@ -30,17 +41,6 @@ export default defineEventHandler(async (event) => {
       ignoreResponseError: true
     })
 
-    // Debug log: status, headers, and body
-    console.log('[refresh-proxy] Request:', url)
-    console.log('[refresh-proxy] Status:', currentResponse.status)
-    console.log('[refresh-proxy] Headers:', Object.fromEntries(currentResponse.headers.entries()))
-    try {
-      const debugBody = typeof currentResponse._data === 'object' ? JSON.stringify(currentResponse._data) : String(currentResponse._data)
-      console.log('[refresh-proxy] Body:', debugBody)
-    } catch (e) {
-      console.log('[refresh-proxy] Body: <unserializable>')
-    }
-
     response = currentResponse
 
     if (currentResponse.status !== 404) {
@@ -56,7 +56,6 @@ export default defineEventHandler(async (event) => {
   setResponseStatus(event, response.status)
 
   const setCookies = response.headers.getSetCookie()
-  console.log('Vom Backend erhalten:', setCookies)
 
   if (setCookies && setCookies.length > 0) {
     setCookies.forEach(cookie => {

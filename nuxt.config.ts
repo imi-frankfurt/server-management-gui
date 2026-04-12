@@ -52,6 +52,9 @@ export default defineNuxtConfig({
       ]
     }
   },
+  icon: {
+    serverBundle: 'remote' 
+  },
 
   devServer: {
     https: {

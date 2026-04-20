@@ -1,22 +1,16 @@
 version: '3.9'
 services:
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${FRONTEND_IMAGE:-imi-frontend:1.0}
     container_name: imi-frontend
     ports:
-      - "3000:3000"
+      - "${FRONTEND_BIND_ADDRESS:-127.0.0.1}:${FRONTEND_PORT:-3000}:3000"
     environment:
-      # Server-side backend URL used by Nuxt BFF server routes
-      NUXT_API_BASE_URL: https://host.docker.internal:5000
-      # Keep empty so browser does not bypass BFF
-      NUXT_PUBLIC_API_BASE_URL: ""
-      # Trust mkcert root CA in Node.js (for self-signed backend cert)
-      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/mkcert-rootCA.pem
-    volumes:
-      # Put mkcert root CA at ./.cert/rootCA.pem (same path works on Windows/Linux/macOS)
-      - ./.cert/rootCA.pem:/etc/ssl/certs/mkcert-rootCA.pem:ro
+      # Backend URL used by Nuxt server routes inside the container.
+      # On Linux VMs this resolves to the Docker host when using host-gateway.
+      NUXT_API_BASE_URL: ${NUXT_API_BASE_URL:-http://host.docker.internal:5000}
+      # Keep empty so browser calls always stay on same-origin (/api via Nuxt BFF).
+      NUXT_PUBLIC_API_BASE_URL: ${NUXT_PUBLIC_API_BASE_URL:-}
     # Required on Linux so host.docker.internal resolves correctly.
     extra_hosts:
       - "host.docker.internal:host-gateway"

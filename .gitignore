@@ -18,6 +18,9 @@ logs
 .fleet
 .idea
 
+# Tar files
+*.tar
+*.tar.gz
 # Local env files
 .env
 .env.*

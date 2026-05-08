@@ -18,11 +18,13 @@
     <DashboardStatCard
       label="Access Level"
       :value="accessLevel"
+      :value-class="accessLevelClass"
     />
   </section>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import DashboardStatCard from './DashboardStatCard.vue'
 
 const props = defineProps({
@@ -66,6 +68,13 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+})
+
+const accessLevelClass = computed(() => {
+  const value = String(props.accessLevel || '').toLowerCase()
+  if (value.includes('admin')) return 'access-admin'
+  if (value.includes('user')) return 'access-user'
+  return ''
 })
 </script>
 

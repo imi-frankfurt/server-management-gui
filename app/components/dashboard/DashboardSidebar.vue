@@ -2,7 +2,8 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo">
-        <h2>IMI Portal</h2>
+        <img src="/logo.png" alt="IMI Server Verwaltung" class="logo-mark" />
+        <h2>IMI Server Verwaltung</h2>
       </div>
     </div>
 
@@ -109,12 +110,24 @@ const handleLogout = () => {
 
 .logo {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 12px;
+}
+
+.logo-mark {
+  width: 100%;
+  max-height: 70px;
+  object-fit: contain;
+  background: transparent;
+  padding: 0;
 }
 
 .logo h2 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
+  text-align: center;
+  margin: 0;
 }
 
 .sidebar-nav {
@@ -223,6 +236,15 @@ const handleLogout = () => {
   .user-info,
   .logout-btn {
     display: none;
+  }
+
+  .logo {
+    justify-content: center;
+  }
+
+  .logo-mark {
+    width: 100%;
+    padding: 4px;
   }
 }
 </style>

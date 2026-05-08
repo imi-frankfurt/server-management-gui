@@ -72,6 +72,15 @@ export default defineNuxtConfig({
       }
     }
   },
+
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+      ]
+    }
+  },
   
   runtimeConfig: {
     // Server-only — never exposed to the browser

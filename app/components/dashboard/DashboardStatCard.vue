@@ -2,7 +2,7 @@
   <div class="stat-card">
     <div class="stat-content">
       <p class="stat-label">{{ label }}</p>
-      <h3 class="stat-value">{{ value }}</h3>
+      <h3 :class="['stat-value', valueClass]">{{ value }}</h3>
     </div>
   </div>
 </template>
@@ -16,6 +16,10 @@ const props = defineProps({
   value: {
     type: [String, Number],
     required: true
+  },
+  valueClass: {
+    type: String,
+    default: ''
   }
 })
 </script>
@@ -48,5 +52,13 @@ const props = defineProps({
   font-size: 28px;
   font-weight: 700;
   color: #e5e7eb;
+}
+
+.stat-value.access-admin {
+  color: #34d399;
+}
+
+.stat-value.access-user {
+  color: #60a5fa;
 }
 </style>

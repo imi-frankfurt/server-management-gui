@@ -7,14 +7,28 @@ export default defineEventHandler(async (event) => {
 
   const method = getMethod(event)
   const query = getQuery(event)
-  const csrfToken = getRequestHeader(event, 'x-csrf-token') ?? ''
+  const requestCookies = getRequestHeader(event, 'cookie') ?? ''
+  
+  // Extract CSRF directly from cookie to guarantee match with backend
+  const csrfCookieValue = requestCookies
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith('csrf_token='))
+    ?.split('=')
+    .slice(1)
+    .join('=')
+
+  let csrfToken = getRequestHeader(event, 'x-csrf-token') ?? ''
+  if (!csrfToken && csrfCookieValue) {
+    csrfToken = decodeURIComponent(csrfCookieValue)
+  }
 
   const fetchOptions = {
     method,
     params: Object.keys(query).length > 0 ? query : undefined,
     headers: {
       'content-type': getRequestHeader(event, 'content-type') ?? 'application/json',
-      cookie: getRequestHeader(event, 'cookie') ?? '',
+      cookie: requestCookies,
       ...(csrfToken ? { 'x-csrf-token': csrfToken } : {})
     },
     ignoreResponseError: true

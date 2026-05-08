@@ -12,7 +12,7 @@ export const useAuth = () => {
 
   const getAuthHeaders = () => (import.meta.server ? useRequestHeaders(['cookie']) : {})
 
-  const refreshToken = async () => {
+  const refreshToken = async (retryOn403 = true) => {
     if (!sessionActive.value) {
       return false
     }
@@ -21,13 +21,13 @@ export const useAuth = () => {
 
     refreshPromise = (async () => {
       try {
-        const { getCsrfToken, setCsrfToken } = useCsrf()
+        const { getCsrfToken, setCsrfToken, syncFromCookie } = useCsrf()
+        const currentCsrf = syncFromCookie()
 
         const response = await $fetch(refreshUrl, {
           method: 'POST',
           headers: {
-            ...getAuthHeaders(),
-            ...(getCsrfToken() ? { 'X-CSRF-Token': getCsrfToken() } : {})
+            ...getAuthHeaders()
           },
           credentials: 'include'
         })
@@ -38,19 +38,46 @@ export const useAuth = () => {
 
         return true
       } catch (error) {
+        if (error.status === 403 && retryOn403) {
+          console.log('[Auth] 403 CSRF detected, fetching clean session...')
+          const headers = getAuthHeaders()
+          const { setCsrfToken, syncFromCookie } = useCsrf()
+          try {
+            // First we try to grab a fresh token via session
+            const sessionData = await $fetch(sessionUrl, { headers, credentials: 'include' })
+            if (sessionData && sessionData.csrf_token) {
+              setCsrfToken(sessionData.csrf_token)
+            }
+          } catch (e) {
+            if (e.data && e.data.csrf_token) {
+              setCsrfToken(e.data.csrf_token)
+            }
+          }
+          
+          // Small delay to let browser process any Set-Cookie headers
+          await new Promise(resolve => setTimeout(resolve, 100))
+          
+          syncFromCookie()
+
+          refreshPromise = null
+          return await refreshToken(false) // retry once without 403 safety net
+        }
         console.warn('Refresh fehlgeschlagen:', error.status)
         sessionActive.value = false
+        const { clearCsrfToken } = useCsrf()
         clearCsrfToken()
         return false
       } finally {
-        refreshPromise = null
+        if (retryOn403) {
+          refreshPromise = null
+        }
       }
     })()
 
     return refreshPromise
   }
 
-  const fetchSession = async () => {
+  const fetchSession = async (retryOn401 = true) => {
     const headers = getAuthHeaders()
     const { setCsrfToken } = useCsrf()
     try {
@@ -63,16 +90,11 @@ export const useAuth = () => {
       sessionActive.value = Boolean(session && (session.authenticated || session.user))
       return session
     } catch (error) {
-      if (error.status === 401) {
+      if (error.status === 401 && retryOn401) {
         if (sessionActive.value) {
           const success = await refreshToken()
           if (success) {
-            const session = await $fetch(sessionUrl, { headers, credentials: 'include' })
-            if (session && session.csrf_token) {
-              setCsrfToken(session.csrf_token)
-            }
-            sessionActive.value = Boolean(session && (session.authenticated || session.user))
-            return session
+            return await fetchSession(false)
           }
         }
 
@@ -108,14 +130,11 @@ export const useAuth = () => {
   }
 
   const logout = async () => {
-    const { getCsrfToken } = useCsrf()
-
     try {
       await $fetch(logoutUrl, {
         method: 'POST',
         headers: {
-          ...getAuthHeaders(),
-          ...(getCsrfToken() ? { 'X-CSRF-Token': getCsrfToken() } : {})
+          ...getAuthHeaders()
         },
         credentials: 'include'
       })

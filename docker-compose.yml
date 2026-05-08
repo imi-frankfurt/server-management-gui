@@ -7,11 +7,16 @@ services:
       - "${FRONTEND_BIND_ADDRESS:-127.0.0.1}:${FRONTEND_PORT:-3000}:3000"
     environment:
       # Backend URL used by Nuxt server routes inside the container.
-      # On Linux VMs this resolves to the Docker host when using host-gateway.
-      NUXT_API_BASE_URL: ${NUXT_API_BASE_URL:-http://host.docker.internal:5000}
+      # Points to API container on the shared Docker network (or subdomain in prod).
+      NUXT_API_BASE_URL: ${NUXT_API_BASE_URL:-http://192.168.212.2:5000}
       # Keep empty so browser calls always stay on same-origin (/api via Nuxt BFF).
       NUXT_PUBLIC_API_BASE_URL: ${NUXT_PUBLIC_API_BASE_URL:-}
-    # Required on Linux so host.docker.internal resolves correctly.
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     restart: unless-stopped
+    networks:
+      default:
+        ipv4_address: ${FRONTEND_IP:-192.168.212.10}
+
+networks:
+  default:
+    external: true
+    name: imi-network

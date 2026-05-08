@@ -43,6 +43,7 @@
         <thead>
           <tr>
             <th>#</th>
+            <th>Actor</th>
             <th>Action</th>
             <th>Resource</th>
             <th>Details</th>
@@ -51,10 +52,11 @@
         </thead>
         <tbody>
           <tr v-if="filteredLogs.length === 0">
-            <td colspan="5" class="no-results">No logs match the current filters.</td>
+            <td colspan="6" class="no-results">No logs match the current filters.</td>
           </tr>
           <tr v-for="log in filteredLogs" :key="log.id">
             <td class="id-cell">{{ log.id }}</td>
+            <td class="actor-cell">{{ log.actor || 'System' }}</td>
             <td>
               <span :class="['action-badge', `action-${log.action}`]">
                 {{ log.action }}
@@ -384,6 +386,12 @@ const formatDateTime = (dateString) => {
   color: #6b7280;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
+}
+
+.actor-cell {
+  color: #e5e7eb;
+  font-weight: 500;
+  font-size: 13px;
 }
 
 /* Action badges */

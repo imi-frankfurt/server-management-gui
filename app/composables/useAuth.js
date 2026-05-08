@@ -21,9 +21,9 @@ export const useAuth = () => {
 
     refreshPromise = (async () => {
       try {
-        const { getCsrfToken } = useCsrf()
+        const { getCsrfToken, setCsrfToken } = useCsrf()
 
-        await $fetch(refreshUrl, {
+        const response = await $fetch(refreshUrl, {
           method: 'POST',
           headers: {
             ...getAuthHeaders(),
@@ -31,6 +31,10 @@ export const useAuth = () => {
           },
           credentials: 'include'
         })
+        
+        if (response && response.csrf_token) {
+          setCsrfToken(response.csrf_token)
+        }
 
         return true
       } catch (error) {
@@ -48,8 +52,13 @@ export const useAuth = () => {
 
   const fetchSession = async () => {
     const headers = getAuthHeaders()
+    const { setCsrfToken } = useCsrf()
     try {
       const session = await $fetch(sessionUrl, { headers, credentials: 'include' })
+
+      if (session && session.csrf_token) {
+        setCsrfToken(session.csrf_token)
+      }
 
       sessionActive.value = Boolean(session && (session.authenticated || session.user))
       return session
@@ -59,6 +68,9 @@ export const useAuth = () => {
           const success = await refreshToken()
           if (success) {
             const session = await $fetch(sessionUrl, { headers, credentials: 'include' })
+            if (session && session.csrf_token) {
+              setCsrfToken(session.csrf_token)
+            }
             sessionActive.value = Boolean(session && (session.authenticated || session.user))
             return session
           }

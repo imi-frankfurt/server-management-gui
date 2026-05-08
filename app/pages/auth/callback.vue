@@ -35,13 +35,18 @@ onMounted(async () => {
 
     const redirectUri = window.location.origin + '/auth/callback'
 
-    await $fetch('/api/auth/exchange-code', {
+    const { setCsrfToken } = useCsrf()
+    const response = await $fetch('/api/auth/exchange-code', {
       method: 'POST',
       headers: {
         ...(getCsrfToken() ? { 'X-CSRF-Token': getCsrfToken() } : {})
       },
       body: { code, redirect_uri: redirectUri }
     })
+    
+    if (response && response.csrf_token) {
+      setCsrfToken(response.csrf_token)
+    }
 
     await navigateTo('/dashboard')
   } catch (err) {

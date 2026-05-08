@@ -29,3 +29,5 @@ logs
 
 # mkcert certificates
 *.pem
+deploy/
+deploy/nginx/imi-frontend.conf

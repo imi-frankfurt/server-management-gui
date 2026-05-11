@@ -2,7 +2,7 @@
   <section class="content-section">
     <div class="section-header">
       <h2>Blacklist</h2>
-      <button @click="$emit('add-blacklist')" class="btn-add">+ Add to Blacklist</button>
+      <button v-if="isAdmin" @click="$emit('add-blacklist')" class="btn-add">+ Add to Blacklist</button>
     </div>
     <div v-if="loading" class="loading-state">
         <div class="spinner"></div>

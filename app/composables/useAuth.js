@@ -21,17 +21,18 @@ export const useAuth = () => {
 
     refreshPromise = (async () => {
       try {
-        const { getCsrfToken, setCsrfToken } = useCsrf()
+        const { getCsrfToken, setCsrfToken, syncFromCookie } = useCsrf()
 
         const response = await $fetch(refreshUrl, {
           method: 'POST',
           headers: {
-            ...getAuthHeaders(),
-            ...(getCsrfToken() ? { 'X-CSRF-Token': getCsrfToken() } : {})
+            ...getAuthHeaders()
           },
           credentials: 'include'
         })
         
+        syncFromCookie()
+
         if (response && response.csrf_token) {
           setCsrfToken(response.csrf_token)
         }
@@ -52,9 +53,11 @@ export const useAuth = () => {
 
   const fetchSession = async () => {
     const headers = getAuthHeaders()
-    const { setCsrfToken } = useCsrf()
+    const { setCsrfToken, syncFromCookie } = useCsrf()
     try {
       const session = await $fetch(sessionUrl, { headers, credentials: 'include' })
+
+      syncFromCookie()
 
       if (session && session.csrf_token) {
         setCsrfToken(session.csrf_token)
@@ -68,6 +71,9 @@ export const useAuth = () => {
           const success = await refreshToken()
           if (success) {
             const session = await $fetch(sessionUrl, { headers, credentials: 'include' })
+            
+            syncFromCookie()
+
             if (session && session.csrf_token) {
               setCsrfToken(session.csrf_token)
             }

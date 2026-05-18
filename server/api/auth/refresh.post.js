@@ -2,18 +2,6 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const requestCookies = getRequestHeader(event, 'cookie') ?? ''
   const requestBody = await readBody(event).catch(() => undefined)
-  const requestCsrfTokenHeader = getRequestHeader(event, 'x-csrf-token') ?? ''
-
-  // Fallback for double-submit CSRF: use csrf_token cookie if header is missing.
-  const csrfCookieValue = requestCookies
-    .split(';')
-    .map((part) => part.trim())
-    .find((part) => part.startsWith('csrf_token='))
-    ?.split('=')
-    .slice(1)
-    .join('=')
-
-  const requestCsrfToken = requestCsrfTokenHeader || (csrfCookieValue ? decodeURIComponent(csrfCookieValue) : '')
 
   const refreshPaths = [
     '/auth/refresh',
@@ -35,8 +23,7 @@ export default defineEventHandler(async (event) => {
       body: requestBody,
       headers: {
         'content-type': getRequestHeader(event, 'content-type') ?? 'application/json',
-        cookie: requestCookies,
-        ...(requestCsrfToken ? { 'x-csrf-token': requestCsrfToken } : {})
+        cookie: requestCookies
       },
       ignoreResponseError: true
     })

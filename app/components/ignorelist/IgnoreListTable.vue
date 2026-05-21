@@ -1,12 +1,12 @@
 <template>
   <section class="content-section">
     <div class="section-header">
-      <h2>Blacklist</h2>
-      <button v-if="isAdmin" @click="$emit('add-blacklist')" class="btn-add">+ Add to Blacklist</button>
+      <h2>Ignore List</h2>
+      <button v-if="isAdmin" @click="$emit('add-ignore-list')" class="btn-add">+ Add to Ignore List</button>
     </div>
     <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
-        <p>Loading blacklist...</p>
+        <p>Loading Ignore List...</p>
     </div>
 
     <div v-else-if="error" class="error-state">
@@ -14,7 +14,7 @@
         <button @click="$emit('retry')" class="btn-secondary">Retry</button>
     </div>
 
-    <div v-else-if="blacklists && blacklists.length > 0" class="table-container">
+    <div v-else-if="ignoreLists && ignoreLists.length > 0" class="table-container">
       <table class="data-table">
         <thead>
           <tr>
@@ -26,7 +26,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="group in groupedBlacklists" :key="group.username">
+          <tr v-for="group in groupedIgnoreLists" :key="group.username">
             <td>{{ group.username }}</td>
             <td>
                 <span v-if="group.totalServers > 0" class="key-count">
@@ -38,10 +38,10 @@
             <td class="date-text">{{ formatDate(group.updated_at) }}</td>
             <td>
                 <div class="action-buttons">
-                    <button @click="$emit('view-blacklist', group.firstEntry)" class="action-btn view" title="View">
+                    <button @click="$emit('view-ignore-list', group.firstEntry)" class="action-btn view" title="View">
                         View
                     </button>
-                    <button v-if="isAdmin" @click="$emit('assign-blacklist', group.firstEntry)" class="action-btn assign" title="Assign">
+                    <button v-if="isAdmin" @click="$emit('assign-ignore-list', group.firstEntry)" class="action-btn assign" title="Assign">
                         Assign
                     </button>
                 </div>
@@ -52,8 +52,8 @@
     </div>
 
     <div v-else class="empty-state">
-      <h3>No blacklisted items found</h3>
-      <p>There are no items in the blacklist.</p>
+      <h3>No Ignore Listed items found</h3>
+      <p>There are no items in the Ignore List.</p>
     </div>
   </section>
 </template>
@@ -63,10 +63,10 @@
 <script setup>
 import { computed } from 'vue'
 
-defineEmits(['add-blacklist', 'view-blacklist', 'assign-blacklist', 'retry'])
+defineEmits(['add-ignore-list', 'view-ignore-list', 'assign-ignore-list', 'retry'])
 
 const props = defineProps({
-  blacklists: {
+  ignoreLists: {
     type: Array,
     default: () => []
   },
@@ -85,9 +85,9 @@ const props = defineProps({
 })
 
 // Merge entries with the same username into one row
-const groupedBlacklists = computed(() => {
+const groupedIgnoreLists = computed(() => {
   const map = new Map()
-  for (const entry of (props.blacklists || [])) {
+  for (const entry of (props.ignoreLists || [])) {
     if (map.has(entry.username)) {
       const group = map.get(entry.username)
       group.totalServers += (entry.servers?.length || 0)

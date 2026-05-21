@@ -11,7 +11,7 @@
     <main class="main-content">
       <header class="dashboard-header">
         <div class="header-left">
-          <h1>{{ activeTab === 'users' ? 'Users' : activeTab === 'blacklist' ? 'Blacklist' : activeTab === 'logs' ? 'Activity Logs' : 'Dashboard' }}</h1>
+          <h1>{{ activeTab === 'users' ? 'Users' : activeTab === 'ignorelist' ? 'Ignore List' : activeTab === 'logs' ? 'Activity Logs' : 'Dashboard' }}</h1>
           <p class="subtitle">Welcome back, {{ userName }}</p>
         </div>
       </header>
@@ -35,13 +35,13 @@
 
       />
 
-      <DashboardStats v-if="activeTab === 'blacklist'"
-        :total-servers="new Set(blacklists?.map(b => b.username)).size || 0"
-        :active-servers="blacklists?.reduce((sum, b) => sum + (b.servers?.length || 0), 0) || 0"
+      <DashboardStats v-if="activeTab === 'ignorelist'"
+        :total-servers="new Set(ignoreLists?.map(i => i.username)).size || 0"
+        :active-servers="ignoreLists?.reduce((sum, i) => sum + (i.servers?.length || 0), 0) || 0"
         :total-users="0"
         :access-level="userRoles"
-        label1="Total Blacklisted Users"
-        label2="Total Blacklisted Servers"
+        label1="Total Ignored Users"
+        label2="Total Ignored Servers"
         label3=""
         :show-card3="false"
         > </DashboardStats>
@@ -61,15 +61,15 @@
         @retry="fetchServers"
       />
 
-      <BlackListTable v-if="activeTab === 'blacklist'"
-        :blacklists="blacklists"
+      <IgnoreListTable v-if="activeTab === 'ignorelist'"
+        :ignoreLists="ignoreLists"
         :loading="loading"
         :error="error"
         :is-admin="isAdmin"
-        @add-blacklist="showAddBlacklistModal = true"
-        @view-blacklist="viewBlacklist"
-        @assign-blacklist="assignBlacklist"
-        @retry="fetchBlacklist"
+        @add-ignore-list="showAddIgnorelistModal = true"
+        @view-ignore-list="viewIgnorelist"
+        @assign-ignore-list="assignIgnorelist"
+        @retry="fetchIgnoreList"
       />
 
 
@@ -147,31 +147,31 @@
       @close="showViewUserModal = false"
     />
 
-    <AddBlackListModal
-      :show="showAddBlacklistModal"
+    <AddIgnoreListModal
+      :show="showAddIgnorelistModal"
       :servers="servers"
-      @close="showAddBlacklistModal = false"
-      @added="fetchBlacklist"
+      @close="showAddIgnorelistModal = false"
+      @added="fetchIgnoreList"
     />
 
-    <ViewBlackListModal
-      :show="showViewBlacklistModal"
-      :user="selectedBlacklist"
+    <ViewIgnoreListModal
+      :show="showViewIgnorelistModal"
+      :user="selectedIgnorelist"
       :is-admin="isAdmin"
-      :blacklists="blacklists"
+      :ignoreLists="ignoreLists"
       :servers="servers"
-      @view-server="viewServerFromBlacklist"
-      @close="showViewBlacklistModal = false"
-      @removed="fetchBlacklist"
+      @view-server="viewServerFromIgnorelist"
+      @close="showViewIgnorelistModal = false"
+      @removed="fetchIgnoreList"
     />
     
-    <AssignBlackListModal
-      :show="showAssignBlacklistModal"
-      :user="selectedBlacklistForAssign"
+    <AssignIgnoreListModal
+      :show="showAssignIgnorelistModal"
+      :user="selectedIgnorelistForAssign"
       :servers="servers"
-      :blacklists="blacklists"
-      @close="showAssignBlacklistModal = false"
-      @assigned="fetchBlacklist"
+      :ignoreLists="ignoreLists"
+      @close="showAssignIgnorelistModal = false"
+      @assigned="fetchIgnoreList"
     />
 
     <AssignUserModal
@@ -189,7 +189,7 @@ import { ref, computed, onMounted } from 'vue'
 import { DashboardSidebar, DashboardStats } from '~/components/dashboard'
 import { ServerTable, AddServerModal, ViewServerModal, EditServerModal, DeleteServerModal, ServerUsersModal, AssignUserModal } from '~/components/server'
 import { UserTable, ViewUserModal, AddUsersModal } from '~/components/user'
-import { BlackListTable, ViewBlackListModal, AddBlackListModal, AssignBlackListModal } from '~/components/blacklist'
+import { IgnoreListTable, ViewIgnoreListModal, AddIgnoreListModal, AssignIgnoreListModal } from '~/components/ignorelist'
 import { ActivityLogsTable } from '~/components/log'
 
 definePageMeta({
@@ -203,7 +203,7 @@ const { apiRequest } = useApi()
 const activeTab = ref('dashboard')
 const servers = ref(null)
 const users = ref(null)
-const blacklists = ref(null)
+const ignoreLists = ref(null)
 const logs = ref(null)
 const activityStatus = ref(null)
 const loading = ref(true)
@@ -219,15 +219,15 @@ const showServerUsersModal = ref(false)
 const showEditServerModal = ref(false)
 const showDeleteServerModal = ref(false)
 const showViewUserModal = ref(false)
-const showAddBlacklistModal = ref(false)
-const showViewBlacklistModal = ref(false)
-const showAssignBlacklistModal = ref(false)
+const showAddIgnorelistModal = ref(false)
+const showViewIgnorelistModal = ref(false)
+const showAssignIgnorelistModal = ref(false)
 const showAssignUserModal = ref(false)
 const selectedServer = ref(null)
 const selectedServerForUsers = ref(null)
 const selectedUser = ref(null)
-const selectedBlacklist = ref(null)
-const selectedBlacklistForAssign = ref(null)
+const selectedIgnorelist = ref(null)
+const selectedIgnorelistForAssign = ref(null)
 const tokenData = ref(null)
 
 // Computed
@@ -372,14 +372,14 @@ const fetchLogs = async () => {
   }
 }
 
-const fetchBlacklist = async () => {
+const fetchIgnoreList = async () => {
   try {
     loading.value = true
     error.value = ''
-    blacklists.value = await apiRequest('/api/blacklist')
+    ignoreLists.value = await apiRequest('/api/ignorelist')
   } catch (err) {
-    console.error('Failed to load blacklist:', err)
-    error.value = err.message || 'Failed to load blacklist'
+    console.error('Failed to load ignore list:', err)
+    error.value = err.message || 'Failed to load ignore list'
   } finally {
     loading.value = false
   }
@@ -515,20 +515,20 @@ const viewUser = (user) => {
   showViewUserModal.value = true
 }
 
-const viewBlacklist = (blacklist) => {
-  selectedBlacklist.value = blacklist
-  showViewBlacklistModal.value = true
+const viewIgnorelist = (ignorelist) => {
+  selectedIgnorelist.value = ignorelist
+  showViewIgnorelistModal.value = true
 }
 
-const viewServerFromBlacklist = (server) => {
+const viewServerFromIgnorelist = (server) => {
   if (!server) return
-  showViewBlacklistModal.value = false
+  showViewIgnorelistModal.value = false
   viewServer(server)
 }
 
-const assignBlacklist = (blacklist) => {
-  selectedBlacklistForAssign.value = blacklist
-  showAssignBlacklistModal.value = true
+const assignIgnorelist = (ignorelist) => {
+  selectedIgnorelistForAssign.value = ignorelist
+  showAssignIgnorelistModal.value = true
 }
 
 const assignUser = (user) => {
@@ -549,7 +549,7 @@ onMounted(async () => {
   await fetchActivityStatus()
   await fetchServers()
   await fetchUsers()
-  await fetchBlacklist()
+  await fetchIgnoreList()
   await fetchLogs()
 })
 </script>

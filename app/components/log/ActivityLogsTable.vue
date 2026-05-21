@@ -428,7 +428,7 @@ const formatDateTime = (dateString) => {
 .resource-user            { color: #a78bfa; border-color: rgba(139, 92, 246, 0.3); background: rgba(139, 92, 246, 0.08); }
 .resource-user_assignment { color: #34d399; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.08); }
 .resource-user_unassign   { color: #fbbf24; border-color: rgba(245, 158, 11, 0.3);  background: rgba(245, 158, 11, 0.08); }
-.resource-blacklist       { color: #f87171; border-color: rgba(239, 68, 68, 0.3);   background: rgba(239, 68, 68, 0.08); }
+.resource-ignorelist       { color: #f87171; border-color: rgba(239, 68, 68, 0.3);   background: rgba(239, 68, 68, 0.08); }
 
 /* Details */
 .details-cell {

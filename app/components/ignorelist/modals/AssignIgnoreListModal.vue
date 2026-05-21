@@ -7,7 +7,7 @@
       </div>
       <div class="modal-body">
         <p class="modal-description">
-          Select servers to blacklist this user on. Already blacklisted servers are marked.
+          Select servers to add to Ignore List this user on. Already ignored servers are marked.
         </p>
 
         <div v-if="availableServers.length > 0" class="servers-list">
@@ -15,13 +15,13 @@
             v-for="server in availableServers"
             :key="server.id"
             class="server-item"
-            :class="{ 'already-assigned': isBlacklisted(server.id) }"
+            :class="{ 'already-assigned': isIgnored(server.id) }"
           >
             <label class="server-label">
               <input
                 type="checkbox"
-                :checked="isBlacklisted(server.id)"
-                :disabled="isBlacklisted(server.id) || assigning"
+                :checked="isIgnored(server.id)"
+                :disabled="isIgnored(server.id) || assigning"
                 @change="toggleServer(server.id)"
                 class="server-checkbox"
               />
@@ -30,8 +30,8 @@
                   <strong>{{ server.name }}</strong>
                   <code class="ip-address">{{ server.ip }}</code>
                 </div>
-                <span v-if="isBlacklisted(server.id)" class="assigned-badge">
-                  Already Blacklisted
+                <span v-if="isIgnored(server.id)" class="assigned-badge">
+                  Already Ignored
                 </span>
               </div>
             </label>
@@ -71,7 +71,7 @@ const props = defineProps({
   show: { type: Boolean, default: false },
   user: { type: Object, default: null },
   servers: { type: Array, default: () => [] },
-  blacklists: { type: Array, default: () => [] }
+  ignoreLists: { type: Array, default: () => [] }
 })
 
 const emit = defineEmits(['close', 'assigned'])
@@ -82,17 +82,17 @@ const selectedServers = ref([])
 
 const availableServers = computed(() => props.servers || [])
 
-// IDs of servers this user is already blacklisted on
-const blacklistedServerIds = computed(() => {
+// IDs of servers this user is already ignored on
+const ignoredServerIds = computed(() => {
   if (!props.user?.username) return []
-  const userEntries = props.blacklists.filter(b => b.username === props.user.username)
-  const blacklistedNames = new Set(userEntries.flatMap(e => e.servers || []))
+  const userEntries = props.ignoreLists.filter(b => b.username === props.user.username)
+  const ignoredNames = new Set(userEntries.flatMap(e => e.servers || []))
   return props.servers
-    .filter(s => blacklistedNames.has(s.name))
+    .filter(s => ignoredNames.has(s.name))
     .map(s => s.id)
 })
 
-const isBlacklisted = (serverId) => blacklistedServerIds.value.includes(serverId)
+const isIgnored = (serverId) => ignoredServerIds.value.includes(serverId)
 
 const toggleServer = (serverId) => {
   const index = selectedServers.value.indexOf(serverId)
@@ -108,7 +108,7 @@ const handleAssign = async () => {
   try {
     assigning.value = true
     for (const serverId of selectedServers.value) {
-      await apiRequest('/api/blacklist', {
+      await apiRequest('/api/ignorelist', {
         method: 'POST',
         body: { username: props.user.username, server_id: serverId }
       })

@@ -7,7 +7,7 @@
       </div>
       <div class="modal-body">
         <div v-if="userEntries.length === 0" class="error-state">
-          <p>No blacklist entries found for this user.</p>
+          <p>No Ignore List entries found for this user.</p>
         </div>
 
         <div v-else>
@@ -17,12 +17,12 @@
           </div>
 
           <div class="detail-group">
-            <label>Blacklisted Since</label>
+            <label>Ignored Since</label>
             <div class="detail-value">{{ formatDate(userEntries[0]?.created_at) }}</div>
           </div>
 
           <div class="detail-group">
-            <label>Blacklisted Servers ({{ serverList.length }})</label>
+            <label>Ignored Servers ({{ serverList.length }})</label>
             <div v-if="serverList.length > 0" class="servers-list">
               <div
                 v-for="server in serverList"
@@ -70,7 +70,7 @@ const props = defineProps({
   show: { type: Boolean, default: false },
   user: { type: Object, default: null },
   isAdmin: { type: Boolean, default: false },
-  blacklists: { type: Array, default: () => [] },
+  ignoreLists: { type: Array, default: () => [] },
   servers: { type: Array, default: () => [] }
 })
 
@@ -94,10 +94,10 @@ const formatDate = (dateString) => {
   }
 }
 
-// All blacklist entries for this user across all servers
+// All ignore list entries for this user across all servers
 const userEntries = computed(() => {
-  if (!props.user?.username || !props.blacklists?.length) return []
-  return props.blacklists.filter(b => b.username === props.user.username)
+  if (!props.user?.username || !props.ignoreLists?.length) return []
+  return props.ignoreLists.filter(b => b.username === props.user.username)
 })
 
 // Flat list of { entryId, serverId, serverName } — one item per server per entry
@@ -116,19 +116,19 @@ const serverList = computed(() => {
 })
 
 const removeServerEntry = async (entryId, serverId, serverName) => {
-  if (!confirm(`Remove "${props.user?.username}" from "${serverName}" blacklist?`)) return
+  if (!confirm(`Remove "${props.user?.username}" from "${serverName}" ignore list?`)) return
   const key = `${entryId}-${serverName}`
   try {
     removingServer.value = key
-    await apiRequest('/api/blacklist/unassign', {
+    await apiRequest('/api/ignorelist/unassign', {
       method: 'DELETE',
       body: { username: props.user.username, server_id: serverId }
     })
     emit('removed')
     if (serverList.value.length === 1) emit('close')
   } catch (err) {
-    console.error('Failed to remove from blacklist:', err)
-    alert('Failed to remove from blacklist: ' + err.message)
+    console.error('Failed to remove from ignore list:', err)
+    alert('Failed to remove from ignore list: ' + err.message)
   } finally {
     removingServer.value = null
   }

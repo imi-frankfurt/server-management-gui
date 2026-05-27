@@ -2,7 +2,7 @@
   <div v-if="show" class="modal-overlay" @click="$emit('close')">
     <div class="modal-content" @click.stop>
       <div class="modal-header">
-        <h3>Add to Blacklist</h3>
+        <h3>Add to Ignore List</h3>
         <button @click="$emit('close')" class="close-btn">×</button>
       </div>
       <form @submit.prevent="handleSubmit" class="modal-body">
@@ -31,7 +31,7 @@
         <div class="modal-footer">
           <button type="button" @click="$emit('close')" class="btn-secondary">Cancel</button>
           <button type="submit" class="btn-primary" :disabled="submitting">
-            {{ submitting ? 'Adding...' : 'Add to Blacklist' }}
+            {{ submitting ? 'Adding...' : 'Add to Ignore List' }}
           </button>
         </div>
       </form>
@@ -65,7 +65,7 @@ const handleSubmit = async () => {
   try {
     submitting.value = true
     error.value = ''
-    await apiRequest('/api/blacklist', {
+    await apiRequest('/api/ignorelist', {
       method: 'POST',
       body: {
         username: formData.value.username,
@@ -75,7 +75,7 @@ const handleSubmit = async () => {
     emit('added')
     emit('close')
   } catch (err) {
-    error.value = err.message || 'Failed to add user to blacklist'
+    error.value = err.message || 'Failed to add user to Ignore List'
   } finally {
     submitting.value = false
   }

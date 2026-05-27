@@ -26,10 +26,10 @@
 
       <div
         class="nav-item"
-        :class="{ active: activeTab === 'blacklist' }"
-        @click="handleNavClick('blacklist')"
+        :class="{ active: activeTab === 'ignorelist' }"
+        @click="handleNavClick('ignorelist')"
         >
-        <span>Blacklist</span>
+        <span>Ignore List</span>
       </div>
 
       <div

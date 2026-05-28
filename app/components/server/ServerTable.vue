@@ -10,6 +10,15 @@
       </button>
     </div>
 
+    <div v-if="servers && servers.length > 0" class="filter-bar">
+      <input
+        v-model="search"
+        type="text"
+        class="filter-input"
+        placeholder="Search by name or IP address..."
+      />
+    </div>
+
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
       <p>Loading servers...</p>
@@ -20,21 +29,27 @@
       <button @click="$emit('retry')" class="btn-secondary">Retry</button>
     </div>
 
-    <div v-else-if="servers && servers.length > 0" class="table-container">
+    <div v-else-if="processedServers && processedServers.length > 0" class="table-container">
       <table class="data-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>IP Address</th>
+            <th @click="handleSort('name')" style="cursor: pointer; user-select: none;">
+              Name <span v-if="sortCol === 'name'">{{ sortAsc ? '↑' : '↓' }}</span>
+            </th>
+            <th @click="handleSort('ip')" style="cursor: pointer; user-select: none;">
+              IP Address <span v-if="sortCol === 'ip'">{{ sortAsc ? '↑' : '↓' }}</span>
+            </th>
             <th>Server ID</th>
             <th>Assigned Users</th>
             <th>Aliases</th>
-            <th>Updated</th>
+            <th @click="handleSort('updated_at')" style="cursor: pointer; user-select: none;">
+              Updated <span v-if="sortCol === 'updated_at'">{{ sortAsc ? '↑' : '↓' }}</span>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="server in servers" :key="server.id">
+          <tr v-for="server in processedServers" :key="server.id">
             <td>
               <strong>{{ server.name }}</strong>
             </td>
@@ -79,6 +94,11 @@
       </table>
     </div>
 
+    <div v-else-if="servers && servers.length > 0 && processedServers.length === 0" class="empty-state">
+      <h3>No servers found</h3>
+      <p>No servers match your search criteria.</p>
+    </div>
+
     <div v-else class="empty-state">
       <h3>No servers found</h3>
       <p>Add your first server to get started</p>
@@ -90,6 +110,8 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
+
 const props = defineProps({
   servers: {
     type: Array,
@@ -118,6 +140,51 @@ const props = defineProps({
 })
 
 defineEmits(['add-server', 'view-server', 'view-server-users', 'edit-server', 'delete-server', 'retry'])
+
+const search = ref('')
+const sortCol = ref('name')
+const sortAsc = ref(true)
+
+const processedServers = computed(() => {
+  let result = props.servers || []
+
+  if (search.value.trim() !== '') {
+    const term = search.value.toLowerCase()
+    result = result.filter(server => {
+      const name = (server.name || '').toLowerCase()
+      const ip = (server.ip || '').toLowerCase()
+      return name.includes(term) || ip.includes(term)
+    })
+  }
+
+  result = [...result].sort((a, b) => {
+    let valA = a[sortCol.value]
+    let valB = b[sortCol.value]
+
+    if (sortCol.value === 'updated_at') {
+      valA = valA ? new Date(valA).getTime() : 0
+      valB = valB ? new Date(valB).getTime() : 0
+    } else {
+      valA = (valA || '').toString().toLowerCase()
+      valB = (valB || '').toString().toLowerCase()
+    }
+
+    if (valA < valB) return sortAsc.value ? -1 : 1
+    if (valA > valB) return sortAsc.value ? 1 : -1
+    return 0
+  })
+
+  return result
+})
+
+const handleSort = (column) => {
+  if (sortCol.value === column) {
+    sortAsc.value = !sortAsc.value
+  } else {
+    sortCol.value = column
+    sortAsc.value = true
+  }
+}
 
 const getAssignedUserCount = (server) => {
   if (Array.isArray(props.users) && props.users.length > 0) {
@@ -367,5 +434,34 @@ const formatDateTime = (dateString) => {
 .empty-state h3 {
   color: #e5e7eb;
   margin-bottom: 8px;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.filter-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 8px 12px;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  color: #e5e7eb;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filter-input::placeholder {
+  color: #6b7280;
+}
+
+.filter-input:focus {
+  border-color: #3b82f6;
 }
 </style>

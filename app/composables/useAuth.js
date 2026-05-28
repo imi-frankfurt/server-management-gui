@@ -1,3 +1,6 @@
+const getRefreshPromise = () => import.meta.client ? window._authRefreshPromise : null
+const setRefreshPromise = (val) => { if (import.meta.client) window._authRefreshPromise = val }
+
 export const useAuth = () => {
   const { clearCsrfToken } = useCsrf()
 
@@ -7,7 +10,6 @@ export const useAuth = () => {
   const logoutUrl = '/api/auth/logout'
   const fallbackSessionUrl = '/api/auth/session'
 
-  let refreshPromise = null
   const sessionActive = useState('auth-session-active', () => false)
 
   const getAuthHeaders = () => (import.meta.server ? useRequestHeaders(['cookie']) : {})
@@ -17,9 +19,10 @@ export const useAuth = () => {
       return false
     }
 
-    if (refreshPromise) return refreshPromise
+    const currentPromise = getRefreshPromise()
+    if (currentPromise) return currentPromise
 
-    refreshPromise = (async () => {
+    const newPromise = (async () => {
       try {
         const { getCsrfToken, setCsrfToken, syncFromCookie } = useCsrf()
 
@@ -44,11 +47,12 @@ export const useAuth = () => {
         clearCsrfToken()
         return false
       } finally {
-        refreshPromise = null
+        setRefreshPromise(null)
       }
     })()
 
-    return refreshPromise
+    setRefreshPromise(newPromise)
+    return newPromise
   }
 
   const fetchSession = async () => {

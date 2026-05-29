@@ -54,6 +54,7 @@ export const useApi = () => {
 
       if (error?.status === 401 || error?.statusCode === 401) {
         if (!sessionActive.value) {
+          await logout()
           throw error
         }
 
@@ -68,7 +69,7 @@ export const useApi = () => {
         }
 
         await logout()
-        return
+        throw error
       }
       throw error
     }

@@ -52,7 +52,7 @@ td {
 }
 
 .ip-address,
-.keycloak-id {
+.public-key {
 	background: #1e293b !important;
 	color: var(--text-muted) !important;
 }

@@ -26,7 +26,7 @@
               <div class="user-avatar">{{ user.username?.substring(0, 2).toUpperCase() || '??' }}</div>
               <div class="user-details">
                 <strong>{{ user.username }}</strong>
-                <code class="keycloak-id">{{ user.keycloak_id }}</code>
+                <code class="public-key">{{ formatPubKey(user.pubKey) }}</code>
               </div>
               <label class="primary-select">
                 <input
@@ -81,6 +81,16 @@ const selectedUser = ref(null)
 const openUserModal = (user) => {
   selectedUser.value = user
   showUserModal.value = true
+}
+
+const formatPubKey = (pubKeyArray) => {
+  if (!pubKeyArray || !pubKeyArray.length) return 'No key assigned'
+  const keyStr = pubKeyArray[0]
+  const truncated = keyStr.length > 25 ? keyStr.substring(0, 25) + '...' : keyStr
+  if (pubKeyArray.length > 1) {
+    return `${truncated} (+${pubKeyArray.length - 1} keys)`
+  }
+  return truncated
 }
 
 const props = defineProps({
@@ -332,7 +342,7 @@ watch(() => props.server, (newServer) => {
   color: #e5e7eb;
 }
 
-.keycloak-id {
+.public-key {
   font-family: 'Courier New', monospace;
   font-size: 11px;
   color: #64748b;

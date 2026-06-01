@@ -25,7 +25,7 @@
         <thead>
           <tr>
             <th>Username</th>
-            <th>Keycloak ID</th>
+            <th>Public Key</th>
             <th>Servers</th>
             <th>Public Keys</th>
             <th>Created</th>
@@ -39,7 +39,7 @@
               <strong>{{ user.username }}</strong>
             </td>
             <td>
-              <code class="keycloak-id">{{ formatKeycloakId(user.keycloak_id) }}</code>
+              <code class="public-key">{{ formatPubKey(user.pubKey) }}</code>
             </td>
             <td>
               <div class="server-assignment">
@@ -126,6 +126,17 @@ const formatDate = (dateString) => {
     day: 'numeric' 
   })
 }
+
+const formatPubKey = (pubKeyArray) => {
+  if (!pubKeyArray || !pubKeyArray.length) return 'No key assigned'
+  const keyStr = pubKeyArray[0]
+  const truncated = keyStr.length > 25 ? keyStr.substring(0, 25) + '...' : keyStr
+  if (pubKeyArray.length > 1) {
+    return `${truncated} (+${pubKeyArray.length - 1} keys)`
+  }
+  return truncated
+}
+
 
 const getPrimaryServerCount = (user) => {
   if (!Array.isArray(user?.assigned_servers) || user.assigned_servers.length === 0) return 0
@@ -241,7 +252,7 @@ const formatDateTime = (dateString) => {
   background: #0f172a;
 }
 
-.keycloak-id {
+.public-key {
   background: #1e293b;
   padding: 4px 8px;
   border-radius: 4px;

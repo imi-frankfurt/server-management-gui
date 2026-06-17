@@ -3,7 +3,7 @@
     <div class="section-header">
       <div>
         <h2>Servers</h2>
-        <p class="section-meta">Last updated: {{ formatDateTime(lastUpdated) }}</p>
+        <p class="section-meta">Last updated: {{ formatDateTimeWithSeconds(lastUpdated) }}</p>
       </div>
       <button v-if="isAdmin" @click="$emit('add-server')" class="btn-primary">
         Add Server
@@ -111,6 +111,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useFormatter } from '~/composables/useFormatter'
+const { formatDate, formatDateTimeWithSeconds } = useFormatter()
 
 const props = defineProps({
   servers: {
@@ -196,36 +198,7 @@ const getAssignedUserCount = (server) => {
   return server.assigned_users_count ?? server.assigned_users?.length ?? 0
 }
 
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
 
-  try {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  } catch {
-    return dateString
-  }
-}
-
-const formatDateTime = (dateString) => {
-  if (!dateString) return 'N/A'
-
-  try {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    })
-  } catch {
-    return dateString
-  }
-}
 </script>
 
 <style scoped>

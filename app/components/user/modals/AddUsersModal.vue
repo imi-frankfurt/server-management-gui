@@ -20,14 +20,32 @@
         </div>
 
         <div class="primary-info" v-if="allUsers.length > 0">
-          <span class="primary-title">Primary user (admin)</span>
-          <span class="primary-value" v-if="selectedPrimaryUser">
-            {{ selectedPrimaryUser.username }}
-          </span>
-          <span class="primary-value empty" v-else>
-            No primary user selected
-          </span>
+          <div class="primary-text">
+             <span class="primary-title">Primary user (admin)</span>
+                <span class="primary-value" v-if="selectedPrimaryUser">
+                  {{ selectedPrimaryUser.username }}
+                </span>
+                <span class="primary-value empty" v-else>
+                  No primary user selected
+            </span>
+          </div>
+          <div class="action-buttons">
+            <button @click="$emit('close')" class="btn-secondary">Close</button>
+            <button
+              type="button"
+              @click="handleAssign"
+              class="btn-primary"
+              :disabled="!hasChanges || assigning"
+            >
+              {{ assigning
+                ? 'Saving...'
+                : `Apply${selectedUsers.length > 0 ? ` (+${selectedUsers.length} assign)` : ''}${unSelectedUsers.length > 0 ? ` (+${unSelectedUsers.length} unassign)` : ''}${isPrimarySelectionChanged ? ' (+primary)' : ''}`
+              }}
+            </button>
+          </div>  
         </div>
+
+        
 
         <div v-if="loading" class="loading-state">
           <div class="spinner"></div>
@@ -62,7 +80,7 @@
                 <div class="user-avatar">{{ user.username?.substring(0, 2).toUpperCase() || '??' }}</div>
                 <div class="user-details">
                   <strong>{{ user.username }}</strong>
-                  <code class="keycloak-id">{{ user.keycloak_id }}</code>
+                  <code class="public-key">{{ formatPubKey(user.pubKey) }}</code>
                 </div>
 
                 <label class="primary-select" v-if="canBePrimary(user)">
@@ -90,21 +108,6 @@
         <div v-else class="empty-state">
           <p>No users found.</p>
         </div>
-
-        <div class="modal-footer">
-          <button @click="$emit('close')" class="btn-secondary">Close</button>
-          <button
-            type="button"
-            @click="handleAssign"
-            class="btn-primary"
-            :disabled="!hasChanges || assigning"
-          >
-            {{ assigning
-              ? 'Saving...'
-              : `Apply${selectedUsers.length > 0 ? ` (+${selectedUsers.length} assign)` : ''}${unSelectedUsers.length > 0 ? ` (+${unSelectedUsers.length} unassign)` : ''}${isPrimarySelectionChanged ? ' (+primary)' : ''}`
-            }}
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -112,6 +115,8 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { useFormatter } from '~/composables/useFormatter'
+const { formatPubKey } = useFormatter()
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -392,6 +397,7 @@ watch(() => props.server, (newServer) => {
   top: 0;
   background: #111827;
   z-index: 10;
+  height: 81px;
 }
 
 .modal-header h3 {
@@ -429,13 +435,24 @@ watch(() => props.server, (newServer) => {
 
 .primary-info {
   display: flex;
-  gap: 12px;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
+  
   background: #0f172a;
   border: 1px solid #334155;
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+
+  position: sticky;
+  top: 81px;
+  z-index: 9;
+}
+
+.primary-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .primary-title {
@@ -483,17 +500,14 @@ watch(() => props.server, (newServer) => {
   color: #ef4444;
 }
 
-.modal-footer {
+.action-buttons {
   display: flex;
-  justify-content: flex-end;
-  padding-top: 20px;
-  margin-top: 24px;
-  border-top: 1px solid #334155;
+  align-items: center;
+  gap: 12px;
 }
 
 .btn-primary {
   padding: 10px 20px;
-  margin: 5px;
   background: #3b82f6;
   color: #fff;
   border: none;
@@ -514,7 +528,6 @@ watch(() => props.server, (newServer) => {
 
 .btn-secondary {
   padding: 10px 20px;
-  margin: 5px;
   background: #334155;
   color: #fff;
   border: none;
@@ -579,6 +592,7 @@ watch(() => props.server, (newServer) => {
 .user-details {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
 }
 
@@ -587,7 +601,7 @@ watch(() => props.server, (newServer) => {
   color: #e5e7eb;
 }
 
-.keycloak-id {
+.public-key{
   font-family: 'Courier New', monospace;
   font-size: 11px;
   color: #64748b;

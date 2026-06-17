@@ -18,7 +18,7 @@
 
           <div class="detail-group">
             <label>Ignored Since</label>
-            <div class="detail-value">{{ formatDate(userEntries[0]?.created_at) }}</div>
+            <div class="detail-value">{{ formatDateTime(userEntries[0]?.created_at) }}</div>
           </div>
 
           <div class="detail-group">
@@ -65,6 +65,8 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useApi } from '~/composables/useApi'
+const { formatDateTime } = useFormatter()
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -79,20 +81,6 @@ const emit = defineEmits(['close', 'removed', 'view-server'])
 const { apiRequest } = useApi()
 const removingServer = ref(null)
 
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  try {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  } catch {
-    return dateString
-  }
-}
 
 // All ignore list entries for this user across all servers
 const userEntries = computed(() => {

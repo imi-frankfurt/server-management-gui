@@ -26,7 +26,7 @@
               <div class="user-avatar">{{ user.username?.substring(0, 2).toUpperCase() || '??' }}</div>
               <div class="user-details">
                 <strong>{{ user.username }}</strong>
-                <code class="keycloak-id">{{ user.keycloak_id }}</code>
+                <code class="public-key">{{ formatPubKey(user.pubKey) }}</code>
               </div>
               <label class="primary-select">
                 <input
@@ -74,6 +74,8 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { ViewUserModal } from '~/components/user'
+import { useFormatter } from '~/composables/useFormatter'
+const { formatPubKey } = useFormatter()
 
 const showUserModal = ref(false)
 const selectedUser = ref(null)
@@ -82,6 +84,7 @@ const openUserModal = (user) => {
   selectedUser.value = user
   showUserModal.value = true
 }
+
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -332,7 +335,7 @@ watch(() => props.server, (newServer) => {
   color: #e5e7eb;
 }
 
-.keycloak-id {
+.public-key {
   font-family: 'Courier New', monospace;
   font-size: 11px;
   color: #64748b;

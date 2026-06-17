@@ -3,7 +3,7 @@
     <div class="section-header">
       <div>
         <h2>Users</h2>
-        <p class="section-meta">Last synced: {{ formatDateTime(lastSynced) }}</p>
+        <p class="section-meta">Last synced: {{ formatDateTimeWithSeconds(lastSynced) }}</p>
       </div>
       <button v-if="isAdmin" @click="$emit('sync-users')" class="btn-primary">
         Sync Users
@@ -25,7 +25,7 @@
         <thead>
           <tr>
             <th>Username</th>
-            <th>Keycloak ID</th>
+            <th>Public Key</th>
             <th>Servers</th>
             <th>Public Keys</th>
             <th>Created</th>
@@ -39,7 +39,7 @@
               <strong>{{ user.username }}</strong>
             </td>
             <td>
-              <code class="keycloak-id">{{ formatKeycloakId(user.keycloak_id) }}</code>
+              <code class="public-key">{{ formatPubKey(user.pubKey) }}</code>
             </td>
             <td>
               <div class="server-assignment">
@@ -109,44 +109,13 @@ const props = defineProps({
     default: false
   }
 })
+import { useFormatter } from '~/composables/useFormatter'
+const { formatPubKey, formatDate, formatDateTimeWithSeconds } = useFormatter()
 
 defineEmits(['sync-users', 'view-user', 'assign-user', 'retry'])
-
-const formatKeycloakId = (id) => {
-  if (!id) return 'N/A'
-  return id.length > 16 ? `${id.substring(0, 16)}...` : id
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'short', 
-    day: 'numeric' 
-  })
-}
-
 const getPrimaryServerCount = (user) => {
   if (!Array.isArray(user?.assigned_servers) || user.assigned_servers.length === 0) return 0
   return user.assigned_servers.filter((server) => server?.primary_user === true).length
-}
-
-const formatDateTime = (dateString) => {
-  if (!dateString) return 'N/A'
-
-  try {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    })
-  } catch {
-    return dateString
-  }
 }
 </script>
 
@@ -241,7 +210,7 @@ const formatDateTime = (dateString) => {
   background: #0f172a;
 }
 
-.keycloak-id {
+.public-key {
   background: #1e293b;
   padding: 4px 8px;
   border-radius: 4px;

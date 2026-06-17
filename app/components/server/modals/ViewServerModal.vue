@@ -35,7 +35,7 @@
         </div>
         <div class="detail-group">
           <label>Updated At</label>
-          <div class="detail-value">{{ formatDate(server?.updated_at) }}</div>
+          <div class="detail-value">{{ formatDateTime(server?.updated_at) }}</div>
         </div>
         <div class="modal-footer">
           <button @click="$emit('close')" class="btn-primary">Close</button>
@@ -46,6 +46,8 @@
 </template>
 
 <script setup>
+import { useFormatter } from '~/composables/useFormatter'
+const { formatDateTime } = useFormatter()
 const props = defineProps({
   show: {
     type: Boolean,
@@ -75,21 +77,6 @@ const assignedUserCount = computed(() => {
   return props.server?.assigned_users_count ?? props.server?.assigned_users?.length ?? 0
 })
 
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-
-  try {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  } catch {
-    return dateString
-  }
-}
 </script>
 
 <style scoped>

@@ -35,12 +35,12 @@
 
           <div class="detail-group">
             <label>Created At</label>
-            <div class="detail-value">{{ formatDate(userDetails.created_at) }}</div>
+            <div class="detail-value">{{ formatDateTime(userDetails.created_at) }}</div>
           </div>
 
           <div class="detail-group">
             <label>Updated At</label>
-            <div class="detail-value">{{ formatDate(userDetails.updated_at) }}</div>
+            <div class="detail-value">{{ formatDateTime(userDetails.updated_at) }}</div>
           </div>
 
           <div class="detail-group">
@@ -94,7 +94,8 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
-
+import { useFormatter } from '~/composables/useFormatter'
+const { formatDateTime } = useFormatter()
 const props = defineProps({
   show: {
     type: Boolean,
@@ -124,20 +125,6 @@ const adminAssignmentCount = computed(() => {
   return assignedServers.filter((server) => server?.primary_user === true).length
 })
 
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  try {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  } catch {
-    return dateString
-  }
-}
 
 const fetchUserDetails = async (keycloakId) => {
   try {

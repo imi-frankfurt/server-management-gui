@@ -75,7 +75,7 @@
                 <span v-if="index < parseDetails(log.details).length - 1" class="detail-divider"> · </span>
               </span>
             </td>
-            <td class="date-text">{{ formatDateTime(log.created_at) }}</td>
+            <td class="date-text">{{ formatDateTimeWithSeconds(log.created_at) }}</td>
           </tr>
         </tbody>
       </table>
@@ -90,7 +90,8 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-
+import { useFormatter } from '~/composables/useFormatter'
+const { formatDateTimeWithSeconds, formatResource } = useFormatter()
 const props = defineProps({
   logs: {
     type: Array,
@@ -158,26 +159,6 @@ const parseDetails = (details) => {
   })
 }
 
-const formatResource = (resource) => {
-  if (!resource) return resource
-  return resource.replace(/_/g, ' ')
-}
-
-const formatDateTime = (dateString) => {
-  if (!dateString) return 'N/A'
-  try {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    })
-  } catch {
-    return dateString
-  }
-}
 </script>
 
 <style scoped>

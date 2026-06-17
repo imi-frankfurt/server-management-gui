@@ -115,6 +115,8 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { useFormatter } from '~/composables/useFormatter'
+const { formatPubKey } = useFormatter()
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -205,17 +207,6 @@ const fetchAllUsers = async (serverId) => {
     loading.value = false
     assigning.value = false
   }
-}
-
-const formatPubKey = (pubKeyArray) => {
-  if (!pubKeyArray || !pubKeyArray.length) return 'No key assigned'
-  const keyStr = pubKeyArray[0]
-  // Extract up to 25 chars or so
-  const truncated = keyStr.length > 25 ? keyStr.substring(0, 25) + '...' : keyStr
-  if (pubKeyArray.length > 1) {
-    return `${truncated} (+${pubKeyArray.length - 1} keys)`
-  }
-  return truncated
 }
 
 const onAdminSelectionChange = (userId) => {

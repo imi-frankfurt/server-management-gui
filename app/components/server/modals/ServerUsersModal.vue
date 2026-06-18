@@ -28,7 +28,7 @@
                 <strong>{{ user.username }}</strong>
                 <code class="public-key">{{ formatPubKey(user.pubKey) }}</code>
               </div>
-              <label class="primary-select">
+              <label v-if="isAdmin" class="primary-select">
                 <input
                   type="radio"
                   name="server-users-primary"

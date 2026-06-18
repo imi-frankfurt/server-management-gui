@@ -50,13 +50,14 @@
 
         <div class="modal-footer">
           <button
+            v-if="isAdmin"
             @click="savePrimaryUser"
             class="btn-primary"
             :disabled="!hasPrimaryChange || !primaryUserId || savingPrimary"
           >
             {{ savingPrimary ? 'Saving...' : 'Save Primary User' }}
           </button>
-          <button @click="$emit('addUsers', server)" class="btn-primary">Edit Users</button>
+          <button v-if="isAdmin" @click="$emit('addUsers', server)" class="btn-primary">Edit Users</button>
           <button @click="$emit('close')" class="btn-secondary">Close</button>
         </div>
       </div>
@@ -88,7 +89,8 @@ const openUserModal = (user) => {
 
 const props = defineProps({
   show: { type: Boolean, default: false },
-  server: { type: Object, default: null }
+  server: { type: Object, default: null },
+  isAdmin: { type: Boolean, default: false }
 })
 
 defineEmits(['close', 'addUsers'])

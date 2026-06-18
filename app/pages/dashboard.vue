@@ -120,6 +120,7 @@
     <ServerUsersModal
       :show="showServerUsersModal"
       :server="selectedServerForUsers"
+      :isAdmin="isAdmin"
       @addUsers="viewAddUser"
       @close="showServerUsersModal = false"
     />

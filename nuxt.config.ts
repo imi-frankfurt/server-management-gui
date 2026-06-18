@@ -87,7 +87,9 @@ export default defineNuxtConfig({
     apiBaseUrl: runtimeEnv.NUXT_API_BASE_URL || runtimeEnv.NUXT_PUBLIC_API_BASE_URL || 'https://localhost:5000',
     public: {
       // Optional direct browser base URL (used by auth/session when needed)
-      apiBaseUrl: runtimeEnv.NUXT_PUBLIC_API_BASE_URL || ''
+      apiBaseUrl: runtimeEnv.NUXT_PUBLIC_API_BASE_URL || '',
+      // Keycloak base URL for account management
+      keycloakBaseUrl: runtimeEnv.KEYCLOAK_BASE_URL || 'https://login.imi-frankfurt.de/realms/imi/account'
     }
   }
 })

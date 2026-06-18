@@ -51,6 +51,12 @@
           <p class="user-name">{{ userName }}</p>
           <p class="user-role">{{ userRoles }}</p>
         </div>
+        <a v-if="keycloakAccountUrl" :href="keycloakAccountUrl" target="_blank" class="keycloak-account-link" title="Keycloak Account Settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
       </div>
       <button @click="handleLogout" class="logout-btn">
         Logout
@@ -60,7 +66,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRuntimeConfig } from '#imports'
+import { useApi } from '~/composables/useApi'
 
 const props = defineProps({
   userName: {
@@ -89,6 +97,32 @@ const handleNavClick = (tab) => {
 const handleLogout = () => {
   emit('logout')
 }
+
+const keycloakAccountUrl = ref('')
+onMounted(async () => {
+  try {
+    const { apiRequest } = useApi()
+    const loginData = await apiRequest('/api/auth/login-url')
+    
+    if (loginData && loginData.auth_url) {
+      const authUrl = loginData.auth_url
+      
+      // Parse the base URL from auth_url until /protocol
+      const protocolIndex = authUrl.indexOf('/protocol')
+      if (protocolIndex !== -1) {
+        const baseUrl = authUrl.substring(0, protocolIndex)
+        keycloakAccountUrl.value = `${baseUrl}/account`
+        // console.log('Derived Keycloak account URL:', keycloakAccountUrl.value)
+      }
+    }
+  } catch (error) {
+    // Fallback to default if anything goes wrong
+    console.warn('Could not derive Keycloak account URL, using default', error)
+    const config = useRuntimeConfig()
+    const keycloakBaseUrl = config.public.keycloakBaseUrl
+    keycloakAccountUrl.value = `${keycloakBaseUrl}`
+  }
+})
 </script>
 
 <style scoped>
@@ -204,6 +238,26 @@ const handleLogout = () => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.keycloak-account-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  color: #94a3b8;
+  transition: all 0.2s;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.keycloak-account-link:hover {
+  color: white;
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+  transform: scale(1.1);
 }
 
 .logout-btn {

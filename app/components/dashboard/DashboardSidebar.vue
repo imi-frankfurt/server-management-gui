@@ -2,7 +2,7 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo">
-        <img src="/logo.png" alt="IMI Server Verwaltung" class="logo-mark" />
+        <img src="/logo.svg" alt="IMI Server Verwaltung" class="logo-mark" />
         <h2>IMI Server Verwaltung</h2>
       </div>
     </div>

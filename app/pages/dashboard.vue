@@ -11,7 +11,7 @@
     <main class="main-content">
       <header class="dashboard-header">
         <div class="header-left">
-          <h1>{{ activeTab === 'users' ? 'Users' : activeTab === 'ignorelist' ? 'Ignore List' : activeTab === 'logs' ? 'Activity Logs' : 'Dashboard' }}</h1>
+          <h1>{{ activeTab === 'users' ? 'Users' : activeTab === 'ignorelist' ? 'Ignore List' : activeTab === 'logs' ? 'Activity Logs' : activeTab === 'ansible_logs' ? 'Ansible Logs' : 'Dashboard' }}</h1>
           <p class="subtitle">Welcome back, {{ userName }}</p>
         </div>
       </header>
@@ -72,7 +72,13 @@
         @retry="fetchIgnoreList"
       />
 
-
+      <AnsibleLogTable v-if="activeTab === 'ansible_logs'"
+        :ansibleLogs="ansibleLogs"
+        :loading="loading"
+        :error="error"
+        :is-admin="isAdmin"
+        @retry="fetchAnsibleLogs"
+      />
 
       <ActivityLogsTable v-if="activeTab === 'logs'"
         :logs="logs"
@@ -92,6 +98,7 @@
         @assign-user="assignUser"
         @retry="fetchUsers"
       />
+      
     </main>
 
     <AddServerModal
@@ -192,6 +199,7 @@ import { ServerTable, AddServerModal, ViewServerModal, EditServerModal, DeleteSe
 import { UserTable, ViewUserModal, AddUsersModal } from '~/components/user'
 import { IgnoreListTable, ViewIgnoreListModal, AddIgnoreListModal, AssignIgnoreListModal } from '~/components/ignorelist'
 import { ActivityLogsTable } from '~/components/log'
+import { AnsibleLogTable } from '~/components/ansible_log'
 
 definePageMeta({
   middleware: 'auth'
@@ -205,6 +213,7 @@ const activeTab = ref('dashboard')
 const servers = ref(null)
 const users = ref(null)
 const ignoreLists = ref(null)
+const ansibleLogs = ref(null)
 const logs = ref(null)
 const activityStatus = ref(null)
 const loading = ref(true)
@@ -386,6 +395,19 @@ const fetchIgnoreList = async () => {
   }
 }
 
+const fetchAnsibleLogs = async () => {
+  try {
+    loading.value = true
+    error.value = ''
+    ansibleLogs.value = await apiRequest('/api/ansible/history')
+  } catch (err) {
+    console.error('Failed to load ansible logs:', err)
+    error.value = err.message || 'Failed to load ansible logs'
+  } finally {
+    loading.value = false
+  }
+}
+
 
 const applySession = (session) => {
   if (!session) return
@@ -552,6 +574,7 @@ onMounted(async () => {
   await fetchUsers()
   await fetchIgnoreList()
   await fetchLogs()
+  await fetchAnsibleLogs()
 })
 </script>
 

@@ -15,8 +15,12 @@
             v-model="search"
             type="text"
             class="filter-input"
-            placeholder="Search details..."
+            placeholder="Search users..."
           />
+          <label class="filter-checkbox">
+            <input type="checkbox" v-model="showUsersWithoutKeys" />
+            <span>Show users without keys</span>
+          </label>
         </div>
 
         <div class="primary-info" v-if="allUsers.length > 0">
@@ -44,8 +48,6 @@
             </button>
           </div>  
         </div>
-
-        
 
         <div v-if="loading" class="loading-state">
           <div class="spinner"></div>
@@ -136,6 +138,7 @@ const adminUserId = ref(null)
 const initialAdminUserId = ref(null)
 const loading = ref(false)
 const error = ref('')
+const showUsersWithoutKeys = ref(false)
 
 const getServerAssignment = (user, serverId) => {
   return (user?.assigned_servers || []).find((server) => server?.id === serverId) || null
@@ -169,9 +172,17 @@ const isFiltered = computed(() => {
 })
 
 const filteredUsers = computed(() => {
-  if (!isFiltered.value) return allUsers.value
+  let users = allUsers.value.filter((user) => user.enabled !== false)
+
+  // By default, only show users with at least one public key
+  if (!showUsersWithoutKeys.value) {
+    users = users.filter((user) => user.pubKey && user.pubKey.length > 0)
+  }
+
+  if (!isFiltered.value) return users
+
   const term = search.value.toLowerCase()
-  return allUsers.value.filter((user) =>
+  return users.filter((user) =>
     (user.username || '').toLowerCase().includes(term) ||
     (user.keycloak_id || '').toLowerCase().includes(term)
   )
@@ -353,6 +364,7 @@ watch(() => props.show, (newVal) => {
     initialAdminUserId.value = null
     error.value = ''
     search.value = ''
+    showUsersWithoutKeys.value = false
   }
 })
 
@@ -601,7 +613,7 @@ watch(() => props.server, (newServer) => {
   color: #e5e7eb;
 }
 
-.public-key{
+.public-key {
   font-family: 'Courier New', monospace;
   font-size: 11px;
   color: #64748b;
@@ -671,5 +683,23 @@ watch(() => props.server, (newServer) => {
 
 .filter-input:focus {
   border-color: #3b82f6;
+}
+
+.filter-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #94a3b8;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.filter-checkbox input {
+  accent-color: #3b82f6;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
 }
 </style>

@@ -58,7 +58,7 @@
                     @click="toggleHist(log.id)"
                   >
                     History
-                    <span class="hist-count-badge">{{ log.queries.length }}</span>
+                    <span class="hist-count-badge">{{ log.queries.length > 99 ? '99+' : log.queries.length }}</span>
                     <svg
                       :class="['chevron', { open: openHist === log.id }]"
                       viewBox="0 0 12 12"

@@ -39,7 +39,14 @@
       >
         <span>Logs</span>
       </div>
-      
+
+      <div
+        class="nav-item"
+        :class="{ active: activeTab === 'ansible_logs' }"
+        @click="handleNavClick('ansible_logs')"
+      >
+        <span>Ansible Logs</span>
+      </div>
     </nav>
 
 

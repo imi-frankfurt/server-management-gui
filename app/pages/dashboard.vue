@@ -497,7 +497,6 @@ const deleteServer = (server) => {
 }
 
 const confirmDelete = async (server) => {
-  console.log('confirmDelete called', server)
   try {
     await apiRequest(`/api/server/${server.id}`, { method: 'DELETE' })
     console.log('delete success')

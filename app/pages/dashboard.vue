@@ -200,6 +200,9 @@ import { UserTable, ViewUserModal, AddUsersModal } from '~/components/user'
 import { IgnoreListTable, ViewIgnoreListModal, AddIgnoreListModal, AssignIgnoreListModal } from '~/components/ignorelist'
 import { ActivityLogsTable } from '~/components/log'
 import { AnsibleLogTable } from '~/components/ansible_log'
+import { useToast } from '~/composables/useToast'
+
+const { toast } = useToast()
 
 definePageMeta({
   middleware: 'auth'
@@ -446,6 +449,7 @@ const addServer = async (serverData) => {
     })
     showAddServerModal.value = false
     await refreshServerData()
+    toast.success('Server added successfully.')
   } catch (err) {
     // alert('Failed to add server: ' + err.message)
   }
@@ -481,6 +485,7 @@ const updateServer = async (serverData) => {
     })
     showEditServerModal.value = false
     await refreshServerData()
+    toast.success('Server updated successfully.')
   } catch (err) {
     // alert('Failed to update server: ' + err.message)
   }
@@ -492,10 +497,13 @@ const deleteServer = (server) => {
 }
 
 const confirmDelete = async (server) => {
+  console.log('confirmDelete called', server)
   try {
     await apiRequest(`/api/server/${server.id}`, { method: 'DELETE' })
+    console.log('delete success')
     showDeleteServerModal.value = false
     await refreshServerData()
+    toast.warning('Server deleted successfully.')
   } catch (err) {
     // alert('Failed to delete server: ' + err.message)
   }
@@ -521,6 +529,11 @@ const syncUsers = async () => {
     await refreshUserData()
     await fetchLogs()
     // alert('Users synchronized successfully!')
+    if (result?.message) {
+      toast.info(result.message) // "All users are already synchronized"
+    } else {
+      toast.success('Users synchronized successfully.')
+    }
   } catch (err) {
     // alert('Failed to sync users: ' + err.message)
   } finally {

@@ -1,17 +1,19 @@
 import { ref } from 'vue'
 
-const toasts = ref([])
-let nextId = 0
+const toastState = {
+  toasts: ref([]),
+  nextId: 0
+}
 
 export const useToast = () => {
   const addToast = (message, type = 'error', duration = 4000) => {
-    const id = nextId++
-    toasts.value.push({ id, message, type })
+    const id = toastState.nextId++
+    toastState.toasts.value.push({ id, message, type })
     setTimeout(() => removeToast(id), duration)
   }
 
   const removeToast = (id) => {
-    toasts.value = toasts.value.filter((t) => t.id !== id)
+    toastState.toasts.value = toastState.toasts.value.filter((t) => t.id !== id)
   }
 
   const toast = {
@@ -21,5 +23,5 @@ export const useToast = () => {
     info: (msg) => addToast(msg, 'info'),
   }
 
-  return { toasts, toast, removeToast }
+  return { toasts: toastState.toasts, toast, removeToast }
 }

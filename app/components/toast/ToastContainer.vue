@@ -1,11 +1,13 @@
 <template>
-  <Teleport to="body">
+  <Teleport to="body" v-if="isMounted">
     <div class="toast-container">
       <Transition name="toast" v-for="t in toasts" :key="t.id">
         <div :class="['toast', `toast--${t.type}`]">
-          <span class="toast-icon">{{ icons[t.type] }}</span>
+          <UIcon :name="icons[t.type]" class="toast-icon" />
           <span class="toast-message">{{ t.message }}</span>
-          <button class="toast-close" @click="removeToast(t.id)">×</button>
+          <button class="toast-close" @click="removeToast(t.id)">
+            <UIcon name="i-lucide-x" />
+          </button>
         </div>
       </Transition>
     </div>
@@ -13,14 +15,18 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useToast } from '~/composables/useToast'
+
 const { toasts, removeToast } = useToast()
+const isMounted = ref(false)
+onMounted(() => { isMounted.value = true })
 
 const icons = {
-  error: '✕',
-  success: '✓',
-  warning: '⚠',
-  info: 'ℹ',
+  error: 'i-lucide-x-circle',
+  success: 'i-lucide-check-circle',
+  warning: 'i-lucide-alert-triangle',
+  info: 'i-lucide-info',
 }
 </script>
 
@@ -75,8 +81,9 @@ const icons = {
 }
 
 .toast-icon {
-  font-size: 13px;
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
 }
 
 .toast-message {
@@ -90,8 +97,8 @@ const icons = {
   color: inherit;
   opacity: 0.6;
   cursor: pointer;
-  font-size: 18px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
   padding: 0;
   flex-shrink: 0;
 }

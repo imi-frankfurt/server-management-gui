@@ -1,11 +1,14 @@
+import { useToast } from '~/composables/useToast'
+
 export const useApi = () => {
   const apiRequest = async (endpoint, options = {}) => {
     const { _retried = false, headers: optionHeaders = {}, ...fetchOptions } = options
     const { refreshToken, logout, sessionActive, getSession } = useAuth()
     const { getCsrfToken, syncFromCookie } = useCsrf()
+    const { toast } = useToast()
     const method = String(fetchOptions.method || 'GET').toUpperCase()
     const unsafeMethods = ['POST', 'PUT', 'PATCH', 'DELETE']
-    
+
     syncFromCookie()
     let csrfToken = getCsrfToken()
 
@@ -21,61 +24,56 @@ export const useApi = () => {
         headers: {
           'Content-Type': 'application/json',
           ...optionHeaders
-          // We intentionally omit injecting X-CSRF-Token manually here
-          // because the Nuxt proxy (e.g. [...path].js / refresh.post.js) 
-          // will automatically extract it from the cookie and attach it.
         }
       })
 
       return response
     } catch (error) {
-      if (error?.status === 403 || error?.statusCode === 403) {
+      const status = error?.status ?? error?.statusCode
+
+      if (status === 403) {
         if (!_retried && unsafeMethods.includes(method)) {
           try {
-            const session = await getSession()
-            if (session || true) { // Explicitly retry even if getSession "fails" with 401, because the CSRF token might have updated
-              const { syncFromCookie } = useCsrf()
-              syncFromCookie()
-              return await apiRequest(endpoint, {
-                ...options,
-                _retried: true
-              })
-            }
-          } catch (e) {
             const { syncFromCookie } = useCsrf()
             syncFromCookie()
-            return await apiRequest(endpoint, {
-              ...options,
-              _retried: true
-            })
+            return await apiRequest(endpoint, { ...options, _retried: true })
+          } catch (e) {
+            throw e
           }
         }
       }
 
-      if (error?.status === 401 || error?.statusCode === 401) {
+      if (status === 401) {
         if (!sessionActive.value) {
           await logout()
           throw error
         }
-
         if (!_retried) {
           const refreshed = await refreshToken()
           if (refreshed) {
-            return await apiRequest(endpoint, {
-              ...options,
-              _retried: true
-            })
+            return await apiRequest(endpoint, { ...options, _retried: true })
           }
         }
-
         await logout()
         throw error
       }
+
+      const messages = {
+        403: 'You don\'t have permission to perform this action.',
+        400: error?.data?.detail || 'Invalid request. Please check your input.',
+        404: 'The requested resource was not found.',
+        409: error?.data?.detail || 'This entry already exists.',
+        422: 'Validation failed. Please check your input.',
+        500: 'Something went wrong on our end. Please try again.',
+        429: 'Too many requests. Please wait a moment and try again.',
+      }
+
+      const message = messages[status] ?? `Unexpected error (${status ?? 'unknown'}).`
+      toast.error(message)
+
       throw error
     }
   }
 
-  return {
-    apiRequest
-  }
+  return { apiRequest }
 }

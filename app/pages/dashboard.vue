@@ -205,8 +205,10 @@ definePageMeta({
   middleware: 'auth'
 })
 
+
 const { logout, getSession } = useAuth()
 const { apiRequest } = useApi()
+
 
 // Data
 const activeTab = ref('dashboard')
@@ -349,8 +351,7 @@ const fetchServers = async () => {
     error.value = ''
     servers.value = await apiRequest('/api/server')
   } catch (err) {
-    console.error('Failed to load servers:', err)
-    error.value = err.message || 'Failed to load servers'
+      error.value = 'Failed to load servers.'
   } finally {
     loading.value = false
   }
@@ -362,8 +363,7 @@ const fetchUsers = async () => {
     usersError.value = ''
     users.value = await apiRequest('/api/user')
   } catch (err) {
-    console.error('Failed to load users:', err)
-    usersError.value = err.message || 'Failed to load users'
+    usersError.value = 'Failed to load users.'
   } finally {
     usersLoading.value = false
   }
@@ -375,8 +375,7 @@ const fetchLogs = async () => {
     logsError.value = ''
     logs.value = await apiRequest('/api/activity/logs')
   } catch (err) {
-    console.error('Failed to load activity logs:', err)
-    logsError.value = err.message || 'Failed to load activity logs'
+    logsError.value = 'Failed to load activity logs.'
   } finally {
     logsLoading.value = false
   }
@@ -388,8 +387,7 @@ const fetchIgnoreList = async () => {
     error.value = ''
     ignoreLists.value = await apiRequest('/api/ignorelist')
   } catch (err) {
-    console.error('Failed to load ignore list:', err)
-    error.value = err.message || 'Failed to load ignore list'
+    error.value = 'Failed to load ignore list.'
   } finally {
     loading.value = false
   }
@@ -401,8 +399,7 @@ const fetchAnsibleLogs = async () => {
     error.value = ''
     ansibleLogs.value = await apiRequest('/api/ansible/history')
   } catch (err) {
-    console.error('Failed to load ansible logs:', err)
-    error.value = err.message || 'Failed to load ansible logs'
+    error.value = 'Failed to load ansible logs.'
   } finally {
     loading.value = false
   }
@@ -450,7 +447,7 @@ const addServer = async (serverData) => {
     showAddServerModal.value = false
     await refreshServerData()
   } catch (err) {
-    alert('Failed to add server: ' + err.message)
+    // alert('Failed to add server: ' + err.message)
   }
 }
 
@@ -485,7 +482,7 @@ const updateServer = async (serverData) => {
     showEditServerModal.value = false
     await refreshServerData()
   } catch (err) {
-    alert('Failed to update server: ' + err.message)
+    // alert('Failed to update server: ' + err.message)
   }
 }
 
@@ -500,7 +497,7 @@ const confirmDelete = async (server) => {
     showDeleteServerModal.value = false
     await refreshServerData()
   } catch (err) {
-    alert('Failed to delete server: ' + err.message)
+    // alert('Failed to delete server: ' + err.message)
   }
 }
 
@@ -523,11 +520,9 @@ const syncUsers = async () => {
     console.log('Sync result:', result)
     await refreshUserData()
     await fetchLogs()
-    alert('Users synchronized successfully!')
+    // alert('Users synchronized successfully!')
   } catch (err) {
-    console.error('Failed to sync users:', err)
-    alert('Failed to sync users: ' + err.message)
-    usersError.value = err.message || 'Failed to sync users'
+    // alert('Failed to sync users: ' + err.message)
   } finally {
     usersLoading.value = false
   }

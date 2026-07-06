@@ -161,7 +161,7 @@ const savePrimaryUser = async () => {
     await fetchUsers(props.server.id)
   } catch (err) {
     console.error('Failed to update primary user:', err)
-    alert('Failed to update primary user: ' + err.message)
+    // alert('Failed to update primary user: ' + err.message)
   } finally {
     savingPrimary.value = false
   }

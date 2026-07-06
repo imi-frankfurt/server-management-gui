@@ -35,6 +35,7 @@
       <div
         class="nav-item"
         :class="{ active: activeTab === 'logs' }"
+        v-if="isAdmin"
         @click="handleNavClick('logs')"
       >
         <span>Logs</span>
@@ -43,6 +44,7 @@
       <div
         class="nav-item"
         :class="{ active: activeTab === 'ansible_logs' }"
+        v-if="isAdmin"
         @click="handleNavClick('ansible_logs')"
       >
         <span>Ansible Logs</span>
@@ -89,6 +91,10 @@ const props = defineProps({
   userInitials: {
     type: String,
     required: true
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 })
 

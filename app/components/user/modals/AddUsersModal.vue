@@ -296,12 +296,12 @@ const handleAssign = async () => {
   const finalAssignedIds = getFinalAssignedUserIds()
 
   if (finalAssignedIds.size > 0 && !adminUserId.value) {
-    alert('Please select one primary user for this server.')
+    // alert('Please select one primary user for this server.')
     return
   }
 
   if (adminUserId.value && !finalAssignedIds.has(adminUserId.value)) {
-    alert('Primary user must be assigned to this server.')
+    // alert('Primary user must be assigned to this server.')
     return
   }
 
@@ -345,7 +345,7 @@ const handleAssign = async () => {
     emit('close')
   } catch (err) {
     console.error('Failed to assign/unassign users:', err)
-    alert('Failed to assign/unassign users: ' + err.message)
+    // alert('Failed to assign/unassign users: ' + err.message)
   } finally {
     assigning.value = false
   }

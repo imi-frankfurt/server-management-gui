@@ -117,7 +117,7 @@ const handleAssign = async () => {
     emit('close')
   } catch (err) {
     console.error('Failed to assign servers:', err)
-    alert('Failed to assign servers: ' + err.message)
+    // alert('Failed to assign servers: ' + err.message)
   } finally {
     assigning.value = false
   }

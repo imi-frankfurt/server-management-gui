@@ -159,7 +159,7 @@ const unassignServer = async (serverId) => {
     emit('unassigned')
   } catch (err) {
     console.error('Failed to unassign server:', err)
-    alert('Failed to unassign server: ' + err.message)
+    // alert('Failed to unassign server: ' + err.message)
   } finally {
     unassigning.value = null
   }

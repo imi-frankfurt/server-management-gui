@@ -116,7 +116,7 @@ const removeServerEntry = async (entryId, serverId, serverName) => {
     if (serverList.value.length === 1) emit('close')
   } catch (err) {
     console.error('Failed to remove from ignore list:', err)
-    alert('Failed to remove from ignore list: ' + err.message)
+     // alert('Failed to remove from ignore list: ' + err.message)
   } finally {
     removingServer.value = null
   }

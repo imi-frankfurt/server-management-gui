@@ -10,9 +10,16 @@
           Select servers to add to Ignore List this user on. Already ignored servers are marked.
         </p>
 
-        <div v-if="availableServers.length > 0" class="servers-list">
+        <input
+          v-model="serverSearch"
+          type="text"
+          class="search-input"
+          placeholder="Search servers..."
+        />
+
+        <div v-if="filteredServers.length > 0" class="servers-list">
           <div
-            v-for="server in availableServers"
+            v-for="server in filteredServers"
             :key="server.id"
             class="server-item"
             :class="{ 'already-assigned': isIgnored(server.id) }"
@@ -39,7 +46,7 @@
         </div>
 
         <div v-else class="empty-state">
-          <p>No servers available</p>
+          <p>No servers match your search.</p>
         </div>
 
         <div v-if="selectedServers.length > 0" class="selection-info">
@@ -79,10 +86,18 @@ const emit = defineEmits(['close', 'assigned'])
 const { apiRequest } = useApi()
 const assigning = ref(false)
 const selectedServers = ref([])
+const serverSearch = ref('')
 
-const availableServers = computed(() => props.servers || [])
+const filteredServers = computed(() => {
+  const term = serverSearch.value.toLowerCase().trim()
+  if (!term) return props.servers
+  return props.servers.filter(
+    (s) =>
+      s.name.toLowerCase().includes(term) ||
+      s.ip.toLowerCase().includes(term)
+  )
+})
 
-// IDs of servers this user is already ignored on
 const ignoredServerIds = computed(() => {
   if (!props.user?.username) return []
   const userEntries = props.ignoreLists.filter(b => b.username === props.user.username)
@@ -117,14 +132,16 @@ const handleAssign = async () => {
     emit('close')
   } catch (err) {
     console.error('Failed to assign servers:', err)
-    // alert('Failed to assign servers: ' + err.message)
   } finally {
     assigning.value = false
   }
 }
 
 watch(() => props.show, (newVal) => {
-  if (!newVal) selectedServers.value = []
+  if (!newVal) {
+    selectedServers.value = []
+    serverSearch.value = ''
+  }
 })
 </script>
 
@@ -132,7 +149,7 @@ watch(() => props.show, (newVal) => {
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,7 +163,7 @@ watch(() => props.show, (newVal) => {
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .modal-header {
@@ -185,8 +202,26 @@ watch(() => props.show, (newVal) => {
 .modal-description {
   font-size: 14px;
   color: #94a3b8;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
+
+.search-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #e5e7eb;
+  outline: none;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus { border-color: #3b82f6; }
+
+.search-input::placeholder { color: #4b5563; }
 
 .servers-list {
   display: flex;
@@ -250,8 +285,8 @@ watch(() => props.show, (newVal) => {
 .assigned-badge {
   font-size: 12px;
   color: #f59e0b;
-  background: rgba(245,158,11,0.1);
-  border: 1px solid rgba(245,158,11,0.3);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   padding: 2px 8px;
   border-radius: 4px;
   white-space: nowrap;

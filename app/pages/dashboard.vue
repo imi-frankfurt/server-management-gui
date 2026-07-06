@@ -4,6 +4,7 @@
       :user-name="userName"
       :user-roles="userRoles"
       :user-initials="userInitials"
+      :is-admin="isAdmin"
       @logout="handleLogout"
       @navigate="handleNavigation"
     />
@@ -373,6 +374,8 @@ const fetchUsers = async () => {
 }
 
 const fetchLogs = async () => {
+  if (!isAdmin.value) return
+
   try {
     logsLoading.value = true
     logsError.value = ''
@@ -397,6 +400,8 @@ const fetchIgnoreList = async () => {
 }
 
 const fetchAnsibleLogs = async () => {
+  if (!isAdmin.value) return
+
   try {
     loading.value = true
     error.value = ''
@@ -513,6 +518,10 @@ const handleLogout = () => {
 }
 
 const handleNavigation = (tab) => {
+  if ((tab === 'logs' || tab === 'ansible_logs') && !isAdmin.value) {
+    return
+  }
+
   activeTab.value = tab
   if (tab === 'logs') {
     fetchLogs()
@@ -580,8 +589,11 @@ onMounted(async () => {
   await fetchServers()
   await fetchUsers()
   await fetchIgnoreList()
-  await fetchLogs()
-  await fetchAnsibleLogs()
+
+  if (isAdmin.value) {
+    await fetchLogs()
+    await fetchAnsibleLogs()
+  }
 })
 </script>
 

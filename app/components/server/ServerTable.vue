@@ -81,6 +81,13 @@
                 <button @click="$emit('view-server-users', server)" class="action-btn users" title="Users">
                   Users
                 </button>
+                <button
+                  @click="copyIp(server)"
+                  class="action-btn copy"
+                  :title="copiedServerId === server.id ? 'IP copied' : 'Copy IP address'"
+                >
+                  {{ copiedServerId === server.id ? 'Copied' : 'Copy IP' }}
+                </button>
                 <button v-if="isAdmin" @click="$emit('edit-server', server)" class="action-btn edit" title="Edit">
                   Edit
                 </button>
@@ -110,7 +117,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import { useFormatter } from '~/composables/useFormatter'
 const { formatDate, formatDateTimeWithSeconds } = useFormatter()
 
@@ -146,6 +153,8 @@ defineEmits(['add-server', 'view-server', 'view-server-users', 'edit-server', 'd
 const search = ref('')
 const sortCol = ref('name')
 const sortAsc = ref(true)
+const copiedServerId = ref(null)
+let copyResetTimer
 
 const processedServers = computed(() => {
   let result = props.servers || []
@@ -197,6 +206,21 @@ const getAssignedUserCount = (server) => {
 
   return server.assigned_users_count ?? server.assigned_users?.length ?? 0
 }
+
+const copyIp = async (server) => {
+  try {
+    await navigator.clipboard.writeText(server.ip)
+    copiedServerId.value = server.id
+    clearTimeout(copyResetTimer)
+    copyResetTimer = setTimeout(() => {
+      copiedServerId.value = null
+    }, 2000)
+  } catch (error) {
+    console.error('Failed to copy server IP:', error)
+  }
+}
+
+onBeforeUnmount(() => clearTimeout(copyResetTimer))
 
 
 </script>
@@ -381,6 +405,16 @@ const getAssignedUserCount = (server) => {
 .action-btn.users:hover {
   background: #022c22;
   border-color: #10b981;
+}
+
+.action-btn.copy {
+  color: #c084fc;
+  border-color: #6b21a8;
+}
+
+.action-btn.copy:hover {
+  background: #3b0764;
+  border-color: #c084fc;
 }
 
 .loading-state, .empty-state, .error-state {

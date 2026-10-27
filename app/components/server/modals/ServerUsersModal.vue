@@ -48,6 +48,12 @@
           <p>No users assigned to this server.</p>
         </div>
 
+        <div class="ignored-block">
+          <h4 class="section-title">Ignored usernames</h4>
+          <p class="section-description">Usernames on this list are excluded from user management on this server.</p>
+          <ServerIgnoredUsersSection :server="server" :isAdmin="isAdmin" :active="show" />
+        </div>
+
         <div class="modal-footer">
           <button
             v-if="isAdmin"
@@ -75,6 +81,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { ViewUserModal } from '~/components/user'
+import ServerIgnoredUsersSection from '~/components/server/ServerIgnoredUsersSection.vue'
 import { useFormatter } from '~/composables/useFormatter'
 const { formatPubKey } = useFormatter()
 
@@ -365,6 +372,25 @@ watch(() => props.server, (newServer) => {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .error-state { color: #ef4444; }
+
+.ignored-block {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #334155;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 4px;
+}
+
+.section-description {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 12px;
+}
 
 .modal-footer {
   display: flex;

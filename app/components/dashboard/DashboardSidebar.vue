@@ -26,14 +26,6 @@
 
       <div
         class="nav-item"
-        :class="{ active: activeTab === 'ignorelist' }"
-        @click="handleNavClick('ignorelist')"
-        >
-        <span>Ignore List</span>
-      </div>
-
-      <div
-        class="nav-item"
         :class="{ active: activeTab === 'logs' }"
         v-if="isAdmin"
         @click="handleNavClick('logs')"

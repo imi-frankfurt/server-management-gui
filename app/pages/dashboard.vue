@@ -12,7 +12,7 @@
     <main class="main-content">
       <header class="dashboard-header">
         <div class="header-left">
-          <h1>{{ activeTab === 'users' ? 'Users' : activeTab === 'ignorelist' ? 'Ignore List' : activeTab === 'logs' ? 'Activity Logs' : activeTab === 'ansible_logs' ? 'Ansible Logs' : 'Dashboard' }}</h1>
+          <h1>{{ activeTab === 'users' ? 'Users' : activeTab === 'logs' ? 'Activity Logs' : activeTab === 'ansible_logs' ? 'Ansible Logs' : 'Dashboard' }}</h1>
           <p class="subtitle">Welcome back, {{ userName }}</p>
         </div>
       </header>
@@ -36,17 +36,6 @@
 
       />
 
-      <DashboardStats v-if="activeTab === 'ignorelist'"
-        :total-servers="new Set(ignoreLists?.map(i => i.username)).size || 0"
-        :active-servers="ignoreLists?.reduce((sum, i) => sum + (i.servers?.length || 0), 0) || 0"
-        :total-users="0"
-        :access-level="userRoles"
-        label1="Total Ignored Users"
-        label2="Total Ignored Servers"
-        label3=""
-        :show-card3="false"
-        > </DashboardStats>
-
       <ServerTable v-if="activeTab === 'dashboard'"
         :servers="servers"
         :users="users"
@@ -60,17 +49,6 @@
         @edit-server="editServer"
         @delete-server="deleteServer"
         @retry="fetchServers"
-      />
-
-      <IgnoreListTable v-if="activeTab === 'ignorelist'"
-        :ignoreLists="ignoreLists"
-        :loading="loading"
-        :error="error"
-        :is-admin="isAdmin"
-        @add-ignore-list="showAddIgnorelistModal = true"
-        @view-ignore-list="viewIgnorelist"
-        @assign-ignore-list="assignIgnorelist"
-        @retry="fetchIgnoreList"
       />
 
       <AnsibleLogTable v-if="activeTab === 'ansible_logs'"
@@ -156,33 +134,6 @@
       @close="showViewUserModal = false"
     />
 
-    <AddIgnoreListModal
-      :show="showAddIgnorelistModal"
-      :servers="servers"
-      @close="showAddIgnorelistModal = false"
-      @added="fetchIgnoreList"
-    />
-
-    <ViewIgnoreListModal
-      :show="showViewIgnorelistModal"
-      :user="selectedIgnorelist"
-      :is-admin="isAdmin"
-      :ignoreLists="ignoreLists"
-      :servers="servers"
-      @view-server="viewServerFromIgnorelist"
-      @close="showViewIgnorelistModal = false"
-      @removed="fetchIgnoreList"
-    />
-    
-    <AssignIgnoreListModal
-      :show="showAssignIgnorelistModal"
-      :user="selectedIgnorelistForAssign"
-      :servers="servers"
-      :ignoreLists="ignoreLists"
-      @close="showAssignIgnorelistModal = false"
-      @assigned="fetchIgnoreList"
-    />
-
     <AssignUserModal
       :show="showAssignUserModal"
       :user="selectedUser"
@@ -198,7 +149,6 @@ import { ref, computed, onMounted } from 'vue'
 import { DashboardSidebar, DashboardStats } from '~/components/dashboard'
 import { ServerTable, AddServerModal, ViewServerModal, EditServerModal, DeleteServerModal, ServerUsersModal, AssignUserModal } from '~/components/server'
 import { UserTable, ViewUserModal, AddUsersModal } from '~/components/user'
-import { IgnoreListTable, ViewIgnoreListModal, AddIgnoreListModal, AssignIgnoreListModal } from '~/components/ignorelist'
 import { ActivityLogsTable } from '~/components/log'
 import { AnsibleLogTable } from '~/components/ansible_log'
 import { useToast } from '~/composables/useToast'
@@ -218,7 +168,6 @@ const { apiRequest } = useApi()
 const activeTab = ref('dashboard')
 const servers = ref(null)
 const users = ref(null)
-const ignoreLists = ref(null)
 const ansibleLogs = ref(null)
 const logs = ref(null)
 const activityStatus = ref(null)
@@ -235,15 +184,10 @@ const showServerUsersModal = ref(false)
 const showEditServerModal = ref(false)
 const showDeleteServerModal = ref(false)
 const showViewUserModal = ref(false)
-const showAddIgnorelistModal = ref(false)
-const showViewIgnorelistModal = ref(false)
-const showAssignIgnorelistModal = ref(false)
 const showAssignUserModal = ref(false)
 const selectedServer = ref(null)
 const selectedServerForUsers = ref(null)
 const selectedUser = ref(null)
-const selectedIgnorelist = ref(null)
-const selectedIgnorelistForAssign = ref(null)
 const tokenData = ref(null)
 
 // Computed
@@ -384,18 +328,6 @@ const fetchLogs = async () => {
     logsError.value = 'Failed to load activity logs.'
   } finally {
     logsLoading.value = false
-  }
-}
-
-const fetchIgnoreList = async () => {
-  try {
-    loading.value = true
-    error.value = ''
-    ignoreLists.value = await apiRequest('/api/ignorelist')
-  } catch (err) {
-    error.value = 'Failed to load ignore list.'
-  } finally {
-    loading.value = false
   }
 }
 
@@ -554,22 +486,6 @@ const viewUser = (user) => {
   showViewUserModal.value = true
 }
 
-const viewIgnorelist = (ignorelist) => {
-  selectedIgnorelist.value = ignorelist
-  showViewIgnorelistModal.value = true
-}
-
-const viewServerFromIgnorelist = (server) => {
-  if (!server) return
-  showViewIgnorelistModal.value = false
-  viewServer(server)
-}
-
-const assignIgnorelist = (ignorelist) => {
-  selectedIgnorelistForAssign.value = ignorelist
-  showAssignIgnorelistModal.value = true
-}
-
 const assignUser = (user) => {
   selectedUser.value = user
   showAssignUserModal.value = true
@@ -588,7 +504,6 @@ onMounted(async () => {
   await fetchActivityStatus()
   await fetchServers()
   await fetchUsers()
-  await fetchIgnoreList()
 
   if (isAdmin.value) {
     await fetchLogs()

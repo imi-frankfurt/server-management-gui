@@ -5,9 +5,30 @@
         <h2>Users</h2>
         <p class="section-meta">Last synced: {{ formatDateTimeWithSeconds(lastSynced) }}</p>
       </div>
-      <button v-if="isAdmin" @click="$emit('sync-users')" class="btn-primary">
-        Sync Users
-      </button>
+      <div class="header-actions">
+        <label class="status-toggle">
+          <input v-model="showEnabled" type="checkbox" />
+          Show enabled
+        </label>
+        <label class="status-toggle">
+          <input v-model="showDisabled" type="checkbox" />
+          Show disabled
+        </label>
+        <button v-if="isAdmin" @click="$emit('sync-users')" class="btn-primary">
+          Sync Users
+        </button>
+      </div>
+    </div>
+
+    <div v-if="!loading && !error && users && users.length > 0" class="filter-bar">
+      <input
+        v-model="search"
+        type="search"
+        class="filter-input"
+        placeholder="Filter by username…"
+      />
+      <button v-if="search" @click="search = ''" class="btn-clear">✕ Clear</button>
+      <span class="filter-count">{{ visibleUsers.length }} of {{ users.length }} user(s)</span>
     </div>
 
     <div v-if="loading" class="loading-state">
@@ -24,19 +45,31 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>Username</th>
+            <th :aria-sort="ariaSort('username')">
+              <button type="button" class="sort-btn" @click="toggleSort('username')">
+                Username <span class="sort-indicator">{{ sortIndicator('username') }}</span>
+              </button>
+            </th>
             <th>Public Key</th>
             <th>Servers</th>
-            <th>Public Keys</th>
             <th>Created</th>
-            <th>Updated</th>
+            <th :aria-sort="ariaSort('updated_at')">
+              <button type="button" class="sort-btn" @click="toggleSort('updated_at')">
+                Updated <span class="sort-indicator">{{ sortIndicator('updated_at') }}</span>
+              </button>
+            </th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in users" :key="user.id">
+          <tr
+            v-for="user in visibleUsers"
+            :key="user.id"
+            :class="{ 'row-disabled': isDisabled(user) }"
+          >
             <td>
               <strong>{{ user.username }}</strong>
+              <span v-if="isDisabled(user)" class="disabled-badge">Disabled</span>
             </td>
             <td>
               <code class="public-key">{{ formatPubKey(user.pubKey) }}</code>
@@ -48,12 +81,6 @@
                 </span>
                 <span class="role-count admin">Admin: {{ getPrimaryServerCount(user) }}</span>
               </div>
-            </td>
-            <td>
-              <span v-if="user.pubKey && user.pubKey.length > 0" class="key-count">
-                {{ user.pubKey.length }} key(s)
-              </span>
-              <span v-else class="text-muted">No keys</span>
             </td>
             <td>
               <span class="date-text">{{ formatDate(user.created_at) }}</span>
@@ -72,6 +99,9 @@
               </div>
             </td>
           </tr>
+          <tr v-if="visibleUsers.length === 0">
+            <td colspan="6" class="no-results">No users match the current filters.</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -87,6 +117,8 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
+
 const props = defineProps({
   users: {
     type: Array,
@@ -113,6 +145,51 @@ import { useFormatter } from '~/composables/useFormatter'
 const { formatPubKey, formatDate, formatDateTimeWithSeconds } = useFormatter()
 
 defineEmits(['sync-users', 'view-user', 'assign-user', 'retry'])
+const search = ref('')
+const showEnabled = ref(true)
+const showDisabled = ref(false)
+// Newest updates first by default
+const sortKey = ref('updated_at')
+const sortDir = ref('desc')
+
+const isDisabled = (user) => user?.enabled === false
+
+const toggleSort = (key) => {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortKey.value = key
+    sortDir.value = key === 'updated_at' ? 'desc' : 'asc'
+  }
+}
+
+const sortIndicator = (key) => {
+  if (sortKey.value !== key) return '↕'
+  return sortDir.value === 'asc' ? '▲' : '▼'
+}
+
+const ariaSort = (key) => {
+  if (sortKey.value !== key) return 'none'
+  return sortDir.value === 'asc' ? 'ascending' : 'descending'
+}
+
+const compareUsers = (a, b) => {
+  if (sortKey.value === 'username') {
+    return (a.username || '').localeCompare(b.username || '', undefined, { sensitivity: 'base' })
+  }
+  return new Date(a.updated_at || 0) - new Date(b.updated_at || 0)
+}
+
+const visibleUsers = computed(() => {
+  const term = search.value.trim().toLowerCase()
+  const direction = sortDir.value === 'asc' ? 1 : -1
+
+  return (props.users || [])
+    .filter((user) => (isDisabled(user) ? showDisabled.value : showEnabled.value))
+    .filter((user) => !term || (user.username || '').toLowerCase().includes(term))
+    .sort((a, b) => compareUsers(a, b) * direction)
+})
+
 const getPrimaryServerCount = (user) => {
   if (!Array.isArray(user?.assigned_servers) || user.assigned_servers.length === 0) return 0
   return user.assigned_servers.filter((server) => server?.primary_user === true).length
@@ -145,6 +222,83 @@ const getPrimaryServerCount = (user) => {
   margin-top: 6px;
   font-size: 13px;
   color: var(--text-muted);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.status-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.status-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.filter-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 8px 12px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filter-input::placeholder {
+  color: var(--text-subtle);
+}
+
+.filter-input:focus {
+  border-color: #3b82f6;
+}
+
+.btn-clear {
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.btn-clear:hover {
+  background: var(--border-soft);
+  color: var(--red-text);
+}
+
+.filter-count {
+  font-size: 13px;
+  color: var(--text-subtle);
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -210,6 +364,55 @@ const getPrimaryServerCount = (user) => {
   background: var(--surface-sunken);
 }
 
+.sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+
+.sort-btn:hover {
+  color: var(--text);
+}
+
+.sort-indicator {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.data-table tbody tr.row-disabled {
+  background: var(--row-disabled);
+}
+
+.row-disabled td {
+  color: var(--text-subtle);
+}
+
+.disabled-badge {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.no-results {
+  text-align: center;
+  color: var(--text-subtle);
+  padding: 32px 0;
+  font-size: 14px;
+}
+
 .public-key {
   background: var(--surface-raised);
   padding: 4px 8px;
@@ -217,11 +420,6 @@ const getPrimaryServerCount = (user) => {
   font-size: 12px;
   font-family: 'Courier New', monospace;
   color: var(--text-subtle);
-}
-
-.key-count {
-  color: var(--text-muted);
-  font-size: 14px;
 }
 
 .server-count {

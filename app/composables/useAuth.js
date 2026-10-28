@@ -11,6 +11,25 @@ export const useAuth = () => {
   const fallbackSessionUrl = '/api/auth/session'
 
   const sessionActive = useState('auth-session-active', () => false)
+  // Last authenticated session, shared between middleware, pages and plugins
+  // (and transferred from SSR to the client) so it is fetched only once per load.
+  const cachedSession = useState('auth-session', () => null)
+
+  const setSession = (session) => {
+    sessionActive.value = Boolean(session && (session.authenticated || session.user))
+    if (sessionActive.value) {
+      // The CSRF token lives in its cookie; keep it out of the SSR payload.
+      const { csrf_token, ...rest } = session
+      cachedSession.value = rest
+    } else {
+      cachedSession.value = null
+    }
+  }
+
+  const clearSession = () => {
+    sessionActive.value = false
+    cachedSession.value = null
+  }
 
   const getAuthHeaders = () => (import.meta.server ? useRequestHeaders(['cookie']) : {})
 
@@ -43,7 +62,7 @@ export const useAuth = () => {
         return true
       } catch (error) {
         console.warn('Refresh fehlgeschlagen:', error.status)
-        sessionActive.value = false
+        clearSession()
         clearCsrfToken()
         return false
       } finally {
@@ -67,7 +86,7 @@ export const useAuth = () => {
         setCsrfToken(session.csrf_token)
       }
 
-      sessionActive.value = Boolean(session && (session.authenticated || session.user))
+      setSession(session)
       return session
     } catch (error) {
       if (error.status === 401) {
@@ -81,28 +100,36 @@ export const useAuth = () => {
             if (session && session.csrf_token) {
               setCsrfToken(session.csrf_token)
             }
-            sessionActive.value = Boolean(session && (session.authenticated || session.user))
+            setSession(session)
             return session
           }
         }
 
-        sessionActive.value = false
+        clearSession()
         clearCsrfToken()
         return null
       }
 
       if (sessionUrl !== fallbackSessionUrl) {
         const session = await $fetch(fallbackSessionUrl, { headers, credentials: 'include' })
-        sessionActive.value = Boolean(session && (session.authenticated || session.user))
+        setSession(session)
         return session
       }
       throw error
     }
   }
 
+  // Returns the cached session if one is known, otherwise fetches it.
+  const ensureSession = async () => {
+    if (sessionActive.value && cachedSession.value) {
+      return cachedSession.value
+    }
+    return getSession()
+  }
+
   const isAuthenticated = async () => {
     try {
-      const session = await fetchSession()
+      const session = await ensureSession()
       return !!(session && (session.authenticated || session.user))
     } catch {
       return false
@@ -132,7 +159,7 @@ export const useAuth = () => {
     } catch {
       // ignore
     } finally {
-      sessionActive.value = false
+      clearSession()
       clearCsrfToken()
       navigateTo('/login?force_reauth=1')
     }
@@ -141,6 +168,7 @@ export const useAuth = () => {
   return {
     isAuthenticated,
     getSession,
+    ensureSession,
     refreshToken,
     logout,
     sessionActive

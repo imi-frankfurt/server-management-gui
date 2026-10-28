@@ -16,6 +16,7 @@ html.dark {
 	--surface-raised: #1e293b;
 	--surface-sunken: #0f172a;
 	--row-hover: #1a2332;
+	--row-disabled: #232b38;
 	--sidebar-from: #1e293b;
 	--sidebar-to: #0f172a;
 	--sidebar-border: transparent;
@@ -64,6 +65,7 @@ html.light {
 	--surface-raised: #e2e8f0;
 	--surface-sunken: #f1f5f9;
 	--row-hover: #f1f5f9;
+	--row-disabled: #eceef1;
 	--sidebar-from: #ffffff;
 	--sidebar-to: #f8fafc;
 	--sidebar-border: #e2e8f0;

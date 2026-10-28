@@ -2,7 +2,8 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo">
-        <img src="/logo.svg" alt="IMI Server Verwaltung" class="logo-mark" />
+        <img src="/logo_dark.svg" alt="IMI Server Verwaltung" class="logo-mark logo-dark" />
+        <img src="/logo_light.svg" alt="IMI Server Verwaltung" class="logo-mark logo-light" />
         <h2>IMI Server Verwaltung</h2>
       </div>
     </div>
@@ -162,6 +163,15 @@ onMounted(async () => {
   object-fit: contain;
   background: transparent;
   padding: 0;
+}
+
+.logo-light,
+:root.light .logo-dark {
+  display: none;
+}
+
+:root.light .logo-light {
+  display: block;
 }
 
 .logo h2 {

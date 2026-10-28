@@ -2,7 +2,8 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo">
-        <img src="/logo.svg" alt="IMI Server Verwaltung" class="logo-mark" />
+        <img src="/logo_dark.svg" alt="IMI Server Verwaltung" class="logo-mark logo-dark" />
+        <img src="/logo_light.svg" alt="IMI Server Verwaltung" class="logo-mark logo-light" />
         <h2>IMI Server Verwaltung</h2>
       </div>
     </div>
@@ -46,6 +47,7 @@
 
 
     <div class="sidebar-footer">
+      <ThemeToggle class="theme-toggle-row" />
       <div class="user-profile">
         <div class="user-avatar">{{ userInitials }}</div>
         <div class="user-info">
@@ -133,8 +135,9 @@ onMounted(async () => {
 <style scoped>
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  color: white;
+  background: linear-gradient(180deg, var(--sidebar-from) 0%, var(--sidebar-to) 100%);
+  border-right: 1px solid var(--sidebar-border);
+  color: var(--text);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -144,7 +147,7 @@ onMounted(async () => {
 
 .sidebar-header {
   padding: 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid var(--overlay-2);
 }
 
 .logo {
@@ -160,6 +163,15 @@ onMounted(async () => {
   object-fit: contain;
   background: transparent;
   padding: 0;
+}
+
+.logo-light,
+:root.light .logo-dark {
+  display: none;
+}
+
+:root.light .logo-light {
+  display: block;
 }
 
 .logo h2 {
@@ -179,7 +191,7 @@ onMounted(async () => {
   align-items: center;
   padding: 12px 16px;
   border-radius: 8px;
-  color: #64748b;
+  color: var(--text-subtle);
   text-decoration: none;
   transition: all 0.2s;
   margin-bottom: 4px;
@@ -187,19 +199,23 @@ onMounted(async () => {
 }
 
 .nav-item:hover {
-  background: rgba(255,255,255,0.1);
-  color: white;
+  background: var(--overlay-2);
+  color: var(--text);
 }
 
 .nav-item.active {
   background: rgba(59, 130, 246, 0.2);
-  color: white;
+  color: var(--text);
   font-weight: 500;
 }
 
 .sidebar-footer {
   padding: 16px;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  border-top: 1px solid var(--overlay-2);
+}
+
+.theme-toggle-row {
+  margin-bottom: 12px;
 }
 
 .user-profile {
@@ -208,7 +224,7 @@ onMounted(async () => {
   gap: 12px;
   padding: 12px;
   margin-bottom: 12px;
-  background: rgba(255,255,255,0.05);
+  background: var(--overlay-1);
   border-radius: 8px;
 }
 
@@ -239,7 +255,7 @@ onMounted(async () => {
 
 .user-role {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -250,7 +266,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   margin-left: 8px;
-  color: #94a3b8;
+  color: var(--text-muted);
   transition: all 0.2s;
   width: 24px;
   height: 24px;
@@ -259,9 +275,9 @@ onMounted(async () => {
 }
 
 .keycloak-account-link:hover {
-  color: white;
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.2);
+  color: var(--text);
+  background: var(--overlay-2);
+  border-color: var(--overlay-3);
   transform: scale(1.1);
 }
 
@@ -269,7 +285,7 @@ onMounted(async () => {
   width: 100%;
   padding: 10px;
   background: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
+  color: var(--red-text);
   border: none;
   border-radius: 6px;
   cursor: pointer;

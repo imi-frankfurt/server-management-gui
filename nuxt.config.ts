@@ -43,15 +43,23 @@ export default defineNuxtConfig({
               background: #0b1220;
               color: #e5e7eb;
             }
+            html.light, html.light body, html.light #__nuxt {
+              background: #f1f5f9;
+              color: #0f172a;
+            }
             body {
               overflow-x: hidden;
-              color-scheme: dark;
             }
           `
         }
       ]
     }
   },
+  colorMode: {
+    preference: 'dark',
+    fallback: 'dark'
+  },
+
   icon: {
     serverBundle: 'remote' 
   },

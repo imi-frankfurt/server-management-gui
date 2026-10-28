@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  pull_request:
   workflow_dispatch:
 
 env:
@@ -42,7 +43,8 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=sha
+            type=sha,enable=${{ github.event_name != 'pull_request' }}
+            type=ref,event=pr
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

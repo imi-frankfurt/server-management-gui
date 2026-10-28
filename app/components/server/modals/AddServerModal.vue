@@ -177,7 +177,7 @@ watch(() => props.show, (newVal) => {
 }
 
 .modal-content {
-  background: #111827;
+  background: var(--surface);
   border-radius: 16px;
   width: 100%;
   max-width: 500px;
@@ -189,28 +189,28 @@ watch(() => props.show, (newVal) => {
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-header h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .close-btn {
   width: 32px;
   height: 32px;
   border: none;
-  background: #1e293b;
+  background: var(--surface-raised);
   border-radius: 6px;
   cursor: pointer;
   font-size: 18px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .close-btn:hover {
-  background: #334155;
+  background: var(--border);
 }
 
 .modal-body {
@@ -225,14 +225,14 @@ watch(() => props.show, (newVal) => {
   display: block;
   font-size: 14px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--text-subtle);
   margin-bottom: 8px;
 }
 
 .form-group input {
   width: 100%;
   padding: 12px;
-  border: 1px solid #334155;
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 14px;
   transition: all 0.2s;
@@ -248,7 +248,7 @@ watch(() => props.show, (newVal) => {
   display: block;
   margin-top: 6px;
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .error-message {
@@ -295,16 +295,16 @@ watch(() => props.show, (newVal) => {
 }
 
 .btn-primary:disabled {
-  background: #94a3b8;
+  background: var(--text-muted);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 .btn-secondary {
   padding: 10px 20px;
-  background: #1e293b;
-  color: #64748b;
-  border: 1px solid #334155;
+  background: var(--surface-raised);
+  color: var(--text-subtle);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -312,6 +312,6 @@ watch(() => props.show, (newVal) => {
 }
 
 .btn-secondary:hover {
-  background: #334155;
+  background: var(--border);
 }
 </style>

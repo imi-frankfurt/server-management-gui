@@ -199,7 +199,7 @@ watch(() => props.show, async (newShow) => {
 }
 
 .modal-content {
-  background: #111827;
+  background: var(--surface);
   border-radius: 16px;
   width: 100%;
   max-width: 700px;
@@ -213,32 +213,32 @@ watch(() => props.show, async (newShow) => {
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  background: #111827;
+  background: var(--surface);
   z-index: 10;
 }
 
 .modal-header h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .close-btn {
   width: 32px;
   height: 32px;
   border: none;
-  background: #1e293b;
+  background: var(--surface-raised);
   border-radius: 6px;
   cursor: pointer;
   font-size: 18px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .close-btn:hover {
-  background: #334155;
+  background: var(--border);
 }
 
 .modal-body {
@@ -255,7 +255,7 @@ watch(() => props.show, async (newShow) => {
   width: 40px;
   height: 40px;
   margin: 0 auto 16px;
-  border: 4px solid #1e293b;
+  border: 4px solid var(--surface-raised);
   border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -284,22 +284,22 @@ watch(() => props.show, async (newShow) => {
   display: block;
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-subtle);
   margin-bottom: 8px;
 }
 
 .detail-value {
   padding: 12px;
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 14px;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .code-text {
   font-family: 'Courier New', monospace;
-  background: #1e293b;
+  background: var(--surface-raised);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
@@ -308,14 +308,14 @@ watch(() => props.show, async (newShow) => {
 
 .ip-address {
   font-family: 'Courier New', monospace;
-  background: #1e293b;
+  background: var(--surface-raised);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 13px;
 }
 
 .text-muted {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -327,15 +327,15 @@ watch(() => props.show, async (newShow) => {
 
 .key-item {
   padding: 12px;
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 8px;
 }
 
 .key-header {
   font-size: 12px;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
@@ -343,8 +343,8 @@ watch(() => props.show, async (newShow) => {
   display: block;
   font-family: 'Courier New', monospace;
   font-size: 11px;
-  color: #e5e7eb;
-  background: #111827;
+  color: var(--text);
+  background: var(--surface);
   padding: 8px;
   border-radius: 4px;
   word-break: break-all;
@@ -361,8 +361,8 @@ watch(() => props.show, async (newShow) => {
 
 .server-item {
   padding: 12px;
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 8px;
 }
 
@@ -381,7 +381,7 @@ watch(() => props.show, async (newShow) => {
 }
 
 .server-info strong {
-  color: #e5e7eb;
+  color: var(--text);
   font-size: 14px;
 }
 
@@ -389,8 +389,8 @@ watch(() => props.show, async (newShow) => {
   padding: 3px 8px;
   border-radius: 999px;
   border: 1px solid #1d4ed8;
-  background: #172554;
-  color: #bfdbfe;
+  background: var(--blue-tint);
+  color: var(--blue-text-soft);
   font-size: 11px;
   font-weight: 600;
   line-height: 1;
@@ -424,7 +424,7 @@ watch(() => props.show, async (newShow) => {
   justify-content: flex-end;
   padding-top: 20px;
   margin-top: 24px;
-  border-top: 1px solid #334155;
+  border-top: 1px solid var(--border);
 }
 
 .btn-primary {

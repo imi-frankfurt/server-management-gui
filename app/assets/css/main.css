@@ -1,24 +1,111 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
-:root {
+/*
+ * Theme tokens. Dark is the default; the `light` class is set on <html>
+ * by Nuxt UI's color mode (see useColorMode / ThemeToggle).
+ */
+:root,
+html.dark {
 	color-scheme: dark;
 	--bg: #0b1220;
+	--bg-glow-1: #172554;
+	--bg-glow-2: #0f172a;
 	--surface: #111827;
 	--surface-soft: #1f2937;
+	--surface-raised: #1e293b;
+	--surface-sunken: #0f172a;
+	--row-hover: #1a2332;
+	--sidebar-from: #1e293b;
+	--sidebar-to: #0f172a;
+	--sidebar-border: transparent;
 	--text: #e5e7eb;
+	--text-soft: #cbd5e1;
 	--text-muted: #94a3b8;
+	--text-subtle: #64748b;
 	--border: #334155;
+	--border-soft: #374151;
+	--border-strong: #475569;
+	--overlay-1: rgba(255, 255, 255, 0.05);
+	--overlay-2: rgba(255, 255, 255, 0.1);
+	--overlay-3: rgba(255, 255, 255, 0.2);
 	--accent: #3b82f6;
 	--accent-strong: #2563eb;
+
+	--blue-text: #60a5fa;
+	--blue-text-soft: #bfdbfe;
+	--blue-border: #1e40af;
+	--blue-tint: #1e3a8a;
+	--violet-text: #a78bfa;
+	--violet-border: #4c1d95;
+	--violet-tint: #2e1065;
+	--amber-text: #fbbf24;
+	--amber-border: rgb(144, 58, 9);
+	--amber-tint: #3b1a03;
+	--red-text: #f87171;
+	--red-border: #7f1d1d;
+	--green-text: #34d399;
+	--green-border: #064e3b;
+	--green-tint: #022c22;
+
+	--toast-error-bg: #1f0e0e;
+	--toast-success-bg: #0a1f12;
+	--toast-warning-bg: #1a1500;
+	--toast-info-bg: #0c1829;
+}
+
+html.light {
+	color-scheme: light;
+	--bg: #f1f5f9;
+	--bg-glow-1: #dbeafe;
+	--bg-glow-2: #e2e8f0;
+	--surface: #ffffff;
+	--surface-soft: #f8fafc;
+	--surface-raised: #e2e8f0;
+	--surface-sunken: #f1f5f9;
+	--row-hover: #f1f5f9;
+	--sidebar-from: #ffffff;
+	--sidebar-to: #f8fafc;
+	--sidebar-border: #e2e8f0;
+	--text: #0f172a;
+	--text-soft: #334155;
+	--text-muted: #475569;
+	--text-subtle: #64748b;
+	--border: #cbd5e1;
+	--border-soft: #e2e8f0;
+	--border-strong: #94a3b8;
+	--overlay-1: rgba(15, 23, 42, 0.04);
+	--overlay-2: rgba(15, 23, 42, 0.07);
+	--overlay-3: rgba(15, 23, 42, 0.15);
+
+	--blue-text: #2563eb;
+	--blue-text-soft: #1e40af;
+	--blue-border: #93c5fd;
+	--blue-tint: #dbeafe;
+	--violet-text: #7c3aed;
+	--violet-border: #c4b5fd;
+	--violet-tint: #ede9fe;
+	--amber-text: #b45309;
+	--amber-border: #fcd34d;
+	--amber-tint: #fef3c7;
+	--red-text: #dc2626;
+	--red-border: #fca5a5;
+	--green-text: #059669;
+	--green-border: #6ee7b7;
+	--green-tint: #d1fae5;
+
+	--toast-error-bg: #fef2f2;
+	--toast-success-bg: #f0fdf4;
+	--toast-warning-bg: #fffbeb;
+	--toast-info-bg: #eff6ff;
 }
 
 html,
 body,
 #__nuxt {
 	min-height: 100%;
-	background: radial-gradient(1200px 600px at 20% -10%, #172554 0%, transparent 45%),
-		radial-gradient(900px 500px at 100% 0%, #0f172a 0%, transparent 50%),
+	background: radial-gradient(1200px 600px at 20% -10%, var(--bg-glow-1) 0%, transparent 45%),
+		radial-gradient(900px 500px at 100% 0%, var(--bg-glow-2) 0%, transparent 50%),
 		var(--bg);
 	color: var(--text);
 }
@@ -43,16 +130,16 @@ td {
 }
 
 .data-table thead {
-	background: #0f172a !important;
+	background: var(--surface-sunken) !important;
 	border-bottom: 2px solid var(--border) !important;
 }
 
 .data-table tbody tr:hover {
-	background: #0f172a !important;
+	background: var(--surface-sunken) !important;
 }
 
 .ip-address,
 .public-key {
-	background: #1e293b !important;
+	background: var(--surface-raised) !important;
 	color: var(--text-muted) !important;
 }

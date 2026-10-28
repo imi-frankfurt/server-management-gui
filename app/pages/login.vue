@@ -1,5 +1,8 @@
 <template>
   <div class="login-container">
+    <div class="login-theme-toggle">
+      <ThemeToggle />
+    </div>
     <div class="login-card">
       <h1>Login</h1>
       <button @click="loginWithKeycloak" class="keycloak-btn">
@@ -52,11 +55,18 @@ const loginWithKeycloak = async () => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #0b1220;
+  background-color: var(--bg);
+}
+
+.login-theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 180px;
 }
 
 .login-card {
-  background: #111827;
+  background: var(--surface);
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);

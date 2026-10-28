@@ -203,7 +203,7 @@ const getAssignedUserCount = (server) => {
 
 <style scoped>
 .content-section {
-  background: #111827;
+  background: var(--surface);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
@@ -220,13 +220,13 @@ const getAssignedUserCount = (server) => {
 .section-header h2 {
   font-size: 20px;
   font-weight: 600;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .section-meta {
   margin-top: 6px;
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .btn-primary {
@@ -246,9 +246,9 @@ const getAssignedUserCount = (server) => {
 
 .btn-secondary {
   padding: 10px 20px;
-  background: #1e293b;
-  color: #64748b;
-  border: 1px solid #334155;
+  background: var(--surface-raised);
+  color: var(--text-subtle);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -256,7 +256,7 @@ const getAssignedUserCount = (server) => {
 }
 
 .btn-secondary:hover {
-  background: #334155;
+  background: var(--border);
 }
 
 .table-container {
@@ -269,8 +269,8 @@ const getAssignedUserCount = (server) => {
 }
 
 .data-table thead {
-  background: #0f172a;
-  border-bottom: 2px solid #334155;
+  background: var(--surface-sunken);
+  border-bottom: 2px solid var(--border);
 }
 
 .data-table th {
@@ -278,47 +278,47 @@ const getAssignedUserCount = (server) => {
   text-align: left;
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .data-table td {
   padding: 16px;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--surface-raised);
 }
 
 .data-table tbody tr:hover {
-  background: #0f172a;
+  background: var(--surface-sunken);
 }
 
 .ip-address {
-  background: #1e293b;
+  background: var(--surface-raised);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 13px;
   font-family: 'Courier New', monospace;
-  color: #64748b;
+  color: var(--text-subtle);
 }
 
 
 .alias-count {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .count-text {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .date-text {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .text-muted {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
@@ -329,8 +329,8 @@ const getAssignedUserCount = (server) => {
 
 .action-btn {
   padding: 6px 12px;
-  border: 1px solid #334155;
-  background: #111827;
+  border: 1px solid var(--border);
+  background: var(--surface);
   border-radius: 6px;
   cursor: pointer;
   font-size: 13px;
@@ -338,59 +338,59 @@ const getAssignedUserCount = (server) => {
 }
 
 .action-btn:hover {
-  background: #0f172a;
-  border-color: #64748b;
+  background: var(--surface-sunken);
+  border-color: var(--text-subtle);
 }
 
 .action-btn.view {
-  color: #60a5fa;
-  border-color: #1e40af;
+  color: var(--blue-text);
+  border-color: var(--blue-border);
 }
 
 .action-btn.view:hover {
-  background: #1e3a8a;
-  border-color: #60a5fa;
+  background: var(--blue-tint);
+  border-color: var(--blue-text);
 }
 
 .action-btn.edit {
-  color: #fbbf24;
-  border-color: rgb(144, 58, 9);
+  color: var(--amber-text);
+  border-color: var(--amber-border);
 }
 
 .action-btn.edit:hover {
-  background: #3b1a03;
+  background: var(--amber-tint);
   border-color: #f59e0b;
 }
 
 .action-btn.delete {
-  color: #f87171;
-  border-color: #7f1d1d;
+  color: var(--red-text);
+  border-color: var(--red-border);
 }
 
 .action-btn.delete:hover {
   background: rgba(239, 68, 68, 0.1);
-  border-color: #fca5a5;
+  border-color: var(--red-text);
   color: #dc2626;
 }
 
 .action-btn.users {
-  color: #34d399;
-  border-color: #064e3b;
+  color: var(--green-text);
+  border-color: var(--green-border);
 }
 
 .action-btn.users:hover {
-  background: #022c22;
+  background: var(--green-tint);
   border-color: #10b981;
 }
 
 .loading-state, .empty-state, .error-state {
   text-align: center;
   padding: 60px 20px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .loading-state .spinner {
-  border: 4px solid #1e293b;
+  border: 4px solid var(--surface-raised);
   border-top: 4px solid #3b82f6;
   border-radius: 50%;
   width: 40px;
@@ -405,7 +405,7 @@ const getAssignedUserCount = (server) => {
 }
 
 .empty-state h3 {
-  color: #e5e7eb;
+  color: var(--text);
   margin-bottom: 8px;
 }
 
@@ -421,17 +421,17 @@ const getAssignedUserCount = (server) => {
   flex: 1;
   min-width: 180px;
   padding: 8px 12px;
-  background: #1f2937;
-  border: 1px solid #374151;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  color: #e5e7eb;
+  color: var(--text);
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s;
 }
 
 .filter-input::placeholder {
-  color: #6b7280;
+  color: var(--text-subtle);
 }
 
 .filter-input:focus {

@@ -121,7 +121,7 @@ const getPrimaryServerCount = (user) => {
 
 <style scoped>
 .content-section {
-  background: #111827;
+  background: var(--surface);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
@@ -138,13 +138,13 @@ const getPrimaryServerCount = (user) => {
 .section-header h2 {
   font-size: 20px;
   font-weight: 600;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .section-meta {
   margin-top: 6px;
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .btn-primary {
@@ -164,9 +164,9 @@ const getPrimaryServerCount = (user) => {
 
 .btn-secondary {
   padding: 10px 20px;
-  background: #1e293b;
-  color: #64748b;
-  border: 1px solid #334155;
+  background: var(--surface-raised);
+  color: var(--text-subtle);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -174,7 +174,7 @@ const getPrimaryServerCount = (user) => {
 }
 
 .btn-secondary:hover {
-  background: #334155;
+  background: var(--border);
 }
 
 .table-container {
@@ -187,8 +187,8 @@ const getPrimaryServerCount = (user) => {
 }
 
 .data-table thead {
-  background: #0f172a;
-  border-bottom: 2px solid #334155;
+  background: var(--surface-sunken);
+  border-bottom: 2px solid var(--border);
 }
 
 .data-table th {
@@ -196,36 +196,36 @@ const getPrimaryServerCount = (user) => {
   text-align: left;
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .data-table td {
   padding: 16px;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--surface-raised);
 }
 
 .data-table tbody tr:hover {
-  background: #0f172a;
+  background: var(--surface-sunken);
 }
 
 .public-key {
-  background: #1e293b;
+  background: var(--surface-raised);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-family: 'Courier New', monospace;
-  color: #64748b;
+  color: var(--text-subtle);
 }
 
 .key-count {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .server-count {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
@@ -241,16 +241,16 @@ const getPrimaryServerCount = (user) => {
 }
 
 .role-count.admin {
-  color: #60a5fa;
+  color: var(--blue-text);
 }
 
 .date-text {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .text-muted {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
@@ -261,8 +261,8 @@ const getPrimaryServerCount = (user) => {
 
 .action-btn {
   padding: 6px 12px;
-  border: 1px solid #334155;
-  background: #111827;
+  border: 1px solid var(--border);
+  background: var(--surface);
   border-radius: 6px;
   cursor: pointer;
   font-size: 13px;
@@ -270,38 +270,38 @@ const getPrimaryServerCount = (user) => {
 }
 
 .action-btn:hover {
-  background: #0f172a;
-  border-color: #64748b;
+  background: var(--surface-sunken);
+  border-color: var(--text-subtle);
 }
 
 .action-btn.view {
-  color: #60a5fa;
-  border-color: #1e40af;
+  color: var(--blue-text);
+  border-color: var(--blue-border);
 }
 
 .action-btn.view:hover {
-  background: #1e3a8a;
-  border-color: #60a5fa;
+  background: var(--blue-tint);
+  border-color: var(--blue-text);
 }
 
 .action-btn.assign {
-  color: #a78bfa;
-  border-color: #4c1d95;
+  color: var(--violet-text);
+  border-color: var(--violet-border);
 }
 
 .action-btn.assign:hover {
-  background: #2e1065;
+  background: var(--violet-tint);
   border-color: #7c3aed;
 }
 
 .loading-state, .empty-state, .error-state {
   text-align: center;
   padding: 60px 20px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .loading-state .spinner {
-  border: 4px solid #1e293b;
+  border: 4px solid var(--surface-raised);
   border-top: 4px solid #3b82f6;
   border-radius: 50%;
   width: 40px;
@@ -316,7 +316,7 @@ const getPrimaryServerCount = (user) => {
 }
 
 .empty-state h3 {
-  color: #e5e7eb;
+  color: var(--text);
   margin-bottom: 8px;
 }
 </style>

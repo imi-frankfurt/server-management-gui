@@ -74,7 +74,7 @@ const handleDelete = () => {
 }
 
 .modal-content {
-  background: #111827;
+  background: var(--surface);
   border-radius: 16px;
   width: 100%;
   max-width: 500px;
@@ -86,28 +86,28 @@ const handleDelete = () => {
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-header h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .close-btn {
   width: 32px;
   height: 32px;
   border: none;
-  background: #1e293b;
+  background: var(--surface-raised);
   border-radius: 6px;
   cursor: pointer;
   font-size: 18px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .close-btn:hover {
-  background: #334155;
+  background: var(--border);
 }
 
 .modal-body {
@@ -122,21 +122,21 @@ const handleDelete = () => {
 
 .warning-text {
   font-size: 16px;
-  color: #e5e7eb;
+  color: var(--text);
   text-align: center;
   margin-bottom: 8px;
 }
 
 .warning-subtext {
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--text-muted);
   text-align: center;
   margin-bottom: 24px;
 }
 
 .server-details {
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 24px;
@@ -149,18 +149,18 @@ const handleDelete = () => {
 }
 
 .detail-row:not(:last-child) {
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border);
 }
 
 .detail-row .label {
   font-size: 14px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--text-subtle);
 }
 
 .detail-row .value {
   font-size: 14px;
-  color: #e5e7eb;
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -172,9 +172,9 @@ const handleDelete = () => {
 
 .btn-secondary {
   padding: 10px 20px;
-  background: #1e293b;
-  color: #64748b;
-  border: 1px solid #334155;
+  background: var(--surface-raised);
+  color: var(--text-subtle);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -182,7 +182,7 @@ const handleDelete = () => {
 }
 
 .btn-secondary:hover {
-  background: #334155;
+  background: var(--border);
 }
 
 .btn-danger {

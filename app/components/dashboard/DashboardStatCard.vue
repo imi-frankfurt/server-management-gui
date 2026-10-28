@@ -26,7 +26,7 @@ const props = defineProps({
 
 <style scoped>
 .stat-card {
-  background: #111827;
+  background: var(--surface);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -44,21 +44,21 @@ const props = defineProps({
 
 .stat-label {
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
 .stat-value {
   font-size: 28px;
   font-weight: 700;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .stat-value.access-admin {
-  color: #34d399;
+  color: var(--green-text);
 }
 
 .stat-value.access-user {
-  color: #60a5fa;
+  color: var(--blue-text);
 }
 </style>

@@ -211,7 +211,7 @@ async function copyJson() {
 
 <style scoped>
 .content-section {
-  background: #111827;
+  background: var(--surface);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
@@ -227,14 +227,14 @@ async function copyJson() {
 .section-header h2 {
   font-size: 15px;
   font-weight: 500;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .btn-refresh {
   padding: 8px 16px;
-  background: #1f2937;
-  color: #9ca3af;
-  border: 1px solid #374151;
+  background: var(--surface-soft);
+  color: var(--text-muted);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
@@ -243,13 +243,13 @@ async function copyJson() {
 }
 
 .btn-refresh:hover {
-  background: #374151;
-  color: #e5e7eb;
+  background: var(--border-soft);
+  color: var(--text);
 }
 
 
 .table-wrap {
-  border: 1px solid #1e293b;
+  border: 1px solid var(--surface-raised);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -260,17 +260,17 @@ async function copyJson() {
   table-layout: fixed;
 }
 
-.data-table thead { background: #0f172a; }
+.data-table thead { background: var(--surface-sunken); }
 
 .data-table th {
   padding: 10px 16px;
   text-align: center;
   font-size: 11px;
   font-weight: 500;
-  color: #475569;
+  color: var(--border-strong);
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--surface-raised);
 }
 
 .data-table th:nth-child(1) { width: 20%; }
@@ -280,26 +280,26 @@ async function copyJson() {
 
 .data-table td {
   padding: 12px 16px;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--surface-raised);
   vertical-align: middle;
   text-align: center;
 }
 
 .main-row td { transition: background 0.1s; }
-.main-row:hover td { background: #0f172a; }
+.main-row:hover td { background: var(--surface-sunken); }
 
 .system-label {
   font-size: 13px;
   font-weight: 500;
-  color: #f1f5f9;
+  color: var(--text);
 }
 
 .hash-chip {
   font-size: 11px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: #64748b;
-  background: #0f172a;
-  border: 1px solid #1e293b;
+  color: var(--text-subtle);
+  background: var(--surface-sunken);
+  border: 1px solid var(--surface-raised);
   border-radius: 5px;
   padding: 2px 7px;
   cursor: default;
@@ -309,7 +309,7 @@ async function copyJson() {
 .date-cell {
   font-size: 12px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: #cbd5e1;
+  color: var(--text-soft);
 }
 
 .actions-cell {
@@ -330,7 +330,7 @@ async function copyJson() {
   font-size: 12px;
   font-weight: 500;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: #60a5fa;
+  color: var(--blue-text);
   background: rgba(59, 130, 246, 0.1);
   border: 1px solid rgba(59, 130, 246, 0.25);
   border-radius: 6px;
@@ -351,9 +351,9 @@ async function copyJson() {
   gap: 5px;
   font-size: 12px;
   font-weight: 500;
-  color: #94a3b8;
-  background: #1e293b;
-  border: 1px solid #334155;
+  color: var(--text-muted);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 4px 9px;
   cursor: pointer;
@@ -362,8 +362,8 @@ async function copyJson() {
 }
 .btn-hist:hover,
 .btn-hist.active {
-  background: #0f172a;
-  border-color: #475569;
+  background: var(--surface-sunken);
+  border-color: var(--border-strong);
 }
 
 .hist-count-badge {
@@ -372,9 +372,9 @@ async function copyJson() {
   justify-content: center;
   font-size: 10px;
   font-weight: 600;
-  color: #94a3b8;
-  background: #0f172a;
-  border: 1px solid #334155;
+  color: var(--text-muted);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 0 6px;
   min-width: 18px;
@@ -393,8 +393,8 @@ async function copyJson() {
 /* History */
 .expand-row td {
   padding: 0;
-  background: #0b1120;
-  border-bottom: 1px solid #1e293b;
+  background: var(--bg);
+  border-bottom: 1px solid var(--surface-raised);
 }
 
 .expand-inner { padding: 12px 16px; }
@@ -409,7 +409,7 @@ async function copyJson() {
   align-items: center;
   gap: 10px;
   padding: 7px 0;
-  border-bottom: 1px solid #1a2540;
+  border-bottom: 1px solid var(--border-soft);
 }
 .hist-item:last-child { border-bottom: none; }
 
@@ -417,7 +417,7 @@ async function copyJson() {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #334155;
+  background: var(--border);
   flex-shrink: 0;
 }
 .hist-item.first .hist-dot { background: #3b82f6; }
@@ -425,9 +425,9 @@ async function copyJson() {
 .hist-ts {
   font-size: 12px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
-.hist-item.first .hist-ts { color: #e2e8f0; font-weight: 500; }
+.hist-item.first .hist-ts { color: var(--text); font-weight: 500; }
 
 .hist-latest-badge {
   font-size: 10px;
@@ -454,8 +454,8 @@ async function copyJson() {
 }
 
 .modal {
-  background: #111827;
-  border: 1px solid #1e293b;
+  background: var(--surface);
+  border: 1px solid var(--surface-raised);
   border-radius: 14px;
   width: 100%;
   max-width: 640px;
@@ -470,14 +470,14 @@ async function copyJson() {
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid var(--surface-raised);
   flex-shrink: 0;
 }
 
 .modal-title {
   font-size: 13px;
   font-weight: 500;
-  color: #e2e8f0;
+  color: var(--text);
 }
 
 .modal-header-actions {
@@ -492,16 +492,16 @@ async function copyJson() {
   gap: 5px;
   font-size: 12px;
   font-weight: 500;
-  color: #94a3b8;
-  background: #1e293b;
-  border: 1px solid #334155;
+  color: var(--text-muted);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 4px 10px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
   white-space: nowrap;
 }
-.btn-copy:hover { background: #0f172a; color: #e2e8f0; }
+.btn-copy:hover { background: var(--surface-sunken); color: var(--text); }
 
 .modal-close {
   display: flex;
@@ -510,13 +510,13 @@ async function copyJson() {
   width: 26px;
   height: 26px;
   border-radius: 6px;
-  border: 1px solid #1e293b;
+  border: 1px solid var(--surface-raised);
   background: transparent;
-  color: #64748b;
+  color: var(--text-subtle);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-.modal-close:hover { background: #1e293b; color: #e2e8f0; }
+.modal-close:hover { background: var(--surface-raised); color: var(--text); }
 
 .modal-body {
   flex: 1;
@@ -529,8 +529,8 @@ async function copyJson() {
   width: 100%;
   height: 100%;
   min-height: 360px;
-  background: #0b1120;
-  color: #e2e8f0;
+  background: var(--bg);
+  color: var(--text);
   font-size: 12px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   line-height: 1.6;
@@ -545,11 +545,11 @@ async function copyJson() {
 .loading-state, .empty-state, .error-state {
   text-align: center;
   padding: 60px 20px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .loading-state .spinner {
-  border: 3px solid #1e293b;
+  border: 3px solid var(--surface-raised);
   border-top: 3px solid #3b82f6;
   border-radius: 50%;
   width: 36px;
@@ -559,7 +559,7 @@ async function copyJson() {
 }
 
 .empty-state h3 {
-  color: #e5e7eb;
+  color: var(--text);
   font-size: 15px;
   font-weight: 500;
   margin-bottom: 6px;
@@ -569,14 +569,14 @@ async function copyJson() {
   margin-top: 12px;
   padding: 6px 14px;
   font-size: 13px;
-  color: #94a3b8;
-  background: #1e293b;
-  border: 1px solid #334155;
+  color: var(--text-muted);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.15s;
 }
-.btn-secondary:hover { background: #0f172a; }
+.btn-secondary:hover { background: var(--surface-sunken); }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>

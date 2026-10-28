@@ -163,7 +163,7 @@ const parseDetails = (details) => {
 
 <style scoped>
 .content-section {
-  background: #111827;
+  background: var(--surface);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
@@ -180,13 +180,13 @@ const parseDetails = (details) => {
 .section-header h2 {
   font-size: 20px;
   font-weight: 600;
-  color: #e5e7eb;
+  color: var(--text);
   margin: 0 0 4px 0;
 }
 
 .section-meta {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-subtle);
   margin: 0;
 }
 
@@ -203,17 +203,17 @@ const parseDetails = (details) => {
   flex: 1;
   min-width: 180px;
   padding: 8px 12px;
-  background: #1f2937;
-  border: 1px solid #374151;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  color: #e5e7eb;
+  color: var(--text);
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s;
 }
 
 .filter-input::placeholder {
-  color: #6b7280;
+  color: var(--text-subtle);
 }
 
 .filter-input:focus {
@@ -222,10 +222,10 @@ const parseDetails = (details) => {
 
 .filter-select {
   padding: 8px 12px;
-  background: #1f2937;
-  border: 1px solid #374151;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  color: #e5e7eb;
+  color: var(--text);
   font-size: 14px;
   outline: none;
   cursor: pointer;
@@ -239,9 +239,9 @@ const parseDetails = (details) => {
 .btn-clear {
   padding: 8px 14px;
   background: transparent;
-  border: 1px solid #374151;
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 13px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
@@ -249,22 +249,22 @@ const parseDetails = (details) => {
 }
 
 .btn-clear:hover {
-  background: #374151;
-  color: #f87171;
+  background: var(--border-soft);
+  color: var(--red-text);
 }
 
 .no-results {
   text-align: center;
-  color: #6b7280;
+  color: var(--text-subtle);
   padding: 32px 0;
   font-size: 14px;
 }
 
 .btn-refresh {
   padding: 8px 16px;
-  background: #1f2937;
-  color: #9ca3af;
-  border: 1px solid #374151;
+  background: var(--surface-soft);
+  color: var(--text-muted);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
@@ -273,15 +273,15 @@ const parseDetails = (details) => {
 }
 
 .btn-refresh:hover {
-  background: #374151;
-  color: #e5e7eb;
+  background: var(--border-soft);
+  color: var(--text);
 }
 
 .btn-secondary {
   padding: 8px 16px;
-  background: #1f2937;
-  color: #9ca3af;
-  border: 1px solid #374151;
+  background: var(--surface-soft);
+  color: var(--text-muted);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
@@ -292,13 +292,13 @@ const parseDetails = (details) => {
 .empty-state {
   text-align: center;
   padding: 48px 24px;
-  color: #6b7280;
+  color: var(--text-subtle);
 }
 
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid #374151;
+  border: 3px solid var(--border-soft);
   border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -317,14 +317,14 @@ const parseDetails = (details) => {
 .empty-state h3 {
   font-size: 18px;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--text-muted);
   margin-bottom: 8px;
 }
 
 .table-container {
   overflow-x: auto;
   border-radius: 10px;
-  border: 1px solid #1f2937;
+  border: 1px solid var(--surface-soft);
 }
 
 .data-table {
@@ -334,7 +334,7 @@ const parseDetails = (details) => {
 }
 
 .data-table thead {
-  background: #1f2937;
+  background: var(--surface-soft);
 }
 
 .data-table th {
@@ -344,33 +344,33 @@ const parseDetails = (details) => {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #9ca3af;
-  border-bottom: 1px solid #374151;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .data-table tbody tr {
-  border-bottom: 1px solid #1f2937;
+  border-bottom: 1px solid var(--surface-soft);
   transition: background 0.15s;
 }
 
 .data-table tbody tr:hover {
-  background: #1a2332;
+  background: var(--row-hover);
 }
 
 .data-table td {
   padding: 12px 16px;
-  color: #d1d5db;
+  color: var(--text-soft);
   vertical-align: middle;
 }
 
 .id-cell {
-  color: #6b7280;
+  color: var(--text-subtle);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 
 .actor-cell {
-  color: #e5e7eb;
+  color: var(--text);
   font-weight: 500;
   font-size: 13px;
 }
@@ -386,11 +386,11 @@ const parseDetails = (details) => {
   letter-spacing: 0.04em;
 }
 
-.action-post   { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
-.action-put    { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-.action-delete { background: rgba(239, 68, 68, 0.15);  color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-.action-sync   { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-.action-get    { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+.action-post   { background: rgba(59, 130, 246, 0.15); color: var(--blue-text); border: 1px solid rgba(59, 130, 246, 0.3); }
+.action-put    { background: rgba(245, 158, 11, 0.15); color: var(--amber-text); border: 1px solid rgba(245, 158, 11, 0.3); }
+.action-delete { background: rgba(239, 68, 68, 0.15);  color: var(--red-text); border: 1px solid rgba(239, 68, 68, 0.3); }
+.action-sync   { background: rgba(16, 185, 129, 0.15); color: var(--green-text); border: 1px solid rgba(16, 185, 129, 0.3); }
+.action-get    { background: rgba(139, 92, 246, 0.15); color: var(--violet-text); border: 1px solid rgba(139, 92, 246, 0.3); }
 
 /* Resource badges */
 .resource-badge {
@@ -400,16 +400,16 @@ const parseDetails = (details) => {
   font-size: 12px;
   font-weight: 500;
   text-transform: capitalize;
-  background: #1f2937;
-  color: #9ca3af;
-  border: 1px solid #374151;
+  background: var(--surface-soft);
+  color: var(--text-muted);
+  border: 1px solid var(--border-soft);
 }
 
-.resource-server          { color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.08); }
-.resource-user            { color: #a78bfa; border-color: rgba(139, 92, 246, 0.3); background: rgba(139, 92, 246, 0.08); }
-.resource-user_assignment { color: #34d399; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.08); }
-.resource-user_unassign   { color: #fbbf24; border-color: rgba(245, 158, 11, 0.3);  background: rgba(245, 158, 11, 0.08); }
-.resource-ignorelist       { color: #f87171; border-color: rgba(239, 68, 68, 0.3);   background: rgba(239, 68, 68, 0.08); }
+.resource-server          { color: var(--blue-text); border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.08); }
+.resource-user            { color: var(--violet-text); border-color: rgba(139, 92, 246, 0.3); background: rgba(139, 92, 246, 0.08); }
+.resource-user_assignment { color: var(--green-text); border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.08); }
+.resource-user_unassign   { color: var(--amber-text); border-color: rgba(245, 158, 11, 0.3);  background: rgba(245, 158, 11, 0.08); }
+.resource-ignorelist       { color: var(--red-text); border-color: rgba(239, 68, 68, 0.3);   background: rgba(239, 68, 68, 0.08); }
 
 /* Details */
 .details-cell {
@@ -417,26 +417,26 @@ const parseDetails = (details) => {
 }
 
 .detail-key {
-  color: #6b7280;
+  color: var(--text-subtle);
   font-family: monospace;
 }
 
 .detail-sep {
-  color: #4b5563;
+  color: var(--border-strong);
 }
 
 .detail-value {
-  color: #d1d5db;
+  color: var(--text-soft);
   font-family: monospace;
 }
 
 .detail-divider {
-  color: #374151;
+  color: var(--border-soft);
   margin: 0 4px;
 }
 
 .date-text {
-  color: #6b7280;
+  color: var(--text-subtle);
   font-size: 13px;
   white-space: nowrap;
 }

@@ -71,7 +71,7 @@ onMounted(async () => {
 }
 
 .spinner {
-  border: 4px solid #1e293b;
+  border: 4px solid var(--surface-raised);
   border-top: 4px solid #4a90e2;
   border-radius: 50%;
   width: 40px;

@@ -57,26 +57,26 @@ const icons = {
 }
 
 .toast--error {
-  background: #1f0e0e;
-  color: #fca5a5;
+  background: var(--toast-error-bg);
+  color: var(--red-text);
   border-color: rgba(239, 68, 68, 0.35);
 }
 
 .toast--success {
-  background: #0a1f12;
-  color: #86efac;
+  background: var(--toast-success-bg);
+  color: var(--green-text);
   border-color: rgba(34, 197, 94, 0.35);
 }
 
 .toast--warning {
-  background: #1a1500;
-  color: #fde68a;
+  background: var(--toast-warning-bg);
+  color: var(--amber-text);
   border-color: rgba(245, 158, 11, 0.35);
 }
 
 .toast--info {
-  background: #0c1829;
-  color: #93c5fd;
+  background: var(--toast-info-bg);
+  color: var(--blue-text);
   border-color: rgba(59, 130, 246, 0.35);
 }
 

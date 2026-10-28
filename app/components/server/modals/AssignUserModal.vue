@@ -202,7 +202,7 @@ watch(() => props.show, (newShow) => {
 }
 
 .modal-content {
-  background: #111827;
+  background: var(--surface);
   border-radius: 16px;
   width: 100%;
   max-width: 600px;
@@ -216,32 +216,32 @@ watch(() => props.show, (newShow) => {
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  background: #111827;
+  background: var(--surface);
   z-index: 10;
 }
 
 .modal-header h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .close-btn {
   width: 32px;
   height: 32px;
   border: none;
-  background: #1e293b;
+  background: var(--surface-raised);
   border-radius: 6px;
   cursor: pointer;
   font-size: 18px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .close-btn:hover {
-  background: #334155;
+  background: var(--border);
 }
 
 .modal-body {
@@ -249,7 +249,7 @@ watch(() => props.show, (newShow) => {
 }
 
 .modal-description {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 14px;
   margin-bottom: 20px;
 }
@@ -264,7 +264,7 @@ watch(() => props.show, (newShow) => {
   width: 40px;
   height: 40px;
   margin: 0 auto 16px;
-  border: 4px solid #1e293b;
+  border: 4px solid var(--surface-raised);
   border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -281,7 +281,7 @@ watch(() => props.show, (newShow) => {
 .empty-state {
   text-align: center;
   padding: 40px 20px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .servers-list {
@@ -292,18 +292,18 @@ watch(() => props.show, (newShow) => {
 }
 
 .server-item {
-  border: 2px solid #334155;
+  border: 2px solid var(--border);
   border-radius: 8px;
   transition: all 0.2s;
 }
 
 .server-item:hover:not(.already-assigned) {
   border-color: #3b82f6;
-  background: #0f172a;
+  background: var(--surface-sunken);
 }
 
 .server-item.already-assigned {
-  background: #0f172a;
+  background: var(--surface-sunken);
   opacity: 0.7;
 }
 
@@ -347,13 +347,13 @@ watch(() => props.show, (newShow) => {
 }
 
 .server-details strong {
-  color: #e5e7eb;
+  color: var(--text);
   font-size: 14px;
 }
 
 .ip-address {
   font-family: 'Courier New', monospace;
-  background: #1e293b;
+  background: var(--surface-raised);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 13px;
@@ -385,7 +385,7 @@ watch(() => props.show, (newShow) => {
   gap: 12px;
   justify-content: flex-end;
   padding-top: 20px;
-  border-top: 1px solid #334155;
+  border-top: 1px solid var(--border);
 }
 
 .btn-primary {
@@ -410,9 +410,9 @@ watch(() => props.show, (newShow) => {
 
 .btn-secondary {
   padding: 10px 20px;
-  background: #1e293b;
-  color: #64748b;
-  border: 1px solid #334155;
+  background: var(--surface-raised);
+  color: var(--text-subtle);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -420,7 +420,7 @@ watch(() => props.show, (newShow) => {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #334155;
+  background: var(--border);
 }
 
 .btn-secondary:disabled {

@@ -229,16 +229,16 @@ watch(() => props.server, (newServer) => {
   justify-content: space-between;
   gap: 12px;
   padding: 10px 12px;
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 10px;
 }
 
 .ignored-name {
   font-family: 'Courier New', monospace;
   font-size: 13px;
-  color: #e5e7eb;
-  background: #1e293b;
+  color: var(--text);
+  background: var(--surface-raised);
   padding: 2px 8px;
   border-radius: 4px;
 }
@@ -246,8 +246,8 @@ watch(() => props.server, (newServer) => {
 .btn-remove {
   padding: 6px 14px;
   background: transparent;
-  color: #f87171;
-  border: 1px solid #7f1d1d;
+  color: var(--red-text);
+  border: 1px solid var(--red-border);
   border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
@@ -273,11 +273,11 @@ watch(() => props.server, (newServer) => {
 .add-row input {
   flex: 1;
   padding: 10px 14px;
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 14px;
-  color: #e5e7eb;
+  color: var(--text);
   outline: none;
   box-sizing: border-box;
   transition: border-color 0.2s;
@@ -288,7 +288,7 @@ watch(() => props.server, (newServer) => {
 }
 
 .add-row input::placeholder {
-  color: #4b5563;
+  color: var(--border-strong);
 }
 
 .btn-add {
@@ -322,7 +322,7 @@ watch(() => props.server, (newServer) => {
 .loading-state, .empty-state, .error-state {
   text-align: center;
   padding: 20px;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
@@ -331,21 +331,21 @@ watch(() => props.server, (newServer) => {
 .btn-retry {
   margin-top: 8px;
   padding: 6px 14px;
-  background: #1e293b;
-  color: #94a3b8;
-  border: 1px solid #334155;
+  background: var(--surface-raised);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 12px;
   cursor: pointer;
 }
 
-.btn-retry:hover { background: #334155; }
+.btn-retry:hover { background: var(--border); }
 
 .spinner {
   width: 28px;
   height: 28px;
   margin: 0 auto 12px;
-  border: 3px solid #1e293b;
+  border: 3px solid var(--surface-raised);
   border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

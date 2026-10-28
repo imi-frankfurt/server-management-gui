@@ -522,7 +522,7 @@ onMounted(async () => {
 .dashboard-container {
   display: flex;
   min-height: 100vh;
-  background: #0b1220;
+  background: var(--bg);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
@@ -540,12 +540,12 @@ onMounted(async () => {
 .header-left h1 {
   font-size: 32px;
   font-weight: 700;
-  color: #e5e7eb;
+  color: var(--text);
   margin-bottom: 4px;
 }
 
 .subtitle {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 16px;
 }
 

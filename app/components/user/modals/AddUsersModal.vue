@@ -390,7 +390,7 @@ watch(() => props.server, (newServer) => {
 }
 
 .modal-content {
-  background: #111827;
+  background: var(--surface);
   border-radius: 16px;
   width: 100%;
   max-width: 760px;
@@ -404,10 +404,10 @@ watch(() => props.server, (newServer) => {
   justify-content: space-between;
   align-items: flex-start;
   padding: 24px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  background: #111827;
+  background: var(--surface);
   z-index: 10;
   height: 81px;
 }
@@ -415,13 +415,13 @@ watch(() => props.server, (newServer) => {
 .modal-header h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #e5e7eb;
+  color: var(--text);
   margin-bottom: 4px;
 }
 
 .header-sub {
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-subtle);
   font-family: 'Courier New', monospace;
 }
 
@@ -429,16 +429,16 @@ watch(() => props.server, (newServer) => {
   width: 32px;
   height: 32px;
   border: none;
-  background: #1e293b;
+  background: var(--surface-raised);
   border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
-  color: #94a3b8;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
 .close-btn:hover {
-  background: #334155;
+  background: var(--border);
 }
 
 .modal-body {
@@ -450,8 +450,8 @@ watch(() => props.server, (newServer) => {
   justify-content: space-between;
   align-items: center;
   
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px 20px;
   margin-bottom: 16px;
@@ -468,7 +468,7 @@ watch(() => props.server, (newServer) => {
 }
 
 .primary-title {
-  color: #cbd5e1;
+  color: var(--text-soft);
   font-size: 13px;
   font-weight: 600;
 }
@@ -480,7 +480,7 @@ watch(() => props.server, (newServer) => {
 }
 
 .primary-value.empty {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -489,14 +489,14 @@ watch(() => props.server, (newServer) => {
 .error-state {
   text-align: center;
   padding: 40px 20px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .spinner {
   width: 40px;
   height: 40px;
   margin: 0 auto 16px;
-  border: 4px solid #1e293b;
+  border: 4px solid var(--surface-raised);
   border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -540,8 +540,8 @@ watch(() => props.server, (newServer) => {
 
 .btn-secondary {
   padding: 10px 20px;
-  background: #334155;
-  color: #fff;
+  background: var(--border);
+  color: var(--text);
   border: none;
   border-radius: 8px;
   font-weight: 500;
@@ -551,8 +551,8 @@ watch(() => props.server, (newServer) => {
 
 .user-assign-item {
   padding: 12px;
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 8px;
   transition: border-color 0.2s;
   margin-bottom: 10px;
@@ -610,14 +610,14 @@ watch(() => props.server, (newServer) => {
 
 .user-details strong {
   font-size: 14px;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .public-key {
   font-family: 'Courier New', monospace;
   font-size: 11px;
-  color: #64748b;
-  background: #1e293b;
+  color: var(--text-subtle);
+  background: var(--surface-raised);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -668,17 +668,17 @@ watch(() => props.server, (newServer) => {
   flex: 1;
   min-width: 180px;
   padding: 8px 12px;
-  background: #1f2937;
-  border: 1px solid #374151;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  color: #e5e7eb;
+  color: var(--text);
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s;
 }
 
 .filter-input::placeholder {
-  color: #6b7280;
+  color: var(--text-subtle);
 }
 
 .filter-input:focus {
@@ -689,7 +689,7 @@ watch(() => props.server, (newServer) => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 13px;
   cursor: pointer;
   white-space: nowrap;

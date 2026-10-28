@@ -94,7 +94,7 @@ const assignedUserCount = computed(() => {
 }
 
 .modal-content {
-  background: #111827;
+  background: var(--surface);
   border-radius: 16px;
   width: 100%;
   max-width: 500px;
@@ -106,28 +106,28 @@ const assignedUserCount = computed(() => {
   justify-content: space-between;
   align-items: center;
   padding: 24px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-header h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .close-btn {
   width: 32px;
   height: 32px;
   border: none;
-  background: #1e293b;
+  background: var(--surface-raised);
   border-radius: 6px;
   cursor: pointer;
   font-size: 18px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .close-btn:hover {
-  background: #334155;
+  background: var(--border);
 }
 
 .modal-body {
@@ -146,29 +146,29 @@ const assignedUserCount = computed(() => {
   display: block;
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-subtle);
   margin-bottom: 8px;
 }
 
 .detail-value {
   padding: 12px;
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 14px;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .ip-address {
   font-family: 'Courier New', monospace;
-  background: #1e293b;
+  background: var(--surface-raised);
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 13px;
 }
 
 .text-muted {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -180,11 +180,11 @@ const assignedUserCount = computed(() => {
 
 .alias-item {
   padding: 10px 12px;
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 14px;
-  color: #e5e7eb;
+  color: var(--text);
 }
 
 .modal-footer {
@@ -193,7 +193,7 @@ const assignedUserCount = computed(() => {
   justify-content: flex-end;
   padding-top: 20px;
   margin-top: 24px;
-  border-top: 1px solid #334155;
+  border-top: 1px solid var(--border);
 }
 
 .btn-primary {

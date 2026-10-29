@@ -1,9 +1,21 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { execSync } from 'node:child_process'
+
 const runtimeEnv = (globalThis as typeof globalThis & {
   process?: {
     env?: Record<string, string | undefined>
   }
 }).process?.env ?? {}
+
+// Version shown in the UI: build arg in Docker (APP_VERSION), otherwise the latest git tag
+const resolveAppVersion = () => {
+  if (runtimeEnv.NUXT_PUBLIC_APP_VERSION) return runtimeEnv.NUXT_PUBLIC_APP_VERSION
+  try {
+    return execSync('git describe --tags --always', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim()
+  } catch {
+    return 'dev'
+  }
+}
 
 const isProduction = runtimeEnv.NODE_ENV === 'production'
 const connectSrc = ["'self'", 'ws:', 'wss:']
@@ -102,7 +114,9 @@ export default defineNuxtConfig({
       // Optional direct browser base URL (used by auth/session when needed)
       apiBaseUrl: runtimeEnv.NUXT_PUBLIC_API_BASE_URL || '',
       // Keycloak base URL for account management
-      keycloakBaseUrl: runtimeEnv.KEYCLOAK_BASE_URL || 'https://login.imi-frankfurt.de/realms/imi/account'
+      keycloakBaseUrl: runtimeEnv.KEYCLOAK_BASE_URL || 'https://login.imi-frankfurt.de/realms/imi/account',
+      // Application version shown in the sidebar
+      appVersion: resolveAppVersion().replace(/^v/, '')
     }
   }
 })

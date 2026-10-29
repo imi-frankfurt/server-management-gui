@@ -64,6 +64,7 @@
       <button @click="handleLogout" class="logout-btn">
         Logout
       </button>
+      <p class="app-version" :title="`Version ${appVersion}`">{{ appVersionLabel }}</p>
     </div>
   </aside>
 </template>
@@ -104,7 +105,10 @@ const handleLogout = () => {
   emit('logout')
 }
 
-const keycloakAccountUrl = useRuntimeConfig().public.keycloakBaseUrl
+const { keycloakBaseUrl: keycloakAccountUrl, appVersion } = useRuntimeConfig().public
+
+// Release versions start with a digit (e.g. 2.2.1); other builds (pr-33, dev) are shown as-is
+const appVersionLabel = /^\d/.test(appVersion) ? `v${appVersion}` : appVersion
 </script>
 
 <style scoped>
@@ -274,6 +278,16 @@ const keycloakAccountUrl = useRuntimeConfig().public.keycloakBaseUrl
 
 .logout-btn:hover {
   background: rgba(239, 68, 68, 0.3);
+}
+
+.app-version {
+  margin: 12px 0 0;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media (max-width: 768px) {

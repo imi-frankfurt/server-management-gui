@@ -53,8 +53,8 @@
 
       <AnsibleLogTable v-if="activeTab === 'ansible_logs'"
         :ansibleLogs="ansibleLogs"
-        :loading="loading"
-        :error="error"
+        :loading="ansibleLogsLoading"
+        :error="ansibleLogsError"
         :is-admin="isAdmin"
         @retry="fetchAnsibleLogs"
       />
@@ -160,7 +160,7 @@ definePageMeta({
 })
 
 
-const { logout, getSession } = useAuth()
+const { logout, ensureSession } = useAuth()
 const { apiRequest } = useApi()
 
 
@@ -177,6 +177,8 @@ const usersLoading = ref(false)
 const usersError = ref('')
 const logsLoading = ref(false)
 const logsError = ref('')
+const ansibleLogsLoading = ref(false)
+const ansibleLogsError = ref('')
 const showAddServerModal = ref(false)
 const showViewServerModal = ref(false)
 const showAddUsersModal = ref(false)
@@ -335,13 +337,13 @@ const fetchAnsibleLogs = async () => {
   if (!isAdmin.value) return
 
   try {
-    loading.value = true
-    error.value = ''
+    ansibleLogsLoading.value = true
+    ansibleLogsError.value = ''
     ansibleLogs.value = await apiRequest('/api/ansible/history')
   } catch (err) {
-    error.value = 'Failed to load ansible logs.'
+    ansibleLogsError.value = 'Failed to load ansible logs.'
   } finally {
-    loading.value = false
+    ansibleLogsLoading.value = false
   }
 }
 
@@ -372,7 +374,7 @@ const applySession = (session) => {
 }
 
 const decodeToken = async () => {
-  const session = await getSession()
+  const session = await ensureSession()
   applySession(session)
 }
 

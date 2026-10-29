@@ -11,6 +11,8 @@ services:
       NUXT_API_BASE_URL: ${NUXT_API_BASE_URL:-http://192.168.212.2:5000}
       # Keep empty so browser calls always stay on same-origin (/api via Nuxt BFF).
       NUXT_PUBLIC_API_BASE_URL: ${NUXT_PUBLIC_API_BASE_URL:-}
+      # Keycloak account console linked from the sidebar.
+      NUXT_PUBLIC_KEYCLOAK_BASE_URL: ${NUXT_PUBLIC_KEYCLOAK_BASE_URL:-https://login.imi-frankfurt.de/realms/imi/account}
     restart: unless-stopped
     networks:
       default:

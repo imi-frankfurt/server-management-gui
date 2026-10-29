@@ -23,6 +23,7 @@ export const useApi = () => {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          ...(unsafeMethods.includes(method) && csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
           ...optionHeaders
         }
       })

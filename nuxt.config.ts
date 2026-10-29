@@ -61,7 +61,12 @@ export default defineNuxtConfig({
   },
 
   icon: {
-    serverBundle: 'remote' 
+    // Serve icons from the installed @iconify-json packages instead of the Iconify CDN
+    serverBundle: 'local',
+    // Bundle icons referenced in our own sources straight into the client
+    clientBundle: {
+      scan: true
+    }
   },
 
   devServer: {

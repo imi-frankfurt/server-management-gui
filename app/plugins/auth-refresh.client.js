@@ -1,5 +1,5 @@
 export default defineNuxtPlugin(() => {
-  const { refreshToken, getSession, sessionActive } = useAuth()
+  const { refreshToken, ensureSession, sessionActive } = useAuth()
 
   const refreshIntervalMs = 4 * 60 * 1000
 
@@ -44,7 +44,7 @@ export default defineNuxtPlugin(() => {
   document.addEventListener('visibilitychange', onVisibilityChange)
 
   onNuxtReady(async () => {
-    await getSession()
+    await ensureSession()
 
     if (sessionActive.value) {
       refreshSilently()

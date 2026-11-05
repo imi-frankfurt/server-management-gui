@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-11-05
+
+### Changed
+- Login requires backend v2.3.0, which uses PKCE
+- A rejected login code (`400`/`401`) now shows "please log in again" and offers a new login instead of the backend error
+
+### Fixed
+- The back button no longer returns to the login callback and replays its single-use code
+
+### Security
+- The auth proxy forwards the backend's `Set-Cookie` headers from `/auth/login-url`, so the `pkce_verifier` cookie reaches the browser
+- Login URL and code exchange requests explicitly send credentials
+
 ## [2.2.1] - 2026-10-29
 
 ### Added
@@ -106,6 +119,7 @@ First tagged release.
 ### Changed
 - "Add to blacklist" button is visible to admins only
 
+[2.3.0]: https://github.com/imi-frankfurt/server-management-gui/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/imi-frankfurt/server-management-gui/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/imi-frankfurt/server-management-gui/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/imi-frankfurt/server-management-gui/compare/v2.1.0-rc1...v2.1.0

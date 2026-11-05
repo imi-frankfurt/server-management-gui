@@ -25,6 +25,7 @@ const loginWithKeycloak = async () => {
     const forceReauth = route.query.force_reauth === '1'
 
     const response = await $fetch('/api/auth/login-url', {
+      credentials: 'include',
       params: {
         frontend_callback_url: frontendCallbackUrl,
         ...(forceReauth ? { prompt: 'login', max_age: 0 } : {})

@@ -3,7 +3,7 @@
     <div v-if="error" class="error">
       <h2>Login Failed</h2>
       <p>{{ error }}</p>
-      <button @click="navigateTo('/login')">Back to Login</button>
+      <button @click="navigateTo('/login')">Log in again</button>
     </div>
     <div v-else class="loading">
       <div class="spinner"></div>
@@ -38,6 +38,7 @@ onMounted(async () => {
     const { setCsrfToken } = useCsrf()
     const response = await $fetch('/api/auth/exchange-code', {
       method: 'POST',
+      credentials: 'include',
       headers: {
         ...(getCsrfToken() ? { 'X-CSRF-Token': getCsrfToken() } : {})
       },
@@ -48,10 +49,14 @@ onMounted(async () => {
       setCsrfToken(response.csrf_token)
     }
 
-    await navigateTo('/dashboard')
+    // Replace the history entry so the back button can't replay the single-use code.
+    await navigateTo('/dashboard', { replace: true })
   } catch (err) {
     console.error('Callback error:', err)
-    error.value = err?.data?.detail || err.message || 'Failed to complete login'
+    // The code is single-use and the PKCE verifier may be gone: only a new login can recover.
+    error.value = [400, 401].includes(err?.status)
+      ? 'Your login could not be completed. Please log in again.'
+      : err?.data?.detail || err.message || 'Failed to complete login'
   }
 })
 </script>

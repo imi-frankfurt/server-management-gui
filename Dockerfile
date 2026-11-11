@@ -1,4 +1,6 @@
-FROM node:24-alpine AS build
+# Build on the runner's native platform: the .output bundle is pure JS, and the
+# Vite 8/Rolldown native binary crashes under QEMU arm64 emulation (SIGILL).
+FROM --platform=$BUILDPLATFORM node:24-alpine AS build
 WORKDIR /app
 
 RUN npm install -g npm@latest

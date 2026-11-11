@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.1] - 2026-11-11
+
+### Changed
+- Updated dependencies: Nuxt 4.6.4, Nuxt UI 4.12.0, Tailwind CSS 4.3.5, undici 8.12.4, Vue 3.5.45, Vue Router 5.5.0, Lucide icons 1.2.153. Nuxt now builds with Vite 8 (Rolldown)
+- CI: GitHub Actions updated to their Node 24 releases (checkout v7, setup-buildx v4, login v4, metadata v6, setup-qemu v4, build-push v7)
+- Docker: the app is built once on the runner's native platform; only the runtime image is assembled per architecture, which makes multi-platform builds faster
+
+### Fixed
+- The arm64 Docker build no longer crashes under QEMU emulation (`Illegal instruction`) when bundling with Vite 8/Rolldown
+
+### Security
+- Applied `npm audit fix`: known advisories in the dependency tree went from 74 (6 critical, 17 high) to 13 (low/moderate, build-time tooling only)
+
 ## [2.3.0] - 2026-11-05
 
 ### Changed
@@ -119,6 +132,7 @@ First tagged release.
 ### Changed
 - "Add to blacklist" button is visible to admins only
 
+[2.3.1]: https://github.com/imi-frankfurt/server-management-gui/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/imi-frankfurt/server-management-gui/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/imi-frankfurt/server-management-gui/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/imi-frankfurt/server-management-gui/compare/v2.1.0...v2.2.0
